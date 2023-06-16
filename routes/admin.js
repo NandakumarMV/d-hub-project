@@ -1,7 +1,19 @@
 var express = require("express");
 var session = require("express-session");
-const auth = require("../middlewares/adminAuth");
+const adminAuth = require("../middlewares/adminAuth");
+var multer = require("multer");
+const path = require("path");
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../public/uploads"));
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const uploads = multer({ storage: storage });
 // router.use(session({ secret: config.sessionSecret }));
 
 var router = express.Router();
@@ -16,12 +28,22 @@ router.use(bodyParser.urlencoded({ extended: true }));
 // router.get("/admin", function (req, res, next) {
 //   res.render("index", { title: "Express" });
 // });
-router.get("/", auth.islogOut, adminController.loadAdminLogin);
-router.post("/", adminController.verfiyLogin);
-router.get("/home", auth.isLogin, adminController.loadDash);
-router.get("/logout", auth.isLogin, adminController.adminlogout);
 
-router.get("/table", adminController.tableData);
+router.get("/", adminAuth.islogOut, adminController.loadAdminLogin);
+router.post("/", adminController.verfiyLogin);
+router.get("/home", adminAuth.isLogin, adminController.loadDash);
+router.get("/logout", adminAuth.isLogin, adminController.adminlogout);
+router.get("/add-products", adminAuth.isLogin, adminController.loadProducts);
+router.post(
+  "/add-products",
+  uploads.single("image"),
+  adminController.insertProducts
+);
+
+router.get("/category", adminAuth.isLogin, adminController.loadCategory);
+router.post("/category", adminController.addCategory);
+
+// router.get("/", adminController.tableData);
 router.get("*", (req, res) => {
   res.redirect("/admin");
 });

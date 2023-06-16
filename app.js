@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
+const hbs = require("express-handlebars");
 const config = require("./config/config");
 // mongoose.connect();
 
@@ -30,6 +31,14 @@ var app = express();
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
+app.engine(
+  "hbs",
+  hbs.engine({
+    extname: "hbs",
+    layoutsDir: __dirname + "/views/layouts/",
+    partialsDir: __dirname + "/views/partials/",
+  })
+);
 
 app.use(session({ secret: config.sessionSecret }));
 app.use(bodyParser.json());
