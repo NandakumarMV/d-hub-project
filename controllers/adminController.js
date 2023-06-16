@@ -5,7 +5,17 @@ const { userLogout } = require("./userController");
 const multer = require("multer");
 const Category = require("../models/categoryModel");
 const { log } = require("handlebars/runtime");
+const randomString = require("randomstring");
 // const upload = multer({ dest: "./public/uploads/" });
+
+const securePassword = async (password) => {
+  try {
+    const passwordHash = await bcrypt.hash(password, 10);
+    return passwordHash;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 const loadAdminLogin = async (req, res) => {
   try {
@@ -54,7 +64,7 @@ const adminlogout = async (req, res) => {
   try {
     // console.log("hy......................................................");
     req.session.destroy();
-    res.redirect("/admin");
+    res.redirect("/");
   } catch (error) {
     console.log(error.message);
   }
@@ -80,9 +90,11 @@ const loadProducts = async (req, res) => {
 
 const insertProducts = async (req, res) => {
   try {
+    console.log(req.body.productname);
     const newProduct = new Product({
       brand: req.body.brand,
-      productName: req.body.productname,
+      productname: req.body.productname,
+
       category: req.body.category,
       price: req.body.price,
       // offPrice:dealprice,
@@ -168,14 +180,93 @@ const addCategory = async (req, res) => {
   }
 };
 
+const addUsers = async (req, res) => {
+  const userData = await User.find({ is_admin: 0 }).lean();
+  // console.log(userData);
+  const usersWithSerialNumber = userData.map((users, index) => ({
+    ...users,
+    serialNumber: index + 1,
+  }));
+  res.render("admin/users", {
+    layout: "admin-layout",
+    user: usersWithSerialNumber,
+  });
+};
+// const insertUsers = async (req, res) => {
+//   try {
+//     const name = req.body.name;
+//     const email = req.body.email;
+//     const mobile = req.body.mobile;
+//     const password = randomString.generate(7);
+
+//     const spassword = await securePassword(password);
+//     const user = new User({
+//       name: name,
+//       email: email,
+//       mobile: mobile,
+//       password: spassword,
+//     });
+//     const userData = await user.save();
+
+//     if (userData) {
+//       res.redirect("/admin/home");
+//     } else {
+//       res.render();
+//     }
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
+
+const editUser = async (req, res) => {
+  try {
+    const id = req.query.id;
+    console.log(id);
+    const userData = await User.findById({ _id: id }).lean();
+    console.log(userData);
+    if (userData) {
+      // res.redirect("/admin/home");
+      res.render("admin/edit-user", {
+        layout: "admin-layout",
+        user: userData,
+      });
+    } else {
+      res.redirect("/admin/home");
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const updateUser = async (req, res) => {
+  try {
+    const userData = await User.findByIdAndUpdate(
+      { _id: req.body.id },
+      {
+        $set: {
+          name: req.body.name,
+          email: req.body.email,
+          mobile: req.body.mobile,
+          is_verified: req.body.verified,
+        },
+      }
+    );
+
+    res.redirect("/admin/home");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 module.exports = {
   loadAdminLogin,
   verfiyLogin,
   loadDash,
   adminlogout,
-
+  addUsers,
   insertProducts,
   loadCategory,
   addCategory,
   loadProducts,
+
+  editUser,
+  updateUser,
 };

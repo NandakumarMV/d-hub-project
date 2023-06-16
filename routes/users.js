@@ -27,6 +27,7 @@ router.get("/logout", auth.isLogin, userControllers.userLogout);
 
 router.get("/forget", auth.isLogOut, userControllers.forgetLoad);
 router.post("/forget", userControllers.forgetVerify);
+
 router.get(
   "/forget-password",
   auth.isLogOut,

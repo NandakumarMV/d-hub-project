@@ -42,8 +42,11 @@ router.post(
 
 router.get("/category", adminAuth.isLogin, adminController.loadCategory);
 router.post("/category", adminController.addCategory);
+router.get("/users", adminAuth.isLogin, adminController.addUsers);
+// router.post("/users", adminController.insertUsers);
+router.get("/edit-user", adminAuth.isLogin, adminController.editUser);
+router.post("/edit-user", adminController.updateUser);
 
-// router.get("/", adminController.tableData);
 router.get("*", (req, res) => {
   res.redirect("/admin");
 });

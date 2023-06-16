@@ -1,0 +1,60 @@
+ {{>admin-header}}
+  
+  <div class="container">
+   
+            
+
+        <form action="/admin/edit-user" method="post">
+            <h2 class="mb-3">Edit User</h2>
+           
+            <div class="mb-3">
+                <label for="name" class="form-label">NAME</label>
+                <input type="text" name="name" class="form-control" value="{{user.name}}" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">EMAIL</label>
+                <input type="text" name="email" class="form-control" value="{{user.email}}" required>
+            </div>
+
+            {{#if error}}
+            <div class="alert alert-danger" role="alert">
+                {{error}}
+            </div>
+            <script>
+                // Show the error message in an alert box
+                window.onload = function() {
+                    setTimeout(function() {
+                        alert("{{error}}");
+                    }, 100);
+                }
+            </script>
+            {{/if}}
+            <div class="mb-3">
+                <label for="mobile" class="form-label">MOBILE</label>
+                <input type="number" name="mobile" class="form-control" value="{{user.mobile}}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">VERIFIED</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="verified" id="verified" value="1"  >
+                    <label class="form-check-label" for="verified">
+                        Verified
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="verified" id="unverified" value="0" >
+                    <label class="form-check-label" for="unverified">
+                        Unverified
+                    </label>
+                </div>
+            </div>
+            <input type="hidden" name="id" value="{{user._id}}">
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </form>
+            {{!-- {{/with}} --}}
+
+    </div>
