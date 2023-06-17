@@ -1,0 +1,119 @@
+{{>admin-header}}
+
+<div class="my-form" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="form-dialog form-dialog-centered" role="document">
+    <form class="form-content" action="/admin/edit-product" method="post" enctype="multipart/form-data">
+      <style>
+        .my-form {
+          background-color: #f8f9fa;
+          border-radius: 5px;
+          padding: 20px;
+          margin: 20px auto;
+          max-width: 500px;
+        }
+
+        .form-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 20px;
+        }
+
+        .form-title {
+          margin-bottom: 0;
+        }
+
+        .form-group {
+          margin-bottom: 20px;
+        }
+
+        .form-label {
+          display: block;
+          margin-bottom: 5px;
+        }
+
+        .form-control {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #ced4da;
+          border-radius: 5px;
+        }
+
+        .form-footer {
+          margin-top: 20px;
+          display: flex;
+          justify-content: flex-end;
+          gap:10px
+        }
+
+        .btn {
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+
+        .btn-secondary {
+          background-color: #6c757d;
+          color: #fff;
+        }
+
+        .btn-primary {
+          background-color: #007bff;
+          color: #fff;
+        }
+
+        .product-image {
+          width: 100px;
+          height: auto;
+          margin-top: 10px;
+        }
+      </style>
+      
+      <div class="form-header">
+        <h5 class="form-title" id="exampleModalLongTitle">EDIT PRODUCT</h5>
+        <button type="button" class="close" data-bs-dismiss="form" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="form-body">
+        <div class="form-group">
+          <label for="brand" class="form-label">BRAND</label>
+          <input type="text" name="brand" class="form-control" value="{{product.brand}}" />
+        </div>
+        <div class="form-group">
+          <label for="product-name" class="form-label">PRODUCT NAME</label>
+          <input type="text" name="productname" class="form-control" value="{{product.productname}}" required />
+        </div>
+        <div class="form-group">
+          <label for="category" class="form-label">Category</label>
+          <select name="category" class="form-control" required>
+            {{#each categories}}
+              <option value="{{this}}" {{#if (eq product.category this)}}selected{{/if}}>{{this}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="price" class="form-label">PRICE</label>
+          <input type="number" name="price" class="form-control" value="{{product.price}}" required />
+        </div>
+        <div class="form-group">
+          <label for="image" class="form-label">IMAGE</label>
+          <input type="file" name="image" class="form-control" />
+          <img src="/uploads/{{images}}" alt="{{images}}" width="50px" height="50px">
+        </div>
+        <div class="form-group">
+          <label for="description" class="form-label">DESCRIPTION</label>
+          <input type="text" name="description" class="form-control" value="{{product.description}}" />
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="form">Close</button>
+        <button type="submit" class="btn btn-primary">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{{>admin-footer}}

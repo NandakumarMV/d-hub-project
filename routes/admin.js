@@ -43,7 +43,7 @@ router.post(
 router.get("/category", adminAuth.isLogin, adminController.loadCategory);
 router.post("/category", adminController.addCategory);
 router.get("/users", adminAuth.isLogin, adminController.addUsers);
-
+//edit users
 router.get("/edit-user", adminAuth.isLogin, adminController.editUser);
 router.post("/edit-user", adminController.updateUser);
 
@@ -53,6 +53,14 @@ router.get("/blocked-users", adminController.addBlockedUsers);
 
 //unblock user
 router.get("/unblocked-users", adminAuth.isLogin, adminController.unblockUser);
+
+//edit products
+router.get("/edit-product", adminController.editProductsView);
+router.post(
+  "/edit-product",
+  uploads.single("image"),
+  adminController.editProducts
+);
 
 router.get("*", (req, res) => {
   res.redirect("/admin");

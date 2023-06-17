@@ -15,11 +15,11 @@
                 </button>
             </div>
 
-            {{!-- <div class="bg-light rounded p-4">
+            <div class="bg-light rounded p-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <h6 class="mb-4" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em; margin-bottom: 0;">Category List</h6>
                     <a href="/admin/unlisted-category" class="btn btn-outline-danger m-2">Unlisted Category</a>
-                </div> --}}
+                </div>
                 <div class="table-responsive">
                     <table class="table w-100">
                         <thead>
@@ -53,12 +53,12 @@
                                 <td class="align-middle">{{description}}</td>
 
 
-                                 {{!-- <td class="align-middle">
-                                    <a href="/admin/edit-category?id={{_id}}" class="btn btn-primary m-2">Edit</a>
+                                 <td class="align-middle">
+                                    <a href="/admin/edit-product?id={{_id}}" class="btn btn-primary m-2">Edit</a>
                                 </td>
                                  <td class="align-middle">
-                                    <a href="/admin/unlist-category?id={{this._id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to Unlist {{this.name}}?')">Unlist</a>
-                                </td> --}}
+                                    <a href="/admin/?id={{this._id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to Unlist {{this.name}}?')">Delete</a>
+                                </td>
                             </tr>
                             {{/each}}
                         </tbody>
@@ -75,7 +75,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Add Category</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Add PRODUCT</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -84,11 +84,11 @@
                 <div class="modal-body">
                     <div class="mb-3">
                          <label for="brand" class="form-label">BRAND</label>
-                        <input type="text" name="brand" class="form-control" required>
+                        <input type="text" name="brand" class="form-control" value="{{product.brand}}" required>
                     </div>
                      <div class="mb-3">
                          <label for="product-name" class="form-label">PRODUCT NAME</label>
-                        <input type="text" name="productname" class="form-control" required>
+                        <input type="text" name="productname" class="form-control" value="{{product.productname}}" required>
                     </div>
                      <div class="mb-3">
                          <label for="category" class="form-label">Category</label>
@@ -104,15 +104,15 @@
                     </div>
                      <div class="mb-3">
                          <label for="price" class="form-label">PRICE</label>
-                        <input type="number" name="price" class="form-control" required>
+                        <input type="number" name="price" class="form-control" value="{{product.price}}"required>
                     </div>
                      <div class="mb-3">
                          <label for="image" class="form-label">IMAGE</label>
-                        <input type="file" name="image" class="form-control" required>
+                        <input type="file" name="image" class="form-control" value="{{product.image}}" required>
                     </div>
                     <div class="mb-3">
                          <label for="description" class="form-label">DESCRIPTION</label>
-                        <input type="text" name="description" class="form-control" required>
+                        <input type="text" name="description" class="form-control" value="{{product.description}}"required>
                     </div>
                 </div>
                 
@@ -125,5 +125,10 @@
         </div>
     </div>
 </div>
+
+
+    
+
+
 
 {{>admin-footer}}

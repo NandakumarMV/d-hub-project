@@ -299,6 +299,46 @@ const unblockUser = async (req, res) => {
     console.log(error.message);
   }
 };
+const editProductsView = async (req, res) => {
+  try {
+    const id = req.query.id;
+    console.log(id);
+    const productData = await Product.findById({ _id: id }).lean();
+    console.log(productData);
+    if (productData) {
+      res.render("admin/edit-product", {
+        layout: "admin-layout",
+        product: productData,
+      });
+    } else {
+      res.redirect("/admin/home");
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const editProducts = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const productData = await Product.findByIdAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          brand: req.body.brand,
+          productname: req.body.productname,
+          category: req.body.category,
+          price: req.body.price,
+          images: req.body.image,
+          description: req.body.description,
+        },
+      }
+    );
+    console.log(productData);
+    res.redirect("/admin/add-products");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 module.exports = {
   loadAdminLogin,
   verfiyLogin,
@@ -314,4 +354,6 @@ module.exports = {
   updateUser,
   addBlockedUsers,
   unblockUser,
+  editProducts,
+  editProductsView,
 };
