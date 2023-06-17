@@ -1,4 +1,3 @@
-const twilio = require("twilio");
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
@@ -131,7 +130,7 @@ const verfiyMail = async (req, res) => {
       { _id: req.query.id },
       { $set: { is_verified: 1 } }
     );
-    // console.log(updateInfo);
+    console.log(updateInfo);
     res.render("users/email-verified", { layout: "user-layout" });
   } catch (error) {
     console.log(error.message);
@@ -149,24 +148,14 @@ const loginLoad = async (req, res) => {
 };
 const verfiyLogin = async (req, res) => {
   try {
-    const mobile = req.body.mobile;
+    const email = req.body.email;
     const password = req.body.password;
-    const userData = await User.findOne({ mobile: mobile });
+    const userData = await User.findOne({ email: email });
     if (userData) {
       const passMatch = await bcrypt.compare(password, userData.password);
 
       if (passMatch) {
         if (userData.is_verified === 0) {
-          req.session.mobile = mobile;
-          client.verify.v2
-            .services(verifySid)
-            .verifications.create({
-              to: "+91" + req.session.mobile,
-              channel: "sms",
-            })
-            .then((verification) => console.log(verification.status))
-            .then(() => {});
-
           res.render("users/signup", {
             layout: "user-layout",
             message: "please verify your email",
@@ -194,7 +183,6 @@ const verfiyLogin = async (req, res) => {
 const loadHome = async (req, res) => {
   try {
     const userData = await User.findById({ _id: req.session.user_id });
-    console.log(userData);
     res.render("users/home-page", { layout: "user-layout", user: userData });
   } catch (error) {
     console.log(error.message);
@@ -211,7 +199,7 @@ const userLogout = async (req, res) => {
 };
 const forgetLoad = async (req, res) => {
   try {
-    res.render("users/forget", { layout: "user-layout", user: userData });
+    res.render("users/forget", { layout: "user-layout" });
   } catch (error) {
     console.log(error.message);
   }
@@ -224,7 +212,6 @@ const forgetVerify = async (req, res) => {
       if (userData.is_verified === 0) {
         res.render("users/forget", {
           layout: "user-layout",
-          user: userData,
           message: "Please verify your email",
         });
       } else {
@@ -236,14 +223,12 @@ const forgetVerify = async (req, res) => {
         sendResetPasswordMail(userData.name, userData.email, randomString),
           res.render("users/forget", {
             layout: "user-layout",
-            user: userData,
             message: "please check your mail to reset your password",
           });
       }
     } else {
       res.render("users/forget", {
         layout: "user-layout",
-        user: userData,
         message: "User email is incorrect",
       });
     }
@@ -260,13 +245,11 @@ const forgetpasswordLoad = async (req, res) => {
     if (tokenData) {
       res.render("users/forget-password", {
         layout: "user-layout",
-        user: tokenData,
         user_id: tokenData._id,
       });
     } else {
       res.render("users/404", {
         layout: "user-layout",
-        user: userData,
         message: "token is invalid",
       });
     }
