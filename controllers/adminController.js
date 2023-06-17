@@ -27,20 +27,20 @@ const loadAdminLogin = async (req, res) => {
 
 const verfiyLogin = async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const email = req.body.email;
     const password = req.body.password;
     const userData = await User.findOne({ email: email });
-    console.log(userData);
+    // console.log(userData);
     if (userData) {
       const passMatch = await bcrypt.compare(password, userData.password);
-      console.log(passMatch);
+      // console.log(passMatch);
       if (passMatch) {
         if (userData.is_admin === 0) {
           res.render("admin/login", { layout: "admin-layout" });
         } else {
           req.session.user_id = userData._id;
-          console.log(req.session.user_id);
+          // console.log(req.session.user_id);
           res.redirect("home");
         }
       }
@@ -90,7 +90,7 @@ const loadProducts = async (req, res) => {
 
 const insertProducts = async (req, res) => {
   try {
-    console.log(req.body.productname);
+    // console.log(req.body.productname);
     const newProduct = new Product({
       brand: req.body.brand,
       productname: req.body.productname,
@@ -105,7 +105,7 @@ const insertProducts = async (req, res) => {
     });
 
     const addProductData = await newProduct.save();
-    console.log(addProductData);
+    // console.log(addProductData);
     if (addProductData) {
       await Category.updateOne(
         {
@@ -181,8 +181,8 @@ const addCategory = async (req, res) => {
 };
 
 const addUsers = async (req, res) => {
-  const userData = await User.find({ is_admin: 0 }).lean();
-  // console.log(userData);
+  const userData = await User.find({ is_admin: 0, blocked: false }).lean();
+  console.log(userData);
   const usersWithSerialNumber = userData.map((users, index) => ({
     ...users,
     serialNumber: index + 1,
@@ -221,9 +221,9 @@ const addUsers = async (req, res) => {
 const editUser = async (req, res) => {
   try {
     const id = req.query.id;
-    console.log(id);
+    // console.log(id);
     const userData = await User.findById({ _id: id }).lean();
-    console.log(userData);
+    // console.log(userData);
     if (userData) {
       // res.redirect("/admin/home");
       res.render("admin/edit-user", {
@@ -256,6 +256,49 @@ const updateUser = async (req, res) => {
     console.log(error.message);
   }
 };
+
+const blockUser = async (req, res) => {
+  try {
+    const id = req.query.id;
+    // console.log(id);
+    const userData = await User.findByIdAndUpdate(
+      { _id: id },
+      { $set: { blocked: true } }
+    );
+    // console.log(userData);
+    res.redirect("/admin/user");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const addBlockedUsers = async (req, res) => {
+  try {
+    const userData = await User.find({ blocked: true }).lean();
+    const usersWithSerialNumber = userData.map((blockUser, index) => ({
+      ...blockUser,
+      serialNumber: index + 1,
+    }));
+    res.render("admin/blocked-users", {
+      layout: "admin-layout",
+      user: usersWithSerialNumber,
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const unblockUser = async (req, res) => {
+  try {
+    const id = req.query.id;
+    // console.log(id, "id");
+    const userData = await User.findByIdAndUpdate(
+      { _id: id },
+      { $set: { blocked: false } }
+    );
+    res.redirect("/admin/blocked-users");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 module.exports = {
   loadAdminLogin,
   verfiyLogin,
@@ -266,7 +309,9 @@ module.exports = {
   loadCategory,
   addCategory,
   loadProducts,
-
+  blockUser,
   editUser,
   updateUser,
+  addBlockedUsers,
+  unblockUser,
 };

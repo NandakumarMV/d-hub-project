@@ -9,9 +9,7 @@
     <div class="row">
         <div class="col-md-12">
             
-  <div class="text-end">
-                <a href="/admin/blocked-users" class="btn btn-danger">Blocked Users</a>
-            </div>
+ 
             
                 <div class="table-responsive">
     <table class="table w-100">
@@ -38,8 +36,8 @@
                 <td class="align-middle">NOT VERIFIED</td>
                 {{/if}}
                 <td class="align-middle">
-                    <a href="/admin/edit-user?id={{this._id}}" class="btn btn-outline-success m-2">EDIT</a>
-                    <a href="/admin/block?id={{this._id}}" class="btn btn-outline-danger m-2">BLOCK</a>
+                    {{!-- <a href="/admin/edit-user?id={{this._id}}" class="btn btn-outline-success m-2">EDIT</a> --}}
+                    <a href="/admin/unblocked-users?id={{this._id}}" class="btn btn-outline-danger m-2">UNBLOCK</a>
                 </td>
             </tr>
             {{/each}}

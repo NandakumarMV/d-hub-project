@@ -43,9 +43,16 @@ router.post(
 router.get("/category", adminAuth.isLogin, adminController.loadCategory);
 router.post("/category", adminController.addCategory);
 router.get("/users", adminAuth.isLogin, adminController.addUsers);
-// router.post("/users", adminController.insertUsers);
+
 router.get("/edit-user", adminAuth.isLogin, adminController.editUser);
 router.post("/edit-user", adminController.updateUser);
+
+//block user
+router.get("/block", adminAuth.isLogin, adminController.blockUser);
+router.get("/blocked-users", adminController.addBlockedUsers);
+
+//unblock user
+router.get("/unblocked-users", adminAuth.isLogin, adminController.unblockUser);
 
 router.get("*", (req, res) => {
   res.redirect("/admin");
