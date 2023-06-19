@@ -6,6 +6,9 @@ const multer = require("multer");
 const Category = require("../models/categoryModel");
 const { log } = require("handlebars/runtime");
 const randomString = require("randomstring");
+const mongoose = require("mongoose");
+const twilio = require("twilio");
+const Verify = require("twilio/lib/rest/Verify");
 // const upload = multer({ dest: "./public/uploads/" });
 
 const securePassword = async (password) => {
@@ -90,15 +93,13 @@ const loadProducts = async (req, res) => {
 
 const insertProducts = async (req, res) => {
   try {
-    // console.log(req.body.productname);
     const newProduct = new Product({
       brand: req.body.brand,
       productname: req.body.productname,
 
       category: req.body.category,
       price: req.body.price,
-      // offPrice:dealprice,
-      // quantity:stock,
+
       images: req.file.filename,
       description: req.body.description,
       // strapColour:req.body.strapColour,
@@ -131,6 +132,45 @@ const insertProducts = async (req, res) => {
     console.log(error);
   }
 };
+// const insertProducts = async (req, res) => {
+//   try {
+//     const newProduct = new Product({
+//       brand: req.body.brand,
+//       productname: req.body.productname, // Updated field name
+
+//       category: req.body.category,
+//       price: req.body.price,
+//       // inStock: req.body.inStock,
+//       images: req.file.filename,
+//       description: req.body.description,
+//     });
+
+//     const addProductData = await newProduct.save();
+
+//     if (addProductData) {
+//       const category = await Category.findOneAndUpdate(
+//         { category: req.body.category },
+//         { $push: { products: newProduct._id } },
+//         { new: true }
+//       );
+
+//       const updatedProducts = await Product.find().lean();
+//       const productWithSerialNumber = updatedProducts.map((product, index) => ({
+//         ...product,
+//         serialNumber: index + 1,
+//       }));
+//       const categories = await Category.find().lean();
+
+//       return res.render("admin/add-products", {
+//         layout: "admin-layout",
+//         products: productWithSerialNumber,
+//         categories: categories,
+//       });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 const loadCategory = async (req, res) => {
   try {
@@ -180,6 +220,31 @@ const addCategory = async (req, res) => {
   }
 };
 
+const unlistCategory = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const categoryData = await Category.findByIdAndUpdate(
+      { _id: id },
+      { $set: { unlist: true } }
+    );
+    res.redirect("/admin/category");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const listCategory = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const categoryData = await Category.findByIdAndUpdate(
+      { _id: id },
+      { $set: { unlist: false } }
+    );
+    res.redirect("/admin/category");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+//user section
 const addUsers = async (req, res) => {
   const userData = await User.find({ is_admin: 0, blocked: false }).lean();
   console.log(userData);
@@ -192,31 +257,6 @@ const addUsers = async (req, res) => {
     user: usersWithSerialNumber,
   });
 };
-// const insertUsers = async (req, res) => {
-//   try {
-//     const name = req.body.name;
-//     const email = req.body.email;
-//     const mobile = req.body.mobile;
-//     const password = randomString.generate(7);
-
-//     const spassword = await securePassword(password);
-//     const user = new User({
-//       name: name,
-//       email: email,
-//       mobile: mobile,
-//       password: spassword,
-//     });
-//     const userData = await user.save();
-
-//     if (userData) {
-//       res.redirect("/admin/home");
-//     } else {
-//       res.render();
-//     }
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
 
 const editUser = async (req, res) => {
   try {
@@ -299,41 +339,199 @@ const unblockUser = async (req, res) => {
     console.log(error.message);
   }
 };
+// const editProductsView = async (req, res) => {
+//   try {
+//     const id = req.query.id;
+//     console.log("ID:", id);
+
+//     const categories = await Category.find({ unlist: false }).lean();
+//     const categoryData = {};
+//     categories.forEach((data) => {
+//       categoryData[data._id.toString()] = {
+//         _id: data._id.toString(),
+//         category: data.category,
+//       };
+//     });
+
+//     const categoryLookup = {};
+//     categories.forEach((category) => {
+//       categoryLookup[category._id.toString()] = category.category;
+//     });
+
+//     const updatedProduct = await Product.findById(id).lean();
+
+//     if (updatedProduct) {
+//       const productWithCategoryName = {
+//         ...updatedProduct,
+//         category: categoryLookup[updatedProduct.category],
+//       };
+//       console.log("CategoryData:", categoryData);
+//       res.render("admin/edit-product", {
+//         product: productWithCategoryName,
+//         layout: "admin-layout",
+//         categories: categoryData,
+//       });
+//     } else {
+//       console.log("Product not found");
+//       res.redirect("/admin/products");
+//     }
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
 const editProductsView = async (req, res) => {
   try {
     const id = req.query.id;
-    console.log(id);
-    const productData = await Product.findById({ _id: id }).lean();
-    console.log(productData);
-    if (productData) {
+
+    const categories = await Category.find({ unlist: false }).lean();
+    const categoryData = {};
+    categories.forEach((data) => {
+      categoryData[data._id.toString()] = {
+        _id: data._id.toString(),
+        category: data.category,
+      };
+    });
+
+    const categoryLookup = {};
+    categories.forEach((category) => {
+      categoryLookup[category._id.toString()] = category.category;
+    });
+
+    // Define the lookupCategory helper function
+    const lookupCategory = function (categoryId) {
+      return categoryLookup[categoryId] || "Unknown";
+    };
+
+    const updatedProduct = await Product.findById(id).lean();
+
+    if (updatedProduct) {
+      const productWithCategoryName = {
+        ...updatedProduct,
+        category: lookupCategory(updatedProduct.category),
+      };
+
       res.render("admin/edit-product", {
+        product: productWithCategoryName,
         layout: "admin-layout",
-        product: productData,
+        categories: categoryData,
       });
     } else {
-      res.redirect("/admin/home");
+      console.log("Product not found");
+      res.redirect("/admin/products");
     }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// const editProducts = async (req, res) => {
+//   try {
+//     const id = req.query.id;
+//     console.log(id);
+//     console.log(req.files, "hi image");
+//     const product = await Product.findById({ _id: id }).lean();
+//     console.log(req.body.category, "coming to updating");
+//     let updatedProductData = {
+//       brand: req.body.brand,
+//       productname: req.body.productname,
+//       price: req.body.price,
+//       description: req.body.description,
+//       category: req.body.category,
+//       images: product.images,
+//     };
+
+//     if (req.files && req.files.length > 0) {
+//       updatedProductData.images = req.files.map((file) => file.filename);
+//     }
+
+//     const product1 = await Product.findByIdAndUpdate(
+//       { _id: req.query.id },
+//       { $set: updatedProductData }
+//     );
+
+//     res.redirect("/admin/products");
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
+// const editProducts = async (req, res) => {
+//   try {
+//     const id = req.query.id;
+//     const product = await Product.findById(id).lean();
+
+//     let updatedProductData = {
+//       brand: req.body.brand,
+//       productname: req.body.productname,
+//       price: req.body.price,
+//       description: req.body.description,
+//       category: req.body.category,
+//       images: product.images,
+//     };
+
+//     if (req.files && req.files.length > 0) {
+//       updatedProductData.images = req.files.map((file) => file.filename);
+//     }
+
+//     const product1 = await Product.findByIdAndUpdate(
+//       id,
+//       { $set: updatedProductData },
+//       { new: true }
+//     );
+
+//     res.redirect("/admin/products");
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
+
+const editProducts = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const product = await Product.findById(id).lean();
+
+    let updatedProductData = {
+      brand: req.body.brand,
+      productname: req.body.productname,
+      price: req.body.price,
+      description: req.body.description,
+      category: req.body.category,
+      images: product.images,
+    };
+
+    if (req.files && req.files.length > 0) {
+      updatedProductData.images = req.files.map((file) => file.filename);
+    }
+
+    const product1 = await Product.findByIdAndUpdate(
+      id,
+      { $set: updatedProductData },
+      { new: true }
+    );
+
+    res.redirect("/admin/products");
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+const unlistProducts = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const ProductData = await Product.findByIdAndUpdate(
+      { _id: id },
+      { $set: { unlist: true } }
+    );
+    res.redirect("/admin/add-products");
   } catch (error) {
     console.log(error.message);
   }
 };
-const editProducts = async (req, res) => {
+const listProducts = async (req, res) => {
   try {
     const id = req.query.id;
-    const productData = await Product.findByIdAndUpdate(
+    const ProductData = await Product.findByIdAndUpdate(
       { _id: id },
-      {
-        $set: {
-          brand: req.body.brand,
-          productname: req.body.productname,
-          category: req.body.category,
-          price: req.body.price,
-          images: req.body.image,
-          description: req.body.description,
-        },
-      }
+      { $set: { unlist: false } }
     );
-    console.log(productData);
     res.redirect("/admin/add-products");
   } catch (error) {
     console.log(error.message);
@@ -356,4 +554,8 @@ module.exports = {
   unblockUser,
   editProducts,
   editProductsView,
+  unlistCategory,
+  listCategory,
+  unlistProducts,
+  listProducts,
 };

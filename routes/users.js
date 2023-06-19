@@ -28,8 +28,9 @@ router.get("/logout", auth.isLogin, userControllers.userLogout);
 router.get("/forget", auth.isLogOut, userControllers.forgetLoad);
 router.post("/forget", userControllers.forgetVerify);
 
-// router.get("/otp-verification", userControllers.);
-
+router.get("/otp-verification", userControllers.pageOtp);
+router.post("/otp-verification", userControllers.sendOtp);
+router.post("/otp-verified", auth.otpLog, userControllers.loadOtpHome);
 router.get(
   "/forget-password",
   auth.isLogOut,

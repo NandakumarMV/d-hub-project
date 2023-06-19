@@ -724,7 +724,7 @@ banner
 }
 
 .main-banner .left-content .thumb img {
-  width: 100%;
+  width: 103%;
   overflow: hidden;
 }
 
@@ -853,7 +853,8 @@ Men
   font-size: 22px;
   color: #2a2a2a;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
+  margin-left: 90px;
 }
 
 #men .item .down-content span {
@@ -861,6 +862,7 @@ Men
   color: #a1a1a1;
   font-weight: 500;
   display: block;
+  margin-left: 90px;
 }
 
 #men .item .down-content ul.stars {

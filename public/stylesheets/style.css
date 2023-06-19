@@ -1,16 +1,17 @@
 .logo-img {
-  width: 238px;
-  margin-top: -84px;
-  height: 277px;
+  width: 205px;
+  margin-top: 7px;
+  height: 67px;
 }
+
 .PIC-1 {
   width: 144px;
-  height: 482px;
+  height: 513px;
 }
 
 .img-banner-1 {
   width: 50px;
-  height: 250px;
+  height: 305px;
 }
 /* .img-banner-2 {
   
@@ -25,4 +26,7 @@
 }
 .mac-sales {
   height: 320px;
+}
+.h5-moblie {
+  margin-left: 90px;
 }

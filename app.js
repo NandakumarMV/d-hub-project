@@ -9,6 +9,7 @@ var logger = require("morgan");
 var mongoose = require("mongoose");
 const hbs = require("express-handlebars");
 const config = require("./config/config");
+const handlebarsHelpers = require("handlebars-helpers");
 // mongoose.connect();
 
 // Establish Mongoose connection
@@ -38,6 +39,7 @@ app.engine(
     extname: "hbs",
     layoutsDir: __dirname + "/views/layouts/",
     partialsDir: __dirname + "/views/partials/",
+    helpers: handlebarsHelpers(),
   })
 );
 

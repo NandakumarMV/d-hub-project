@@ -20,7 +20,19 @@ const isLogOut = async (req, res, next) => {
     console.log(error.message);
   }
 };
+const otpLog = async (req, res, next) => {
+  try {
+    if (req.session.user._id) {
+      res.redirect("/home");
+    }
+    next();
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 module.exports = {
   isLogin,
   isLogOut,
+  otpLog,
 };

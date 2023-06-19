@@ -17,7 +17,7 @@
             <nav class="main-nav">
               <!-- ***** Logo Start ***** -->
               <a href="index.html" class="logo">
-                <img class="logo-img" src="/assets/images/dig-nav.png" />
+                <img class="logo-img" src="/assets/images/dhub-main.png" />
               </a>
               <!-- ***** Logo End ***** -->
               <!-- ***** Menu Start ***** -->
@@ -25,8 +25,8 @@
                 <li class="scroll-to-section">
                   <a href="#top" class="active">Home</a>
                 </li>
-                <li class="scroll-to-section"><a href="#men">iPhone</a></li>
-                <li class="scroll-to-section"><a href="#women">Samsang</a></li>
+                <li class="scroll-to-section"><a href="#men">PHONES</a></li>
+                <li class="scroll-to-section"><a href="#women">LAPTOPS</a></li>
 
   <a href="/logout" ><button type="button" class="btn btn-dark" style="color: white">LOGOUT</button></a>
 
@@ -189,126 +189,59 @@
     <!-- ***** Main Banner Area End ***** -->
 
     <!-- ***** phone Area Starts ***** -->
+    {{#each products}}
+    <div>
+      
+    </div>
+    {{/each}}
     <section class="section" id="men">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="section-heading">
-              <h2>SMARTPHONES</h2>
-              <span></span>
-            </div>
-          </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="section-heading">
+          <h2>SMARTPHONES</h2>
+          <span></span>
         </div>
       </div>
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="men-item-carousel">
-              <div class="owl-men-item owl-carousel">
-               
-               
-                 <div class="item">
-                  <div class="thumb">
-                    <div class="hover-content">
-                      <ul>
-                        <li>
-                          <a href="">BUY NOW</a>
-                        </li>
-                        
-                      </ul>
-                    </div>
-                    <img class="i-sales" src="/assets/images/iphone14-sales.jpeg" alt="" />
-                    
-                  </div>
-                  <div class="down-content">
-                   
-                     <h4>iPhone 14 pro </h4>
-                    <span>₹1,69,999</span>
-                    <ul class="stars">
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                    </ul>
-                  </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="men-item-carousel">
+          <div class="owl-men-item owl-carousel">
+            {{#each products}}
+            <div class="item">
+              <div class="thumb">
+                <div class="hover-content">
+                  <ul>
+                    <li>
+                      <a href="">BUY NOW</a>
+                    </li>
+                  </ul>
                 </div>
-                <div class="item">
-                  <div class="thumb">
-                    <div class="hover-content">
-                      <ul>
-                        <li>
-                          <a href="">BUY NOW</a>
-                        </li>
-                       
-                      </ul>
-                    </div>
-                    <img class="one-sales"  src="/assets/images/oneplus-sales.jpeg" alt="" />
-                  </div>
-                  <div class="down-content">
-                    <h4>ONE PLUS 7T</h4>
-                    <span>₹57,999</span>
-                    <ul class="stars">
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="item">
-                  <div class="thumb">
-                    <div class="hover-content">
-                      <ul>
-                        <li>
-                          <a href="">BUY NOW</a>
-                        </li>
-                       
-                      </ul>
-                    </div>
-                    <img src="/assets/images/realme-sales.jpg" alt="" />
-                  </div>
-                  <div class="down-content">
-                    <h4>REALME 9PRO</h4>
-                    <span>₹20,000</span>
-                    <ul class="stars">
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                    </ul>
-                  </div>
-                </div>
-                 <div class="item">
-                  <div class="thumb">
-                    <div class="hover-content">
-                      <ul>
-                        <li>
-                          <a href="">BUY NOW</a>
-                        </li>
-                       
-                      </ul>
-                    </div>
-                    <img class="i-sales" src="/assets/images/S23U-SALES.jpg" alt="" />
-                  </div>
-                  <div class="down-content">
-                   <h4>Samsang S23 Ultra</h4>
-                    <span>₹1,24,999</span>
-                    <ul class="stars">
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                    </ul>
-                  </div>
-                </div>
+                <img class="one-sales" src="/uploads/{{images}}" alt="img" />
+              </div>
+              <div class="down-content">
+                <h4>{{this.brand}}</h4>
+                <h5 class="h5-moblie">{{this.productname}}</h5>
+                <span>{{this.price}}</span>
+                <ul class="stars">
+                  <li><i class="fa fa-star"></i></li>
+                  <li><i class="fa fa-star"></i></li>
+                  <li><i class="fa fa-star"></i></li>
+                  <li><i class="fa fa-star"></i></li>
+                </ul>
               </div>
             </div>
+            {{/each}}
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
+
     <!-- ***** phones Area Ends ***** -->
 
     <!-- ***** laptop Area Starts ***** -->
@@ -432,386 +365,23 @@
         </div>
       </div>
     </section>
-    <!-- ***** laptop Area Ends ***** -->
+   
+    
+   
 
-    <!-- ***** discount Area Starts ***** -->
-    <section class="section" id="kids">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="section-heading">
-              <h2>Latest Discounts</h2>
-              <span>Amazing Disconts on TOP BRANDS!</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="kid-item-carousel">
-              <div class="owl-kid-item owl-carousel">
-                <div class="item">
-                  <div class="thumb">
-                    <div class="hover-content">
-                      <ul>
-                        <li>
-                          <a href="single-product.html"><i
-                              class="fa fa-eye"
-                            ></i></a>
-                        </li>
-                        <li>
-                          <a href="single-product.html"><i
-                              class="fa fa-star"
-                            ></i></a>
-                        </li>
-                        <li>
-                          <a href="single-product.html"><i
-                              class="fa fa-shopping-cart"
-                            ></i></a>
-                        </li>
-                      </ul>
-                    </div>
-                    <img src="/assets/images/kid-01.jpg" alt="" />
-                  </div>
-                  <div class="down-content">
-                    <h4>School Collection</h4>
-                    <span>$80.00</span>
-                    <ul class="stars">
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="item">
-                  <div class="thumb">
-                    <div class="hover-content">
-                      <ul>
-                        <li>
-                          <a href="single-product.html"><i
-                              class="fa fa-eye"
-                            ></i></a>
-                        </li>
-                        <li>
-                          <a href="single-product.html"><i
-                              class="fa fa-star"
-                            ></i></a>
-                        </li>
-                        <li>
-                          <a href="single-product.html"><i
-                              class="fa fa-shopping-cart"
-                            ></i></a>
-                        </li>
-                      </ul>
-                    </div>
-                    <img src="/assets/images/kid-02.jpg" alt="" />
-                  </div>
-                  <div class="down-content">
-                    <h4>Summer Cap</h4>
-                    <span>$12.00</span>
-                    <ul class="stars">
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="item">
-                  <div class="thumb">
-                    <div class="hover-content">
-                      <ul>
-                        <li>
-                          <a href="single-product.html"><i
-                              class="fa fa-eye"
-                            ></i></a>
-                        </li>
-                        <li>
-                          <a href="single-product.html"><i
-                              class="fa fa-star"
-                            ></i></a>
-                        </li>
-                        <li>
-                          <a href="single-product.html"><i
-                              class="fa fa-shopping-cart"
-                            ></i></a>
-                        </li>
-                      </ul>
-                    </div>
-                    <img src="/assets/images/kid-03.jpg" alt="" />
-                  </div>
-                  <div class="down-content">
-                    <h4>Classic Kid</h4>
-                    <span>$30.00</span>
-                    <ul class="stars">
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="item">
-                  <div class="thumb">
-                    <div class="hover-content">
-                      <ul>
-                        <li>
-                          <a href="single-product.html"><i
-                              class="fa fa-eye"
-                            ></i></a>
-                        </li>
-                        <li>
-                          <a href="single-product.html"><i
-                              class="fa fa-star"
-                            ></i></a>
-                        </li>
-                        <li>
-                          <a href="single-product.html"><i
-                              class="fa fa-shopping-cart"
-                            ></i></a>
-                        </li>
-                      </ul>
-                    </div>
-                    <img src="/assets/images/kid-01.jpg" alt="" />
-                  </div>
-                  <div class="down-content">
-                    <h4>Classic Spring</h4>
-                    <span>$120.00</span>
-                    <ul class="stars">
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                      <li><i class="fa fa-star"></i></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- ***** Kids Area Ends ***** -->
-
-    <!-- ***** Explore Area Starts ***** -->
-    <section class="section" id="explore">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="left-content">
-              <h2>Explore Our Products</h2>
-              <span>You are allowed to use this HexaShop HTML CSS template. You
-                can feel free to modify or edit this layout. You can convert
-                this template as any kind of ecommerce CMS theme as you wish.</span>
-              <div class="quote">
-                <i class="fa fa-quote-left"></i>
-                <p>
-                  You are not allowed to redistribute this template ZIP file on
-                  any other website.
-                </p>
-              </div>
-              <p>
-                There are 5 pages included in this HexaShop Template and we are
-                providing it to you for absolutely free of charge at our
-                TemplateMo website. There are web development costs for us.
-              </p>
-              <p>
-                If this template is beneficial for your website or business,
-                please kindly
-                <a
-                  rel="nofollow"
-                  href="https://paypal.me/templatemo"
-                  target="_blank"
-                >support us</a>
-                a little via PayPal. Please also tell your friends about our
-                great website. Thank you.
-              </p>
-              <div class="main-border-button">
-                <a href="products.html">Discover More</a>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="right-content">
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="leather">
-                    <h4>Leather Bags</h4>
-                    <span>Latest Collection</span>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="first-image">
-                    <img src="/assets/images/explore-image-01.jpg" alt="" />
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="second-image">
-                    <img src="/assets/images/explore-image-02.jpg" alt="" />
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="types">
-                    <h4>Different Types</h4>
-                    <span>Over 304 Products</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- ***** Explore Area Ends ***** -->
-
-    <!-- ***** Social Area Starts ***** -->
-    <section class="section" id="social">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="section-heading">
-              <h2>Social Media</h2>
-              <span>Details to details is what makes Hexashop different from the
-                other themes.</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="container">
-        <div class="row images">
-          <div class="col-2">
-            <div class="thumb">
-              <div class="icon">
-                <a href="http://instagram.com">
-                  <h6>Fashion</h6>
-                  <i class="fa fa-instagram"></i>
-                </a>
-              </div>
-              <img src="/assets/images/instagram-01.jpg" alt="" />
-            </div>
-          </div>
-          <div class="col-2">
-            <div class="thumb">
-              <div class="icon">
-                <a href="http://instagram.com">
-                  <h6>New</h6>
-                  <i class="fa fa-instagram"></i>
-                </a>
-              </div>
-              <img src="/assets/images/instagram-02.jpg" alt="" />
-            </div>
-          </div>
-          <div class="col-2">
-            <div class="thumb">
-              <div class="icon">
-                <a href="http://instagram.com">
-                  <h6>Brand</h6>
-                  <i class="fa fa-instagram"></i>
-                </a>
-              </div>
-              <img src="/assets/images/instagram-03.jpg" alt="" />
-            </div>
-          </div>
-          <div class="col-2">
-            <div class="thumb">
-              <div class="icon">
-                <a href="http://instagram.com">
-                  <h6>Makeup</h6>
-                  <i class="fa fa-instagram"></i>
-                </a>
-              </div>
-              <img src="/assets/images/instagram-04.jpg" alt="" />
-            </div>
-          </div>
-          <div class="col-2">
-            <div class="thumb">
-              <div class="icon">
-                <a href="http://instagram.com">
-                  <h6>Leather</h6>
-                  <i class="fa fa-instagram"></i>
-                </a>
-              </div>
-              <img src="/assets/images/instagram-05.jpg" alt="" />
-            </div>
-          </div>
-          <div class="col-2">
-            <div class="thumb">
-              <div class="icon">
-                <a href="http://instagram.com">
-                  <h6>Bag</h6>
-                  <i class="fa fa-instagram"></i>
-                </a>
-              </div>
-              <img src="/assets/images/instagram-06.jpg" alt="" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- ***** Social Area Ends ***** -->
+    
 
     <!-- ***** Subscribe Area Starts ***** -->
     <div class="subscribe">
       <div class="container">
         <div class="row">
-          <div class="col-lg-8">
-            <div class="section-heading">
-              <h2>By Subscribing To Our Newsletter You Can Get 30% Off</h2>
-              <span>Details to details is what makes Hexashop different from the
-                other themes.</span>
-            </div>
-            <form id="subscribe" action="" method="get">
-              <div class="row">
-                <div class="col-lg-5">
-                  <fieldset>
-                    <input
-                      name="name"
-                      type="text"
-                      id="name"
-                      placeholder="Your Name"
-                      required=""
-                    />
-                  </fieldset>
-                </div>
-                <div class="col-lg-5">
-                  <fieldset>
-                    <input
-                      name="email"
-                      type="text"
-                      id="email"
-                      pattern="[^ @]*@[^ @]*"
-                      placeholder="Your Email Address"
-                      required=""
-                    />
-                  </fieldset>
-                </div>
-                <div class="col-lg-2">
-                  <fieldset>
-                    <button
-                      type="submit"
-                      id="form-submit"
-                      class="main-dark-button"
-                    >
-                      <i class="fa fa-paper-plane"></i>
-                    </button>
-                  </fieldset>
-                </div>
-              </div>
-            </form>
-          </div>
+          
           <div class="col-lg-4">
             <div class="row">
               <div class="col-6">
                 <ul>
                   <li>
-                    Store Location:<br /><span>Sunny Isles Beach, FL 33160,
-                      United States</span>
+                    Store Location:<br /><span>maradu Kochi</span>
                   </li>
                   <li>Phone:<br /><span>010-020-0340</span></li>
                   <li>Office Location:<br /><span>North Miami Beach</span></li>
@@ -819,14 +389,12 @@
               </div>
               <div class="col-6">
                 <ul>
-                  <li>
-                    Work Hours:<br /><span>07:30 AM - 9:30 PM Daily</span>
-                  </li>
+                 
                   <li>Email:<br /><span>info@company.com</span></li>
                   <li>
                     Social Media:<br /><span><a href="#">Facebook</a>,
                       <a href="#">Instagram</a>,
-                      <a href="#">Behance</a>,
+                      
                       <a href="#">Linkedin</a></span>
                   </li>
                 </ul>
@@ -845,17 +413,19 @@
           <div class="col-lg-3">
             <div class="first-item">
               <div class="logo">
+                <h4>D-HUD ONLINE</h4>
+                
                 <img
-                  src="/assets/images/white-logo.png"
-                  alt="hexashop ecommerce templatemo"
+                  src=""
+                  alt=""
                 />
               </div>
               <ul>
                 <li>
-                  <a href="#">16501 Collins Ave, Sunny Isles Beach, FL 33160,
-                    United States</a>
+                  <a href="#">16501 Collins Ave, FL 33160,
+                    kochi</a>
                 </li>
-                <li><a href="#">hexashop@company.com</a></li>
+                <li><a href="#">d-hub@company.com</a></li>
                 <li><a href="#">010-020-0340</a></li>
               </ul>
             </div>
@@ -863,9 +433,9 @@
           <div class="col-lg-3">
             <h4>Shopping &amp; Categories</h4>
             <ul>
-              <li><a href="#">Men’s Shopping</a></li>
-              <li><a href="#">Women’s Shopping</a></li>
-              <li><a href="#">Kid's Shopping</a></li>
+              <li><a href="#"> Online Shopping</a></li>
+              <li><a href="#"> </a></li>
+              
             </ul>
           </div>
           <div class="col-lg-3">
@@ -889,36 +459,12 @@
           <div class="col-lg-12">
             <div class="under-footer">
               <p>
-                Copyright © 2022 HexaShop Co., Ltd. All Rights Reserved.
+                Copyright © 2023 D-HUB Co., Ltd. All Rights Reserved.
 
-                <br />Design:
-                <a
-                  href="https://templatemo.com"
-                  target="_parent"
-                  title="free css templates"
-                >TemplateMo</a>
-
-                <br />Distributed By:
-                <a
-                  href="https://themewagon.com"
-                  target="_blank"
-                  title="free & premium responsive templates"
-                >ThemeWagon</a>
+                <br />
+               
               </p>
-              <ul>
-                <li>
-                  <a href="#"><i class="fa fa-facebook"></i></a>
-                </li>
-                <li>
-                  <a href="#"><i class="fa fa-twitter"></i></a>
-                </li>
-                <li>
-                  <a href="#"><i class="fa fa-linkedin"></i></a>
-                </li>
-                <li>
-                  <a href="#"><i class="fa fa-behance"></i></a>
-                </li>
-              </ul>
+              
             </div>
           </div>
         </div>

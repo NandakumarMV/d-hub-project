@@ -40,9 +40,19 @@ router.post(
   adminController.insertProducts
 );
 
+//otp verification
+
+//category loading
+
 router.get("/category", adminAuth.isLogin, adminController.loadCategory);
 router.post("/category", adminController.addCategory);
 router.get("/users", adminAuth.isLogin, adminController.addUsers);
+router.get(
+  "/unlist-category",
+  adminAuth.isLogin,
+  adminController.unlistCategory
+);
+router.get("/list-category", adminAuth.isLogin, adminController.listCategory);
 //edit users
 router.get("/edit-user", adminAuth.isLogin, adminController.editUser);
 router.post("/edit-user", adminController.updateUser);
@@ -61,6 +71,12 @@ router.post(
   uploads.single("image"),
   adminController.editProducts
 );
+router.get(
+  "/unlist-products",
+  adminAuth.isLogin,
+  adminController.unlistProducts
+);
+router.get("/list-products", adminAuth.isLogin, adminController.listProducts);
 
 router.get("*", (req, res) => {
   res.redirect("/admin");

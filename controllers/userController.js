@@ -1,8 +1,12 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
+const Product = require("../models/productModels");
+const twilio = require("twilio");
 const nodemailer = require("nodemailer");
 const config = require("../config/config");
 const randomstring = require("randomstring");
+const Category = require("../models/categoryModel");
+const { use } = require("../app");
 
 //bcrypt password
 
@@ -13,6 +17,43 @@ const securePassword = async (password) => {
   } catch (error) {
     console.log(error.message);
   }
+};
+
+//otp send
+
+const sendOtp = async (req, res) => {
+  try {
+    const { mobile } = req.body;
+
+    const user = await User.findOne({ mobile: mobile });
+    req.session = user;
+    if (!user) {
+      res.status(401).json({ message: "user not found" });
+    } else {
+      const client = new twilio(process.env.accountSid, process.env.authToken);
+
+      client.verify.v2
+        .services(process.env.verifySid)
+        .verifications.create({ to: "+91" + user.mobile, channel: "sms" })
+        .then((verification) => console.log(verification.status))
+        .then(() => {
+          res.render("users/otp-enter", { layout: "user-layout" });
+        });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const pageOtp = async (req, res) => {
+  try {
+    res.render("users/otp-verify", { layout: "user-layout" });
+  } catch (error) {}
+};
+const loadOtpHome = async (req, res) => {
+  try {
+    res.render("user/home-page", { layout: "user-layout" });
+  } catch (error) {}
 };
 //for sending mail
 const sendVerifyMail = async (name, email, user_id) => {
@@ -183,7 +224,15 @@ const verfiyLogin = async (req, res) => {
 const loadHome = async (req, res) => {
   try {
     const userData = await User.findById({ _id: req.session.user_id });
-    res.render("users/home-page", { layout: "user-layout", user: userData });
+    const products = await Product.find({ unlist: false }).lean();
+
+    const category = await Category.find({ unlist: false }).lean();
+    res.render("users/home-page", {
+      layout: "user-layout",
+      user: userData,
+      products: products,
+      category: category,
+    });
   } catch (error) {
     console.log(error.message);
   }
@@ -283,4 +332,7 @@ module.exports = {
   forgetVerify,
   forgetpasswordLoad,
   resetPassword,
+  pageOtp,
+  sendOtp,
+  loadOtpHome,
 };

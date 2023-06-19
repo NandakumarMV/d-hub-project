@@ -15,11 +15,11 @@
                 </button>
             </div>
 
-            <div class="bg-light rounded p-4">
+            {{!-- <div class="bg-light rounded p-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <h6 class="mb-4" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em; margin-bottom: 0;">Category List</h6>
                     <a href="/admin/unlisted-category" class="btn btn-outline-danger m-2">Unlisted Category</a>
-                </div>
+                </div> --}}
                 <div class="table-responsive">
                     <table class="table w-100">
                         <thead>
@@ -54,10 +54,14 @@
 
 
                                  <td class="align-middle">
-                                    <a href="/admin/edit-product?id={{_id}}" class="btn btn-primary m-2">Edit</a>
-                                </td>
-                                 <td class="align-middle">
-                                    <a href="/admin/?id={{this._id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to Unlist {{this.name}}?')">Delete</a>
+                                    <a href="/admin/edit-product?id={{_id}}" class="btn btn-primary m-2">Edit</a></td>
+                                <td class="align-middle">
+                                    {{#if unlist}}
+                                    <a href="/admin/list-products?id={{this._id}}" class="btn btn-success" onclick="return confirm('Are you sure you want to list {{this.name}}?')">List</a>
+                                    {{else}}
+                                    <a href="/admin/unlist-products?id={{this._id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to Unlist {{this.name}}?')">Unlist</a>
+
+                                    {{/if}}
                                 </td>
                             </tr>
                             {{/each}}
@@ -68,6 +72,61 @@
         </div>
     </div>
 </div>
+{{!-- <style>
+    .align-middle {
+        vertical-align: middle;
+    }
+</style>
+{{> admin-header}} --}}
+
+{{!-- <div class="container-fluid pt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-right mb-3">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
+                    Add product
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table w-100">
+                    <thead>
+                        <tr>
+                            <th scope="col">SL NO</th>
+                            <th scope="col">BRAND</th>
+                            <th scope="col">PRODUCT-NAME</th> 
+                            <th scope="col">CATEGORY</th>
+                            <th scope="col">PRICE</th>
+                            <th scope="col">IMAGES</th>
+                            <th scope="col">DECRIPTION</th>
+                            <th scope="col">OPTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each products}}
+                        <tr>
+                            <th class="align-middle" scope="row">{{serialNumber}}</th>
+                            <td class="align-middle">{{brand}}</td>
+                            <td class="align-middle">{{productname}}</td>
+                            <td class="align-middle">{{category}}</td>
+                            <td class="align-middle">{{price}}</td>
+                            <td class="align-middle"><img src="/uploads/{{images}}" alt="{{images}}" width="50px" height="50px"></td>
+                            <td class="align-middle">{{description}}</td>
+                            <td class="align-middle">
+                                <a href="/admin/edit-product?id={{_id}}" class="btn btn-primary m-2">Edit</a>
+                            </td>
+                            <td class="align-middle">
+                                <a href="/admin/?id={{this._id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to Unlist {{this.name}}?')">Delete</a>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div> --}}
+
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
