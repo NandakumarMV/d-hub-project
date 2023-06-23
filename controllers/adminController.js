@@ -9,6 +9,8 @@ const randomString = require("randomstring");
 const mongoose = require("mongoose");
 const twilio = require("twilio");
 const Verify = require("twilio/lib/rest/Verify");
+const productHelpers = require("../helpers/productHelpers");
+const helpers = require("handlebars-helpers");
 // const upload = multer({ dest: "./public/uploads/" });
 
 const securePassword = async (password) => {
@@ -76,10 +78,16 @@ const adminlogout = async (req, res) => {
 const loadProducts = async (req, res) => {
   try {
     const updateProducts = await Product.find().lean();
+    console.log(
+      "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmupdateProducts"
+    );
+
+    // console.log(updateProducts);
     const productWithSerialNumber = updateProducts.map((products, index) => ({
       ...products,
       serialNumber: index + 1,
     }));
+    console.log(productWithSerialNumber);
     const categories = await Category.find().lean();
     res.render("admin/add-products", {
       layout: "admin-layout",
@@ -93,6 +101,11 @@ const loadProducts = async (req, res) => {
 
 const insertProducts = async (req, res) => {
   try {
+    var arrayImage = [];
+    for (let i = 0; i < req.files.length; i++) {
+      arrayImage[i] = req.files[i].filename;
+    }
+
     const newProduct = new Product({
       brand: req.body.brand,
       productname: req.body.productname,
@@ -100,13 +113,13 @@ const insertProducts = async (req, res) => {
       category: req.body.category,
       price: req.body.price,
 
-      images: req.file.filename,
+      images: arrayImage,
       description: req.body.description,
       // strapColour:req.body.strapColour,
     });
 
     const addProductData = await newProduct.save();
-    // console.log(addProductData);
+    console.log(addProductData);
     if (addProductData) {
       await Category.updateOne(
         {
@@ -117,10 +130,8 @@ const insertProducts = async (req, res) => {
         }
       );
       const updateProducts = await Product.find().lean();
-      const productWithSerialNumber = updateProducts.map((products, index) => ({
-        ...products,
-        serialNumber: index + 1,
-      }));
+      const productWithSerialNumber =
+        productHelpers.updateSerialNumbers(updateProducts);
       const categories = await Category.find().lean();
       res.render("admin/add-products", {
         layout: "admin-layout",
@@ -174,11 +185,9 @@ const insertProducts = async (req, res) => {
 
 const loadCategory = async (req, res) => {
   try {
-    const updatedcategory = await Category.find().lean();
-    const categoryWithSerialNumber = updatedcategory.map((category, index) => ({
-      ...category,
-      serialNumber: index + 1,
-    }));
+    const updatedcategory = await Category.find({ unlist: false }).lean();
+    const categoryWithSerialNumber =
+      productHelpers.updateCategorySerialNumbers(updatedcategory);
     res.render("admin/category", {
       layout: "admin-layout",
       category: categoryWithSerialNumber,
@@ -197,12 +206,8 @@ const addCategory = async (req, res) => {
     if (existingCategory) {
       const errorMessage = "category already exits";
       const updatedcategory = await Category.find().lean();
-      const categoryWithSerialNumber = updatedcategory.map(
-        (category, index) => ({
-          ...category,
-          serialNumber: index + 1,
-        })
-      );
+      const categoryWithSerialNumber =
+        productHelpers.updateSerialNumbers(updatedcategory);
 
       return res.render("admin/category", {
         layout: "admin-layout",
@@ -537,6 +542,7 @@ const listProducts = async (req, res) => {
     console.log(error.message);
   }
 };
+
 module.exports = {
   loadAdminLogin,
   verfiyLogin,

@@ -1639,7 +1639,7 @@ Products Page
 .page-heading {
   margin-top: 160px;
   margin-bottom: 30px;
-  background-image: url(../images/products-page-heading.jpg);
+  background-image: url(../images/proBanner.jpg);
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -1647,7 +1647,7 @@ Products Page
 
 .page-heading .inner-content {
   padding: 150px 0px;
-  text-align: center;
+  text-align: left;
 }
 
 .page-heading .inner-content h2 {
@@ -1899,7 +1899,7 @@ Single Product Page
 }
 
 .total .main-border-button {
-  text-align: right;
+  text-align: left;
 }
 
 .total .main-border-button a {

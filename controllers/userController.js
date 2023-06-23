@@ -26,7 +26,7 @@ const sendOtp = async (req, res) => {
     const { mobile } = req.body;
 
     const user = await User.findOne({ mobile: mobile });
-    req.session = user;
+    req.session.userMobile = req.body.mobile;
     if (!user) {
       res.status(401).json({ message: "user not found" });
     } else {
@@ -35,9 +35,15 @@ const sendOtp = async (req, res) => {
       client.verify.v2
         .services(process.env.verifySid)
         .verifications.create({ to: "+91" + user.mobile, channel: "sms" })
-        .then((verification) => console.log(verification.status))
-        .then(() => {
-          res.render("users/otp-enter", { layout: "user-layout" });
+        .then((verification) => {
+          if (verification.status === "pending") {
+            res.render("users/otp-enter", { layout: "user-layout" });
+          } else {
+            res.render("users/otp-verify", {
+              message: "OTP sending failed",
+              layout: "user-layout",
+            });
+          }
         });
     }
   } catch (error) {
@@ -52,8 +58,32 @@ const pageOtp = async (req, res) => {
 };
 const loadOtpHome = async (req, res) => {
   try {
-    res.render("user/home-page", { layout: "user-layout" });
-  } catch (error) {}
+    const userMobile = "+91" + req.session.userMobile;
+    console.log(userMobile);
+    const otp = req.body.otp;
+    client.verify.v2
+      .services(process.env.verifySid)
+      .verificationChecks.create({ to: User.mobile, code: otp })
+      .then(async (verification_check) => {
+        if (verification_check.status === "approved") {
+          console.log(verification_check.status);
+          let user = await User.findOne({ mobile: req.session.userMobile });
+
+          req.session.user_id = user._id;
+
+          console.log(req.session.user_id);
+
+          res.redirect("/home");
+        } else {
+          res.render("users/", {
+            message: "invalid OTP",
+            layout: "user-layout",
+          });
+        }
+      });
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 //for sending mail
 const sendVerifyMail = async (name, email, user_id) => {
@@ -110,7 +140,7 @@ const sendResetPasswordMail = async (name, email, token) => {
       html:
         "<p> hi" +
         name +
-        ',please click here to <a href="http://localhost:3000/forget-password?token=' +
+        ',please click here to <a href="http://localhost:3000/forget-password?token=' + //to config
         token +
         '">reset </a>your password</p>',
     };
@@ -192,6 +222,7 @@ const verfiyLogin = async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const userData = await User.findOne({ email: email });
+
     if (userData) {
       const passMatch = await bcrypt.compare(password, userData.password);
 
@@ -320,6 +351,29 @@ const resetPassword = async (req, res) => {
     console.log(error.message);
   }
 };
+const loadProductView = async (req, res) => {
+  try {
+    // console.log("hiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
+    const id = req.query.id;
+    console.log(id);
+    const product = await Product.findById(id).lean();
+    console.log(product);
+    res.render("users/single-product", {
+      layout: "user-layout",
+      product: product,
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const loadCart = async (req, res) => {
+  try {
+    res.render("users/load-cart", { layout: "user-layout" });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 module.exports = {
   loadSignUp,
   insertUser,
@@ -335,4 +389,6 @@ module.exports = {
   pageOtp,
   sendOtp,
   loadOtpHome,
+  loadProductView,
+  loadCart,
 };

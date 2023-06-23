@@ -30,14 +30,21 @@ router.post("/forget", userControllers.forgetVerify);
 
 router.get("/otp-verification", userControllers.pageOtp);
 router.post("/otp-verification", userControllers.sendOtp);
-router.post("/otp-verified", auth.otpLog, userControllers.loadOtpHome);
+router.get("/otp-verified", auth.isLogOut, userControllers.loadOtpHome);
+// router.post("/otp-verified",  userControllers.);
+
 router.get(
   "/forget-password",
   auth.isLogOut,
   userControllers.forgetpasswordLoad
 );
 
-//admin
+// product load
+
+router.get("/load-product", auth.isLogin, userControllers.loadProductView);
+
+//cart loading
+router.get("/load-cart", auth.isLogin, userControllers.loadCart);
 
 router.post("/forget-password", userControllers.resetPassword);
 module.exports = router;

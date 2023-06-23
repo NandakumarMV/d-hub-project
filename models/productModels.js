@@ -63,10 +63,7 @@ const productSchema = new Schema({
   //   type: Number,
   //   required: true,
   // },
-  images: {
-    type: String,
-    required: true,
-  },
+  images: [{ type: String }],
   description: {
     type: String,
     required: true,

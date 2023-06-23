@@ -15,11 +15,7 @@
                 </button>
             </div>
 
-            {{!-- <div class="bg-light rounded p-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="mb-4" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em; margin-bottom: 0;">Category List</h6>
-                    <a href="/admin/unlisted-category" class="btn btn-outline-danger m-2">Unlisted Category</a>
-                </div> --}}
+           
                 <div class="table-responsive">
                     <table class="table w-100">
                         <thead>
@@ -30,13 +26,12 @@
                                 <th scope="col">PRODUCT-NAME</th> 
                                 <th scope="col">CATEGORY</th>
                                 <th scope="col">PRICE</th>
-                                {{!-- <th scope="col">IN-STOCK</th> --}}
+                               
                                  <th scope="col">IMAGES</th>
                                   <th scope="col">DECRIPTION</th>
                                 <th scope="col">OPTIONS</th>
                                 
-                                {{!-- <th scope="col">ACTION</th> --}}
-                                 {{!-- <th scope="col">ACTION</th> --}}
+                              
 
                             </tr>
                         </thead>
@@ -44,17 +39,19 @@
                           
                             {{#each products}}
                             <tr>
-                                <th class="align-middle" scope="row">{{serialNumber}}</th>
-                                <td class="align-middle">{{brand}}</td>
-                                <td class="align-middle">{{productname}}</td>
-                                 <td class="align-middle">{{category}}</td>
-                                <td class="align-middle">{{price}}</td>
-                                <td class="align-middle"><img src="/uploads/{{images}}" alt="{{images}}" width="50px" height="50px"></td>
-                                <td class="align-middle">{{description}}</td>
+                                <th class="align-middle" scope="row">{{this.serialNumber}}</th>
+                                <td class="align-middle">{{this.brand}}</td>
+                                <td class="align-middle">{{this.productname}}</td>
+                                 <td class="align-middle">{{this.category}}</td>
+                                <td class="align-middle">{{this.price}}</td>
+                            
+                                <td class="align-middle"><img src="/uploads/{{this.images.[0]}}" alt="" width="50px" height="50px"></td>
+                              
+                                <td class="align-middle">{{this.description}}</td>
 
 
                                  <td class="align-middle">
-                                    <a href="/admin/edit-product?id={{_id}}" class="btn btn-primary m-2">Edit</a></td>
+                                    <a href="/admin/edit-product?id={{this._id}}" class="btn btn-primary m-2">Edit</a></td>
                                 <td class="align-middle">
                                     {{#if unlist}}
                                     <a href="/admin/list-products?id={{this._id}}" class="btn btn-success" onclick="return confirm('Are you sure you want to list {{this.name}}?')">List</a>
@@ -72,60 +69,7 @@
         </div>
     </div>
 </div>
-{{!-- <style>
-    .align-middle {
-        vertical-align: middle;
-    }
-</style>
-{{> admin-header}} --}}
 
-{{!-- <div class="container-fluid pt-4">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="text-right mb-3">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
-                    Add product
-                </button>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table w-100">
-                    <thead>
-                        <tr>
-                            <th scope="col">SL NO</th>
-                            <th scope="col">BRAND</th>
-                            <th scope="col">PRODUCT-NAME</th> 
-                            <th scope="col">CATEGORY</th>
-                            <th scope="col">PRICE</th>
-                            <th scope="col">IMAGES</th>
-                            <th scope="col">DECRIPTION</th>
-                            <th scope="col">OPTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{#each products}}
-                        <tr>
-                            <th class="align-middle" scope="row">{{serialNumber}}</th>
-                            <td class="align-middle">{{brand}}</td>
-                            <td class="align-middle">{{productname}}</td>
-                            <td class="align-middle">{{category}}</td>
-                            <td class="align-middle">{{price}}</td>
-                            <td class="align-middle"><img src="/uploads/{{images}}" alt="{{images}}" width="50px" height="50px"></td>
-                            <td class="align-middle">{{description}}</td>
-                            <td class="align-middle">
-                                <a href="/admin/edit-product?id={{_id}}" class="btn btn-primary m-2">Edit</a>
-                            </td>
-                            <td class="align-middle">
-                                <a href="/admin/?id={{this._id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to Unlist {{this.name}}?')">Delete</a>
-                            </td>
-                        </tr>
-                        {{/each}}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div> --}}
 
 
 <!-- Modal -->
@@ -143,11 +87,11 @@
                 <div class="modal-body">
                     <div class="mb-3">
                          <label for="brand" class="form-label">BRAND</label>
-                        <input type="text" name="brand" class="form-control" value="{{product.brand}}" required>
+                        <input type="text" name="brand" class="form-control"  required>
                     </div>
                      <div class="mb-3">
                          <label for="product-name" class="form-label">PRODUCT NAME</label>
-                        <input type="text" name="productname" class="form-control" value="{{product.productname}}" required>
+                        <input type="text" name="productname" class="form-control"  required>
                     </div>
                      <div class="mb-3">
                          <label for="category" class="form-label">Category</label>
@@ -163,15 +107,15 @@
                     </div>
                      <div class="mb-3">
                          <label for="price" class="form-label">PRICE</label>
-                        <input type="number" name="price" class="form-control" value="{{product.price}}"required>
+                        <input type="number" name="price" class="form-control"required>
                     </div>
                      <div class="mb-3">
                          <label for="image" class="form-label">IMAGE</label>
-                        <input type="file" name="image" class="form-control" value="{{product.image}}" required>
+                        <input type="file" name="images" class="form-control"  multiple required>
                     </div>
                     <div class="mb-3">
                          <label for="description" class="form-label">DESCRIPTION</label>
-                        <input type="text" name="description" class="form-control" value="{{product.description}}"required>
+                        <input type="text" name="description" class="form-control" required>
                     </div>
                 </div>
                 

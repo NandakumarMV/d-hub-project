@@ -36,7 +36,7 @@ router.get("/logout", adminAuth.isLogin, adminController.adminlogout);
 router.get("/add-products", adminAuth.isLogin, adminController.loadProducts);
 router.post(
   "/add-products",
-  uploads.single("image"),
+  uploads.array("images", 5),
   adminController.insertProducts
 );
 
@@ -68,7 +68,7 @@ router.get("/unblocked-users", adminAuth.isLogin, adminController.unblockUser);
 router.get("/edit-product", adminController.editProductsView);
 router.post(
   "/edit-product",
-  uploads.single("image"),
+  uploads.array("images", 5),
   adminController.editProducts
 );
 router.get(
