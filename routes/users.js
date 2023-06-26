@@ -9,6 +9,7 @@ router.use(session({ secret: config.sessionSecret }));
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 const userControllers = require("../controllers/userController");
+const cartController = require("../controllers/cartController");
 /* GET users listing. */
 // router.get("/", function (req, res, next) {
 //   res.send("respond with a resource");
@@ -27,6 +28,7 @@ router.get("/logout", auth.isLogin, userControllers.userLogout);
 
 router.get("/forget", auth.isLogOut, userControllers.forgetLoad);
 router.post("/forget", userControllers.forgetVerify);
+router.post("/forget-password", userControllers.resetPassword);
 
 router.get("/otp-verification", userControllers.pageOtp);
 router.post("/otp-verification", userControllers.sendOtp);
@@ -44,7 +46,9 @@ router.get(
 router.get("/load-product", auth.isLogin, userControllers.loadProductView);
 
 //cart loading
-router.get("/load-cart", auth.isLogin, userControllers.loadCart);
+router.post("/add-cart", cartController.addToCart);
+router.get("/load-cart", auth.isLogin, cartController.loadingCartPage);
 
-router.post("/forget-password", userControllers.resetPassword);
+//user profile
+router.get("/user-profile", auth.isLogin, userControllers.loadUserProfile);
 module.exports = router;

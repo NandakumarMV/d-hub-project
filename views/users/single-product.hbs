@@ -21,7 +21,7 @@
               <!-- ***** Menu Start ***** -->
               <ul class="nav">
                 <li class="scroll-to-section">
-                  <a href="#top" class="active">Home</a>
+                  <a href="/home" class="active">Home</a>
                 </li>
                 <li class="scroll-to-section"><a href="#men">PHONES</a></li>
                 <li class="scroll-to-section"><a href="#women">LAPTOPS</a></li>
@@ -55,6 +55,7 @@
 <!-- ***** Product Area Starts ***** -->
 <section class="section" id="product">
   <div class="container">
+  {{product._id}}
   
     
     <div class="row">
@@ -105,7 +106,7 @@
           </div> --}}
           <div class="total">
             {{!-- <h4>Total: $210.00</h4> --}}
-            <div class="main-border-button pro-button"><a href="/load-cart">Add To Cart</a></div>
+            <div class="main-border-button pro-button"><a href="" onclick="addToCart('{{product._id}}',event), showSweetAlert()">Add To Cart</a></div>
           </div>
         </div>
       </div>
@@ -177,3 +178,54 @@
         </div>
       </div>
     </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script> 
+function addToCart(productId, event) {
+  event.preventDefault(); // Prevent the default behavior of the <a> tag
+
+  // Send an AJAX request to the server
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/add-cart', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      // Handle the server response here (if needed)
+      swal("Success", "Product added to cart!", "success");
+    }
+  };
+  xhr.onerror = function() {
+  console.log("Request error");
+};
+
+  xhr.send(JSON.stringify({ productId: productId }));
+}
+</script>
+<script>
+function showSweetAlert() {
+  Swal.fire({
+    title: "Success",
+    text: "Product added to cart!",
+    icon: "success",
+    showCancelButton: false,
+    confirmButtonColor: "#000000",
+    confirmButtonText: "OK",
+    customClass: {
+      container: "swal-container",
+      title: "swal-title",
+      content: "swal-text",
+      confirmButton: "swal-button"
+    },
+    onOpen: () => {
+      // Set the text color to white
+      const swalContainer = document.querySelector(".swal-container");
+      swalContainer.style.color = "white";
+
+      // Remove the border from the OK button
+      const okButton = document.querySelector(".swal-button");
+      okButton.style.border = "none";
+    }
+  });
+}
+</script>

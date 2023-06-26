@@ -355,9 +355,9 @@ const loadProductView = async (req, res) => {
   try {
     // console.log("hiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
     const id = req.query.id;
-    console.log(id);
+    // console.log(id);
     const product = await Product.findById(id).lean();
-    console.log(product);
+    // console.log(product);
     res.render("users/single-product", {
       layout: "user-layout",
       product: product,
@@ -367,13 +367,16 @@ const loadProductView = async (req, res) => {
   }
 };
 
-const loadCart = async (req, res) => {
+//user-profile
+const loadUserProfile = async (req, res) => {
   try {
-    res.render("users/load-cart", { layout: "user-layout" });
+    const userData = await User.findById({ _id: req.session.user_id });
+    res.render("users/user-profile", { layout: "user-layout", user: userData });
   } catch (error) {
     console.log(error.message);
   }
 };
+
 module.exports = {
   loadSignUp,
   insertUser,
@@ -390,5 +393,6 @@ module.exports = {
   sendOtp,
   loadOtpHome,
   loadProductView,
-  loadCart,
+
+  loadUserProfile,
 };
