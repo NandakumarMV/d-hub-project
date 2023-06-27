@@ -48,6 +48,7 @@ router.get("/load-product", auth.isLogin, userControllers.loadProductView);
 //cart loading
 router.post("/add-cart", cartController.addToCart);
 router.get("/load-cart", auth.isLogin, cartController.loadingCartPage);
+router.post("/change-product-quantity", cartController.changeProductQuantity);
 
 //user profile
 router.get("/user-profile", auth.isLogin, userControllers.loadUserProfile);

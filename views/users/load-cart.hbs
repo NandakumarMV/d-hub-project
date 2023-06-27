@@ -28,7 +28,7 @@
 
 <!-- ***** Preloader Start ***** -->
 
-    <div id="preloader">
+     <div id="preloader">
       <div class="jumper">
         <div></div>
         <div></div>
@@ -51,10 +51,13 @@
               <!-- ***** Menu Start ***** -->
               <ul class="nav">
                 <li class="scroll-to-section">
-                  <a href="#top" class="active">Home</a>
+                  <a href="/home" class="active">Home</a>
                 </li>
                 <li class="scroll-to-section"><a href="#men">PHONES</a></li>
                 <li class="scroll-to-section"><a href="#women">LAPTOPS</a></li>
+                <li class="scroll-to-section"><a href="/user-profile">PROFILE</a></li>
+                <li class="scroll-to-section"><a href="/load-cart">CART</a></li>
+
 
   <a href="/logout" ><button type="button" class="btn btn-dark" style="color: white">LOGOUT</button></a>
 
@@ -82,11 +85,13 @@
   </div>
 </div>
 <!-- ***** Main Banner Area End ***** -->
+{{#if products}}
     <section class="shopping-cart spad">
   <div class="container">
     <div class="row">
       <div class="col-lg-8">
         <div class="shopping__cart__table">
+        
           <table>
             <thead>
               <tr>
@@ -105,18 +110,29 @@
                   </div>
                   <div class="product__cart__item__text">
                     <h6>{{this.brand}}</h6>
+                      {{this.user_id}}
                     <h6>{{this.productname}}</h6>
                     <h5>{{this.price}}</h5>
                   </div>
                 </td>
-                <td class="quantity__item">
-                  <div class="quantity">
-                    <div class="pro-qty-2">
-                      <input type="text" value="1">
-                    </div>
-                  </div>
+                <td class="quantity__item" >
+                {{!-- <div class="input-group">
+                            <button class="btn btn-outline-secondary decrement-btn" type="button" >-</button>
+                            <input id="quantityInput_{{this._id}}" type="number" class="form-control text-center quantity-input"  readonly />
+                            <button class="btn btn-outline-secondary increment-btn" type="button" >+</button>
+                          </div> --}}
+        <div class="input-group" style="width: 60%;">
+          <div class="input-group-prepend">
+            <button class="btn btn-outline-secondary" id="decrementBtn" onclick="changeQuantity('{{this._id}}', -1, '{{this.user_id}}', {{this.quantity}})">-</button>
+          </div>
+          <input type="text" class="form-control text-center" id="quantityInput_{{this._id}}" value="{{this.quantity}}" min="1" readonly>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" id="incrementBtn" onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.quantity}})">+</button>
+          </div>
+        </div>
                 </td>
-                <td class="cart__price">{{this.total}}</td>
+            <td class="cart__price" id="productTotal_{{this._id}}">{{total}}</td>
+
                 <td class="cart__close"><i class="fa fa-close"></i></td>
               </tr>
               {{/each}}
@@ -126,7 +142,7 @@
         <div class="row">
           <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="continue__btn">
-              <a href="#">Continue Shopping</a>
+              <a href="/home">Continue Shopping</a>
             </div>
           </div>
           <div class="col-lg-6 col-md-6 col-sm-6">
@@ -147,8 +163,8 @@
         <div class="cart__total">
           <h6>Cart total</h6>
           <ul>
-            <li>Subtotal <span>{{subtotal}}</span></li>
-            <li>Total <span>{{finalAmount}}</span></li>
+            <li>Subtotal <span id="summary">{{subtotal}}</span></li>
+            <li>Total <span id="summary-subtotal">{{subtotal}}</span></li>
           </ul>
           <a href="#" class="primary-btn">Proceed to checkout</a>
         </div>
@@ -156,7 +172,15 @@
     </div>
   </div>
 </section>
-
+{{else}}
+<div class="cart-emty" style="justify-content: center; display: grid;">
+<h1 style="text-align: center;">CART IS EMPTY</h1>
+<h3 style="text-align: center;">ADD ITEMS TO CART</h3>
+<div class="continue__btn" style="justify-self: center;">
+              <a href="/home">Continue Shopping</a>
+            </div>
+</div>
+{{/if}}
 
     
 <footer>
@@ -222,10 +246,52 @@
         </div>
       </div>
     </footer>
-    {{!-- <script src="js/jquery-3.3.1.min.js"></script> --}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  function changeQuantity(proId, count, userId, quantity) {
+   
+
+    $.ajax({
+      url: "/change-product-quantity",
+      method: "post",
+      data: {
+        productId: proId,
+        count: count,
+        userId: userId,
+        quantity: quantity,
+      },
+    success: (response) => {
+      console.log(response)
+       if(response.deleteProduct){
+          location.reload(); // Reload the page
+       }else{
+             console.log(response,'ajax response')
+        const quantityInput = document.getElementById(`quantityInput_${proId}`);
+        quantityInput.value = response.quantity;
+
+        
+    const productTotal = document.querySelector(`#productTotal_${proId}`);
+    productTotal.textContent = response.productTotal;
+
+        const subtotal = document.getElementById(`summary`);
+        subtotal.textContent = response.subtotal;
+
+        const summarySubtotal = document.getElementById(`summary-subtotal`);
+        summarySubtotal.textContent = response.subtotal
+        
+       }
+     
+        
+      }
+       
+    
+    })
+  }
+   </script> 
+   
     <script src="/carts/js/jquery-3.3.1.min.js"></script>
 
-    {{!-- <script src="js/bootstrap.min.js"></script> --}}
+
     <script src="/carts/js/jquery-3.3.1.min.js"></script>
 
 

@@ -1,5 +1,6 @@
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModels");
+const mongoose = require("mongoose");
 
 module.exports = {
   addToCart: async (req, res) => {
@@ -54,8 +55,8 @@ module.exports = {
     try {
       console.log("entered loading cart page");
       const check = await Cart.findOne({ User_id: req.session.user_id });
-      console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-      console.log("checking no 1", check, "this is cart");
+
+      // console.log("checking no 1", check, "this is cart");
       if (check) {
         const cart = await Cart.findOne({ User_id: req.session.user_id })
           .populate({
@@ -114,10 +115,12 @@ module.exports = {
 
   changeProductQuantity: async (req, res) => {
     try {
+      console.log(req.body.userId, "userid is this");
+      console.log(req.body.productId, "product id is this");
       const userId = new mongoose.Types.ObjectId(req.body.userId);
       const productId = new mongoose.Types.ObjectId(req.body.productId);
       const quantity = req.body.quantity;
-      const cartFind = await Cart.findOne({ user_id: userId });
+      const cartFind = await Cart.findOne({ User_id: userId });
       const cartId = cartFind._id;
       const count = req.body.count;
       console.log(userId, "userId");
@@ -128,7 +131,7 @@ module.exports = {
 
       // Find the cart for the given user and product
       const cart = await Cart.findOneAndUpdate(
-        { user_id: userId, "products.productId": productId },
+        { User_id: userId, "products.productId": productId },
         { $inc: { "products.$.quantity": count } },
         { new: true }
       ).populate("products.productId");
@@ -149,6 +152,7 @@ module.exports = {
         );
         await cart.save();
         const response = { deleteProduct: true };
+        res.send(response);
         return response;
       }
 
@@ -157,12 +161,16 @@ module.exports = {
         return acc + product.total;
       }, 0);
 
+      const total = updatedProduct.total;
+      console.log(total);
       // Prepare the response object
       const response = {
         quantity: updatedProduct.quantity,
         subtotal: subtotal,
+        productTotal: updatedProduct.total,
       };
-      console.log(response);
+      console.log(response, "resposeeeeee");
+      res.send(response);
       return response;
     } catch (error) {
       console.log(error);
