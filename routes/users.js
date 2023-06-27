@@ -4,16 +4,26 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const config = require("../config/config");
 const auth = require("../middlewares/auth");
+var multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../public/uploads"));
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const uploads = multer({ storage: storage });
 
 router.use(session({ secret: config.sessionSecret }));
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 const userControllers = require("../controllers/userController");
 const cartController = require("../controllers/cartController");
-/* GET users listing. */
-// router.get("/", function (req, res, next) {
-//   res.send("respond with a resource");
-// });
+
 router.get("/signup", auth.isLogOut, userControllers.loadSignUp);
 router.post("/signup", userControllers.insertUser);
 
@@ -52,4 +62,8 @@ router.post("/change-product-quantity", cartController.changeProductQuantity);
 
 //user profile
 router.get("/user-profile", auth.isLogin, userControllers.loadUserProfile);
+router.get("/address", auth.isLogin, userControllers.loadAddress);
+router.post("/address", userControllers.addressList);
+
+router.post("/edit-user", uploads.single("image"), userControllers.editUser);
 module.exports = router;

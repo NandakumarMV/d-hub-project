@@ -7,6 +7,9 @@ const config = require("../config/config");
 const randomstring = require("randomstring");
 const Category = require("../models/categoryModel");
 const { use } = require("../app");
+const { default: mongoose } = require("mongoose");
+const Addresses = require("../models/addressesModel");
+const addresses = require("../models/addressesModel");
 
 //bcrypt password
 
@@ -370,13 +373,136 @@ const loadProductView = async (req, res) => {
 //user-profile
 const loadUserProfile = async (req, res) => {
   try {
-    const userData = await User.findById({ _id: req.session.user_id });
-    res.render("users/user-profile", { layout: "user-layout", user: userData });
+    const userId = new mongoose.Types.ObjectId(req.session.user_id);
+    console.log(userId, "user id.....");
+    const userData = await User.findOne({ _id: userId }).lean();
+    const defaultAddress = await Addresses.findOne(
+      { user_id: userId, "addresses.is_default": true },
+      { "address.$": 1 }
+    ).lean();
+    console.log(defaultAddress, "defaultAddress");
+    if (defaultAddress) {
+      res.render("users/user-profile", {
+        layout: "user-layout",
+        userData,
+        defaultAddress: defaultAddress.addresses,
+      });
+    } else {
+      res.render("users/user-profile", { layout: "user-layout", userData });
+    }
   } catch (error) {
     console.log(error.message);
   }
 };
+// const addressList = async (req, res) => {};
 
+const editUser = async (req, res) => {
+  const id = new mongoose.Types.ObjectId(req.session.user_id);
+  const userDate = await User.findById(id).lean();
+  console.log(userDate, "userdata......");
+  if (!userDate) {
+    throw new Error("user data not find");
+  }
+  let updatedUser = {
+    image: req.file.filename,
+    name: req.body.name,
+    email: req.body.email,
+    mobile: req.body.mobile,
+  };
+  console.log(updatedUser, "updated user");
+  if (req.file) {
+    updatedUser.image = req.file.filename;
+  }
+  const updatedUserData = await User.findByIdAndUpdate(
+    { _id: id },
+    { $set: updatedUser },
+    { new: true }
+  );
+  res.redirect("/user-profile");
+};
+const loadAddress = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+    const userAddress = await Addresses.findOne({ user_id: userId })
+      .lean()
+      .exec();
+
+    if (userAddress) {
+      if (userAddress.addresses.length === 1) {
+        userAddress.addresses[0].isDefault = true;
+      }
+
+      const addressDetails = userAddress.addresses.map((address) => {
+        return {
+          name: addresses.name,
+
+          address: addresses.address,
+          city: addresses.city,
+          state: addresses.state,
+          postalCode: addresses.postalCode,
+          _id: addresses._id,
+          isDefault: addresses.isDefault,
+        };
+      });
+
+      console.log(addressDetails, "addressdetails");
+      res.render("users/address", { layout: "user-layout", addressDetails });
+    } else {
+      res.render("users/address", {
+        layout: "user-layout",
+        addressDetails: [],
+      });
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+const addressList = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+
+    const name = req.body.name;
+
+    const city = req.body.city;
+    const state = req.body.state;
+    const pincode = req.body.pincode;
+    const address = req.body.address;
+    console.log(name);
+
+    console.log(city);
+    console.log(state);
+    console.log(pincode);
+    const newAddress = {
+      name: name,
+
+      address: address,
+      city: city,
+      state: state,
+      pincode: pincode,
+      is_default: false,
+    };
+
+    let userAddress = await Addresses.findOne({ user_id: userId });
+
+    if (!userAddress) {
+      newAddress.is_default = true;
+      userAddress = new Addresses({ user_id: userId, addresses: [newAddress] });
+    } else {
+      userAddress.addresses.push(newAddress);
+      if (userAddress.addresses.length === 1) {
+        userAddress.addresses[0].is_default = true;
+      }
+    }
+
+    await userAddress.save();
+    console.log(userAddress, "useraddress");
+
+    res.redirect("/address");
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 module.exports = {
   loadSignUp,
   insertUser,
@@ -393,6 +519,8 @@ module.exports = {
   sendOtp,
   loadOtpHome,
   loadProductView,
-
   loadUserProfile,
+  editUser,
+  addressList,
+  loadAddress,
 };

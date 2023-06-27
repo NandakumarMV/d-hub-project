@@ -127,13 +127,20 @@
           </div>
           <input type="text" class="form-control text-center" id="quantityInput_{{this._id}}" value="{{this.quantity}}" min="1" readonly>
           <div class="input-group-append">
-            <button class="btn btn-outline-secondary" id="incrementBtn" onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.quantity}})">+</button>
+            <button class="btn btn-outline-secondary" id="incrementBtn" onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.quantity}})">+</button >
           </div>
         </div>
                 </td>
             <td class="cart__price" id="productTotal_{{this._id}}">{{total}}</td>
 
-                <td class="cart__close"><i class="fa fa-close"></i></td>
+                <td class="cart__close">
+                  <div class="col-md-1 col-lg-1 col-xl-1">
+                       <button type="button" class="btn btn-link delete-product-btn" onclick="showDeleteConfirmation('{{this._id}}','{{this.user_id}}','{{this.name}}')">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+
+                </td>
               </tr>
               {{/each}}
             </tbody>
@@ -150,7 +157,7 @@
               <a href="#"><i class="fa fa-spinner"></i> Update cart</a>
             </div> --}}
           </div>
-        </div>
+        </div> 
       </div>
       <div class="col-lg-4">
         <div class="cart__discount">
@@ -270,8 +277,8 @@
         quantityInput.value = response.quantity;
 
         
-    const productTotal = document.querySelector(`#productTotal_${proId}`);
-    productTotal.textContent = response.productTotal;
+        const productTotal = document.querySelector(`#productTotal_${proId}`);
+        productTotal.textContent = response.productTotal;
 
         const subtotal = document.getElementById(`summary`);
         subtotal.textContent = response.subtotal;
@@ -281,12 +288,47 @@
         
        }
      
-        
+          
       }
        
     
     })
   }
+
+   function showDeleteConfirmation(proId, userId,productName) {
+  
+    $('#deleteConfirmationModal').modal('show');
+
+   
+  $('#productName').text(productName);
+
+   
+    $('#confirmDeleteBtn').data('product-id', proId);
+    $('#confirmDeleteBtn').data('user-id', userId);
+  }
+
+  function deleteproduct() {
+
+    const proId = $('#confirmDeleteBtn').data('product-id');
+    const userId = $('#confirmDeleteBtn').data('user-id');
+
+    $.ajax({
+      url: "/delete-product-from-cart",
+      method: "post",
+      data: {
+        productId: proId,
+        userId: userId,
+      },
+      success: (response) => {
+        if (response.deleteProductFromCart) {
+        
+          location.reload();
+        }
+      }
+    });
+  }
+
+  $('#confirmDeleteBtn').click(deleteproduct); 
    </script> 
    
     <script src="/carts/js/jquery-3.3.1.min.js"></script>

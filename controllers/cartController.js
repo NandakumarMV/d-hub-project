@@ -177,4 +177,35 @@ module.exports = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  // deleteProductFromCart: async (req, res) => {
+  //   try {
+  //     const userId = new mongoose.Types.ObjectId(req.body.userId);
+  //     const productId = new mongoose.Types.ObjectId(req.body.productId);
+
+  //     // Find the cart with the specified user ID and product ID
+  //     const cart = await Cart.findOneAndUpdate(
+  //       { user_id: userId },
+  //       { $pull: { products: { productId: productId } } },
+  //       { new: true } // To return the updated cart document
+  //     );
+
+  //     if (cart) {
+  //       console.log(cart, "updated cart");
+
+  //       // Product successfully removed from the cart
+  //       const response = { deleteProductFromCart: true };
+  //       console.log(response, "response from userhelper");
+  //       return response;
+  //     } else {
+  //       // Cart or product not found
+  //       const response = { deleteProductFromCart: false };
+  //       console.log(response, "response from userhelper");
+  //       return response;
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(500).json({ error: error.message });
+  //   }
+  // },
 };

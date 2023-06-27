@@ -1,0 +1,463 @@
+<style>
+  .template-container {
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+
+  .address-label {
+    font-weight: bold;
+  }
+
+  .edit-button {
+    color: #fff;
+    background-color: #000;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+
+  .edit-button:hover {
+    transform: scale(1.1);
+  }
+
+  .delete-button {
+    color: #fff;
+    background-color: #f00;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    margin-top: 10px;
+    cursor: pointer;
+        margin-left: 9px;
+    transition: transform 0.3s;
+  }
+
+  .delete-button:hover {
+    transform: scale(1.1);
+  }
+
+  .checkbox-label {
+    font-weight: normal;
+  }
+
+  .add-address-button {
+    color: #ffffff;
+    background-color: #fbdd35;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 21px;
+    margin-bottom: -13px;
+    margin-left: 13px;
+    margin-top: 24px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .add-address-button:hover {
+    background-color: #ffd700;
+    color: #000;
+    border: none;
+    transform: scale(1.1);
+  }
+
+  .add-button {
+    color: #ffffff;
+    background-color: #fbdd35;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .add-button:hover {
+    background-color: #ffd700;
+    color: #000;
+    border: none;
+    transform: scale(1.1);
+  }
+
+  .no-address-message {
+    opacity: 0;
+    animation-name: fadeIn;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  .make-default-button {
+  margin-top: 9px;
+    background-color: black;
+    color: white;
+    transition: transform 0.3s;
+    border: none;
+    width: 194px;
+    height: 36px;
+}
+
+
+.make-default-button:hover {
+  transform: scale(1.1);
+  background-color: #000;
+}
+</style>
+
+<div id="preloader">
+      <div class="jumper">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+    <!-- ***** Preloader End ***** -->
+
+    <!-- ***** Header Area Start ***** -->
+    <header class="header-area header-sticky">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <nav class="main-nav">
+              <!-- ***** Logo Start ***** -->
+              <a href="index.html" class="logo">
+                <img class="logo-img" src="/assets/images/dhub-main.png" />
+              </a>
+              <!-- ***** Logo End ***** -->
+              <!-- ***** Menu Start ***** -->
+              <ul class="nav">
+                <li class="scroll-to-section">
+                  <a href="/home" class="active">Home</a>
+                </li>
+                <li class="scroll-to-section"><a href="#men">PHONES</a></li>
+                <li class="scroll-to-section"><a href="#women">LAPTOPS</a></li>
+                <li class="scroll-to-section"><a href="/user-profile">PROFILE</a></li>
+                <li class="scroll-to-section"><a href="/load-cart">CART</a></li>
+
+
+  <a href="/logout" ><button type="button" class="btn btn-dark" style="color: white">LOGOUT</button></a>
+
+
+                
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <button type="button" class="btn btn-primary add-address-button" data-toggle="modal"
+        data-target="#exampleModalLong">
+        Add address
+      </button>
+    </div>
+  </div>
+</div>
+
+<!--Add address Modal -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Add address</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="/address" method="post">
+          <div class="form-group">
+            <label for="edit-username">Name</label>
+            <input type="text" class="form-control" name="name" id="edit-username">
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-phone">Address</label>
+            <input type="text" class="form-control" name="address" id="edit-phone">
+          </div>
+          <div class="form-group">
+            <label for="edit-email">City</label>
+            <input type="text" class="form-control" name="city" id="edit-email">
+          </div>
+          <div class="form-group">
+            <label for="edit-email">state</label>
+            <input type="text" class="form-control" name="state" id="edit-email">
+          </div>
+          <div class="form-group">
+            <label for="edit-email">Pin code</label>
+            <input type="number" class="form-control" name="pincode" id="edit-email">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary add-button">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--Edit address Modal -->
+<div class="modal fade" id="editingAddress" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Edit address</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <form action="/edit-address" method="post">
+          <div class="form-group">
+            <label for="edit-username">Name</label>
+            <input type="text" class="form-control" name="name" id="edit-name" value="{{this.name}}" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-email">Mobile</label>
+            <input type="text" class="form-control" name="mobile" id="edit-mobile" value="{{this.mobile}}" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-phone">Address</label>
+            <input type="text" class="form-control" name="address" id="edit-address"
+              value="{{this.address}}" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-email">City</label>
+            <input type="text" class="form-control" name="city" id="edit-city" value="{{this.city}}" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-email">state</label>
+            <input type="text" class="form-control" name="state" id="edit-state" value="{{this.state}}" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-email">Pin code</label>
+            <input type="number" class="form-control" name="pincode" id="edit-pincode" value="{{this.pincode}}"
+              required>
+          </div>
+          <input type="hidden" class="form-control" name="_id" id="edit-_id">
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary add-button">Edit</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container template-container" >
+  {{#if addressDetails.length}}
+  <div class="row">
+
+    {{#each addressDetails}}
+    <div class="col-md-4 mb-4">
+      <div class="card mb-4">
+        <div class="card-header py-3">
+          <h5 class="mb-0">ADDRESS DETAILS</h5>
+        </div>
+        {{#if this.is_default}}
+        <span class="badge badge-dark">Default  Address</span>
+        {{/if}}
+        <div class="card-body">
+          <!-- User Address Details -->
+          <div class="address-details">
+
+            <p class="address-value">{{this.name}}</p>
+
+
+            <p class="address-value">{{this.mobile}}</p>
+
+
+            <p class="address-value">{{this.address}}</p>
+
+
+            <p class="address-value">{{this.city}}</p>
+
+
+            <p class="address-value">{{this.state}}</p>
+
+
+            <p class="address-value">{{this.pincode}}</p>
+
+            <div class="address-actions">
+              <button class="edit-button" data-toggle="modal" data-target="#editingAddress" data-name="{{this.name}}"
+                data-mobile="{{this.mobile}}" data-address="{{this.address}}" data-city="{{this.city}}"
+                data-state="{{this.state}}" data-pincode="{{this.pincode}}" data-_id="{{this._id}}">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <a href="/delete-address?id={{this._id}}" class="delete-button">
+                <i class="fas fa-trash"></i> Delete
+              </a>
+              {{#unless this.is_default}}
+              <div >
+                  <button type="button" class="btn btn-primary btn-sm make-default-button" onclick="setAsDefault('{{this._id}}')">Make as default address</button>
+              </div>
+              {{/unless}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/each}}
+
+  </div>
+</div>
+{{else}}
+<section class="cart-section">
+  <section class="h-100 h-custom" style="background-color: #d2c9ff;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12">
+          <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+            <div class="card-body p-0">
+              <div class="row g-0">
+                <div class="col-lg-12">
+                  <div class="p-5">
+                    <div class="text-center mb-4 empty-cart-animation">
+                      <i class="bi bi-geo-alt-fill" style="font-size: 80px; color: #000;"></i>
+                      <h3>Add Address</h3>
+                      <p>Add a new address to continue</p>
+                    </div>
+                    <div class="text-center mt-4">
+                      <button type="button" class="btn btn-primary add-address-button" data-toggle="modal"
+                        data-target="#exampleModalLong">
+                        Add address
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+{{/if}}
+
+<footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-3">
+            <div class="first-item">
+              <div class="logo">
+                <h4>D-HUD ONLINE</h4>
+                
+                <img
+                  src=""
+                  alt=""
+                />
+              </div>
+              <ul>
+                <li>
+                  <a href="#">16501 Collins Ave, FL 33160,
+                    kochi</a>
+                </li>
+                <li><a href="#">d-hub@company.com</a></li>
+                <li><a href="#">010-020-0340</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-3">
+            <h4>Shopping &amp; Categories</h4>
+            <ul>
+              <li><a href="#"> Online Shopping</a></li>
+              <li><a href="#"> </a></li>
+              
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <h4>Useful Links</h4>
+            <ul>
+              <li><a href="#">Homepage</a></li>
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Help</a></li>
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <h4>Help &amp; Information</h4>
+            <ul>
+              <li><a href="#">Help</a></li>
+              <li><a href="#">FAQ's</a></li>
+              <li><a href="#">Shipping</a></li>
+              <li><a href="#">Tracking ID</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-12">
+            <div class="under-footer">
+              <p>
+                Copyright © 2023 D-HUB Co., Ltd. All Rights Reserved.
+
+                <br />
+               
+              </p>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    // Set the address details in the edit modal when the edit button is clicked
+    $('.edit-button').click(function () {
+
+      var name = $(this).data('name');
+      var mobile = $(this).data('mobile');
+      var address = $(this).data('address');
+      var city = $(this).data('city');
+      var state = $(this).data('state');
+      var pincode = $(this).data('pincode');
+      var _id = $(this).data('_id');
+
+      $('#edit-name').val(name);
+      $('#edit-mobile').val(mobile);
+      $('#edit-address').val(address);
+      $('#edit-city').val(city);
+      $('#edit-state').val(state);
+      $('#edit-pincode').val(pincode);
+      $('#edit-_id').val(_id);
+    });
+  });
+</script>
+
+<script>
+  function setAsDefault(addressId) {
+   
+
+    $.ajax({
+      url: "/set-as-default",
+      method: "post",
+      data: {
+        addressId: addressId,
+      },
+    success: (response) => {
+          if(response.setDefault){
+             location.reload();
+          }
+      }
+       
+    
+    })
+  }
+  </script>
