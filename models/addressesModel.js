@@ -12,6 +12,9 @@ const addressSchema = new Schema({
       name: {
         type: String,
       },
+      mobile: {
+        type: Number,
+      },
       city: {
         type: String,
       },
@@ -32,6 +35,6 @@ const addressSchema = new Schema({
   ],
 });
 
-const addresses = mongoose.model("address", addressSchema);
+const address = mongoose.model("address", addressSchema);
 
-module.exports = addresses;
+module.exports = address;

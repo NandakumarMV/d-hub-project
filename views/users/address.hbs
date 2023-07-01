@@ -45,7 +45,7 @@
 
   .add-address-button {
     color: #ffffff;
-    background-color: #fbdd35;
+    background-color: #080808;
     border: none;
     border-radius: 5px;
     padding: 6px 21px;
@@ -57,23 +57,23 @@
   }
 
   .add-address-button:hover {
-    background-color: #ffd700;
-    color: #000;
+    background-color: #0f0e0e;
+    color: #f8f7f7;
     border: none;
     transform: scale(1.1);
   }
 
   .add-button {
     color: #ffffff;
-    background-color: #fbdd35;
+    background-color: #090909;
     border: none;
     border-radius: 5px;
     transition: background-color 0.3s, color 0.3s;
   }
 
   .add-button:hover {
-    background-color: #ffd700;
-    color: #000;
+    background-color: #040404;
+    color: #eee8e8;
     border: none;
     transform: scale(1.1);
   }
@@ -153,16 +153,7 @@
       </div>
     </header>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-4">
-      <button type="button" class="btn btn-primary add-address-button" data-toggle="modal"
-        data-target="#exampleModalLong">
-        Add address
-      </button>
-    </div>
-  </div>
-</div>
+
 
 <!--Add address Modal -->
 <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
@@ -181,7 +172,10 @@
             <label for="edit-username">Name</label>
             <input type="text" class="form-control" name="name" id="edit-username">
           </div>
-          
+          <div class="form-group">
+            <label for="edit-email">Mobile</label>
+            <input type="number" class="form-control" name="mobile" id="edit-email">
+          </div>
           <div class="form-group">
             <label for="edit-phone">Address</label>
             <input type="text" class="form-control" name="address" id="edit-phone">
@@ -236,6 +230,7 @@
             <input type="text" class="form-control" name="address" id="edit-address"
               value="{{this.address}}" required>
           </div>
+         
           <div class="form-group">
             <label for="edit-email">City</label>
             <input type="text" class="form-control" name="city" id="edit-city" value="{{this.city}}" required>
@@ -261,10 +256,20 @@
   </div>
 </div>
 
-<div class="container template-container" >
-  {{#if addressDetails.length}}
-  <div class="row">
+<div class="container template-container" style="
+    margin-top: 135px;
+">
+ 
+   
+      <button type="button" class="btn btn-primary add-address-button" data-toggle="modal"
+        data-target="#exampleModalLong" style="margin-bottom: 10px;">
+        Add address
+      </button>
 
+ 
+  {{#if addressDetails.length}}
+  
+<div class="row" > 
     {{#each addressDetails}}
     <div class="col-md-4 mb-4">
       <div class="card mb-4">
@@ -299,16 +304,18 @@
               <button class="edit-button" data-toggle="modal" data-target="#editingAddress" data-name="{{this.name}}"
                 data-mobile="{{this.mobile}}" data-address="{{this.address}}" data-city="{{this.city}}"
                 data-state="{{this.state}}" data-pincode="{{this.pincode}}" data-_id="{{this._id}}">
-                <i class="fas fa-edit"></i> Edit
+                Edit
               </button>
               <a href="/delete-address?id={{this._id}}" class="delete-button">
-                <i class="fas fa-trash"></i> Delete
+               Delete
               </a>
-              {{#unless this.is_default}}
-              <div >
-                  <button type="button" class="btn btn-primary btn-sm make-default-button" onclick="setAsDefault('{{this._id}}')">Make as default address</button>
-              </div>
-              {{/unless}}
+             {{#if this.is_default}}
+  
+{{else}}
+  <div>
+    <button type="button" class="btn btn-primary btn-sm make-default-button" onclick="setAsDefault('{{this._id}}')">Make as default address</button>
+  </div>
+{{/if}}
             </div>
           </div>
         </div>
@@ -320,7 +327,7 @@
 </div>
 {{else}}
 <section class="cart-section">
-  <section class="h-100 h-custom" style="background-color: #d2c9ff;">
+  <section class="h-100 h-custom" style="background-color: #f7f6fb;">
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-12">
@@ -332,6 +339,7 @@
                     <div class="text-center mb-4 empty-cart-animation">
                       <i class="bi bi-geo-alt-fill" style="font-size: 80px; color: #000;"></i>
                       <h3>Add Address</h3>
+                    
                       <p>Add a new address to continue</p>
                     </div>
                     <div class="text-center mt-4">
@@ -445,19 +453,29 @@
   function setAsDefault(addressId) {
    
 
-    $.ajax({
-      url: "/set-as-default",
-      method: "post",
-      data: {
-        addressId: addressId,
-      },
-    success: (response) => {
-          if(response.setDefault){
-             location.reload();
-          }
-      }
-       
-    
-    })
+fetch('/set-as-default', {
+  method: 'POST',
+  body: JSON.stringify({
+    addressId: addressId,
+  }),
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+  .then((response) => {
+    if (response.status) {
+
+      location.reload();
+      
+    } else {
+      throw new Error('Request failed.');
+    }
+  })
+  .catch((error) => {
+    // Handle error
+    console.error(error);
+  });
+
+
   }
   </script>

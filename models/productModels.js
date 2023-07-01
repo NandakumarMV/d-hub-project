@@ -59,10 +59,10 @@ const productSchema = new Schema({
     type: Number,
     required: true,
   },
-  // inStock: {
-  //   type: Number,
-  //   required: true,
-  // },
+  inStock: {
+    type: Number,
+    required: true,
+  },
   images: [{ type: String }],
   description: {
     type: String,

@@ -60,10 +60,17 @@ router.post("/add-cart", cartController.addToCart);
 router.get("/load-cart", auth.isLogin, cartController.loadingCartPage);
 router.post("/change-product-quantity", cartController.changeProductQuantity);
 
+//checkout
+router.get("/checkout", auth.isLogin, cartController.checkoutLoad);
+
 //user profile
 router.get("/user-profile", auth.isLogin, userControllers.loadUserProfile);
 router.get("/address", auth.isLogin, userControllers.loadAddress);
 router.post("/address", userControllers.addressList);
+// router.post("/add-new-address", userControllers.addNewAddress);
+router.get("/delete-address", auth.isLogin, userControllers.deletingAddress);
+router.post("/edit-address", userControllers.editAddress);
+router.post("/set-as-default", userControllers.settingAsDefault);
 
 router.post("/edit-user", uploads.single("image"), userControllers.editUser);
 module.exports = router;

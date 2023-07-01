@@ -151,36 +151,37 @@
                 <!-- Address -->
                 <h6 class="heading-small text-muted mb-4">Contact information</h6>
                 <div class="pl-lg-4">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="form-group focused">
-                        <label class="form-control-label" for="input-address">Address</label>
-                        <input id="input-address" class="form-control form-control-alternative" placeholder="Home Address"  type="text" readonly>
-                      </div>
-                    </div>
-                  </div>
-                 
-                  <div class="row">
-                    <div class="col-lg-4">
-                      <div class="form-group focused">
-                        <label class="form-control-label" for="input-city">City</label>
-                        <input type="text" id="input-city" class="form-control form-control-alternative" placeholder="City" value="" readonly>
-                      </div>
-                    </div>
-                    <div class="col-lg-4">
-                      <div class="form-group focused">
-                        <label class="form-control-label" for="input-country">street</label>
-                        <input type="text" id="input-country" class="form-control form-control-alternative" placeholder="street" value="" readonly>
-                      </div>
-                    </div>
-                    <div class="col-lg-4">
-                      <div class="form-group">
-                        <label class="form-control-label" for="input-country">Postal code</label>
-                        <input type="text" id="input-postal-code" class="form-control form-control-alternative" placeholder="Postal code" value="" readonly>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="form-group focused">
+        <label class="form-control-label" for="input-address">Address</label>
+        <input id="input-address" class="form-control form-control-alternative" placeholder="Home Address"  type="text" value="{{defaultAddress.[0].address}}" readonly>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-4">
+      <div class="form-group focused">
+        <label class="form-control-label" for="input-city">City</label>
+        <input type="text" id="input-city" class="form-control form-control-alternative" placeholder="City" value="{{defaultAddress.[0].city}}" readonly>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="form-group focused">
+        <label class="form-control-label" for="input-country">State</label>
+        <input type="text" id="input-country" class="form-control form-control-alternative" placeholder="state" value="{{defaultAddress.[0].state}}" readonly>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="form-group">
+        <label class="form-control-label" for="input-country">Postal code</label>
+        <input type="text" id="input-postal-code" class="form-control form-control-alternative" placeholder="Postal code"value="{{defaultAddress.[0].pincode}}" readonly>
+      </div>
+    </div>
+  </div>
+</div>
+
                 
                 
                

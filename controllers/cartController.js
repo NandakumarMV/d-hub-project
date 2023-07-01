@@ -1,5 +1,6 @@
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModels");
+const Addresses = require("../models/addressesModel");
 const mongoose = require("mongoose");
 
 module.exports = {
@@ -56,7 +57,7 @@ module.exports = {
       console.log("entered loading cart page");
       const check = await Cart.findOne({ User_id: req.session.user_id });
 
-      // console.log("checking no 1", check, "this is cart");
+      console.log("checking no 1", check, "this is cart");
       if (check) {
         const cart = await Cart.findOne({ User_id: req.session.user_id })
           .populate({
@@ -65,7 +66,7 @@ module.exports = {
           .lean()
           .exec();
         console.log(cart, "checking no 2");
-        console.log("products", cart.products);
+        console.log("products : ", cart.products);
         const products = cart.products.map((product) => {
           const total =
             Number(product.quantity) * Number(product.productId.price);
@@ -208,4 +209,70 @@ module.exports = {
   //     res.status(500).json({ error: error.message });
   //   }
   // },
+
+  checkoutLoad: async (req, res) => {
+    try {
+      console.log("entered checkout load");
+      const userId = req.session.user_id;
+
+      const defaultAddress = await Addresses.findOne(
+        {
+          user_id: userId,
+          "addresses.is_default": true,
+        },
+        { "addresses.$": 1 }
+      ).lean();
+      console.log(defaultAddress, "eeeeeeeeeeeeeeeeeeeeee");
+      const addressDoc = await Addresses.findOne({ user_id: userId }).lean();
+      const addressArray = addressDoc.addresses;
+      console.log(addressArray, "arrayyyy");
+      const filteredAddresses = addressArray.filter(
+        (address) => !address.is_default
+      );
+      console.log(filteredAddresses, "filtered address");
+
+      const cart = await Cart.findOne({ User_id: userId })
+        .populate({
+          path: "products.productId",
+        })
+        .lean()
+        .exec();
+
+      const products = cart.products.map((product) => {
+        const total =
+          Number(product.quantity) * Number(product.productId.price);
+        return {
+          _id: product.productId._id.toString(),
+          brand: product.productId.brand,
+          productname: product.productId.productname,
+          category: product.productId.category,
+          images: product.productId.images,
+          price: product.productId.price,
+          description: product.productId.description,
+          quantity: product.quantity,
+          total,
+          user_id: req.session.user_id,
+        };
+      });
+      console.log(products, "products.........................");
+      const total = products.reduce(
+        (sum, product) => sum + Number(product.total),
+        0
+      );
+      const finalAmount = total;
+      const count = products.length;
+      res.render("users/checkout", {
+        layout: "user-layout",
+        defaultAddress: defaultAddress.addresses[0],
+        filteredAddresses: filteredAddresses,
+        products,
+        total,
+        count,
+        subtotal: total,
+        finalAmount,
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  },
 };

@@ -9,7 +9,6 @@ const Category = require("../models/categoryModel");
 const { use } = require("../app");
 const { default: mongoose } = require("mongoose");
 const Addresses = require("../models/addressesModel");
-const addresses = require("../models/addressesModel");
 
 //bcrypt password
 
@@ -378,9 +377,9 @@ const loadUserProfile = async (req, res) => {
     const userData = await User.findOne({ _id: userId }).lean();
     const defaultAddress = await Addresses.findOne(
       { user_id: userId, "addresses.is_default": true },
-      { "address.$": 1 }
+      { "addresses.$": 1 }
     ).lean();
-    console.log(defaultAddress, "defaultAddress");
+    console.log(defaultAddress, "defaultAddress of user");
     if (defaultAddress) {
       res.render("users/user-profile", {
         layout: "user-layout",
@@ -422,30 +421,32 @@ const editUser = async (req, res) => {
 };
 const loadAddress = async (req, res) => {
   try {
+    // console.log("address loadingggggggggggggg");
     const userId = req.session.user_id;
+    // console.log(userId, "kkkkkkkkkkkkkkkkkkkkk");
     const userAddress = await Addresses.findOne({ user_id: userId })
       .lean()
       .exec();
-
+    console.log(userAddress, "userAddressss");
     if (userAddress) {
       if (userAddress.addresses.length === 1) {
-        userAddress.addresses[0].isDefault = true;
+        userAddress.addresses[0].is_default = true;
       }
 
       const addressDetails = userAddress.addresses.map((address) => {
         return {
-          name: addresses.name,
-
-          address: addresses.address,
-          city: addresses.city,
-          state: addresses.state,
-          postalCode: addresses.postalCode,
-          _id: addresses._id,
-          isDefault: addresses.isDefault,
+          name: address.name,
+          mobile: address.mobile,
+          address: address.address,
+          city: address.city,
+          state: address.state,
+          pincode: address.pincode,
+          _id: address._id,
+          is_default: address.is_default,
         };
       });
 
-      console.log(addressDetails, "addressdetails");
+      // console.log(addressDetails, "addressdetails");
       res.render("users/address", { layout: "user-layout", addressDetails });
     } else {
       res.render("users/address", {
@@ -460,10 +461,13 @@ const loadAddress = async (req, res) => {
 
 const addressList = async (req, res) => {
   try {
+    // console.log(
+    //   "entered this page............................................"
+    // );
     const userId = req.session.user_id;
 
     const name = req.body.name;
-
+    const mobile = req.body.mobile;
     const city = req.body.city;
     const state = req.body.state;
     const pincode = req.body.pincode;
@@ -475,7 +479,7 @@ const addressList = async (req, res) => {
     console.log(pincode);
     const newAddress = {
       name: name,
-
+      mobile: mobile,
       address: address,
       city: city,
       state: state,
@@ -484,7 +488,7 @@ const addressList = async (req, res) => {
     };
 
     let userAddress = await Addresses.findOne({ user_id: userId });
-
+    // console.log(userAddress, "useraddresssssss");
     if (!userAddress) {
       newAddress.is_default = true;
       userAddress = new Addresses({ user_id: userId, addresses: [newAddress] });
@@ -501,6 +505,110 @@ const addressList = async (req, res) => {
     res.redirect("/address");
   } catch (error) {
     throw new Error(error.message);
+  }
+};
+
+const deletingAddress = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const userId = req.session.user_id;
+
+    const address = await Addresses.findOne({ user_id: userId });
+
+    const deletedAddress = address.addresses.find(
+      (addr) => addr._id.toString() === id
+    );
+    console.log(deletedAddress, "deletedAddress");
+    const isDefaultAddress = deletedAddress && deletedAddress.is_default;
+    console.log(isDefaultAddress, "isDefaultAddress");
+
+    address.addresses = address.addresses.filter(
+      (addr) => addr._id.toString() !== id
+    );
+
+    if (isDefaultAddress && address.addresses.length > 0) {
+      const newDefaultAddress = address.addresses.find(
+        (addr) => addr._id.toString() !== id
+      );
+      if (newDefaultAddress) {
+        newDefaultAddress.is_default = true;
+      }
+      console.log(newDefaultAddress, "newDefaultAddress");
+    }
+
+    // Save the updated address
+    await address.save();
+    res.redirect("/address");
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+const editAddress = async (req, res) => {
+  try {
+    console.log("edit address entering");
+    const userId = req.session.user_id;
+    const id = req.body._id;
+    console.log(id, "kkkkkkkkkkkkkkkkkkkkkkk");
+    const name = req.body.name;
+    const mobile = req.body.mobile;
+    const address = req.body.address;
+    const city = req.body.city;
+    const state = req.body.state;
+    const pincode = req.body.pincode;
+
+    const updatedAddress = await Addresses.findOneAndUpdate(
+      { user_id: userId, "addresses._id": id },
+      {
+        $set: {
+          "addresses.$.name": name,
+          "addresses.$.mobile": mobile,
+          "addresses.$.address": address,
+          "addresses.$.city": city,
+          "addresses.$.state": state,
+          "addresses.$.pincode": pincode,
+        },
+      },
+      { new: true }
+    );
+    console.log(updatedAddress, "updatedAddresssssss");
+    if (updatedAddress) {
+      console.log("Address updated successfully:", updatedAddress);
+      res.redirect("/address");
+    } else {
+      console.log("Address not found or not updated");
+      res.redirect("/address");
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const settingAsDefault = async (req, res) => {
+  try {
+    const addressId = req.body.addressId;
+    const userId = req.session.user_id;
+    console.log(addressId, "addressIdkkkk");
+    // Find the current default address and unset its "isDefault" flag
+    const old = await Addresses.findOneAndUpdate(
+      { user_id: userId, "addresses.is_default": true },
+      { $set: { "addresses.$.is_default": false } }
+    );
+    console.log(old, "oldddddddddd");
+    // Set the selected addresses as the new default addresses
+    const defaultAddress = await Addresses.findOneAndUpdate(
+      { user_id: userId, "addresses._id": addressId },
+      { $set: { "addresses.$.is_default": true } }
+    );
+    console.log(defaultAddress, "uuuuuuuuuuuuuuuuuuuuu");
+    const response = {
+      setDefault: true,
+    };
+
+    res.json({ status: true });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to set addresses as default" });
   }
 };
 module.exports = {
@@ -523,4 +631,7 @@ module.exports = {
   editUser,
   addressList,
   loadAddress,
+  deletingAddress,
+  editAddress,
+  settingAsDefault,
 };

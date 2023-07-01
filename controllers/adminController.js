@@ -111,11 +111,10 @@ const insertProducts = async (req, res) => {
       productname: req.body.productname,
 
       category: req.body.category,
-      price: req.body.price,
-
+      price: parseFloat(req.body.price),
+      inStock: req.body.stock,
       images: arrayImage,
       description: req.body.description,
-      // strapColour:req.body.strapColour,
     });
 
     const addProductData = await newProduct.save();
@@ -397,17 +396,25 @@ const editProductsView = async (req, res) => {
       };
     });
 
-    const categoryLookup = {};
+    const categoryLookup = [];
     categories.forEach((category) => {
       categoryLookup[category._id.toString()] = category.category;
     });
 
     // Define the lookupCategory helper function
     const lookupCategory = function (categoryId) {
-      return categoryLookup[categoryId] || "Unknown";
+      console.log("categoryId:", categoryId);
+      console.log("categoryLookup:", categoryLookup);
+      return categoryLookup[categoryId];
     };
 
     const updatedProduct = await Product.findById(id).lean();
+    console.log(lookupCategory(updatedProduct.category), "lookupCategory");
+    console.log(categoryLookup);
+    console.log(updatedProduct.category);
+    console.log(updatedProduct);
+    console.log("updatedProduct.category:", updatedProduct.category);
+    console.log("categoryLookup keys:", Object.keys(categoryLookup));
 
     if (updatedProduct) {
       const productWithCategoryName = {
@@ -497,11 +504,13 @@ const editProducts = async (req, res) => {
     let updatedProductData = {
       brand: req.body.brand,
       productname: req.body.productname,
+      inStock: req.body.stock,
       price: req.body.price,
       description: req.body.description,
       category: req.body.category,
       images: product.images,
     };
+    console.log(updatedProductData, "updated productsssssss");
 
     if (req.files && req.files.length > 0) {
       updatedProductData.images = req.files.map((file) => file.filename);

@@ -25,6 +25,8 @@
                                 <th scope="col">BRAND</th>
                                 <th scope="col">PRODUCT-NAME</th> 
                                 <th scope="col">CATEGORY</th>
+                                <th scope="col">STOCK</th>
+                                
                                 <th scope="col">PRICE</th>
                                
                                  <th scope="col">IMAGES</th>
@@ -43,6 +45,9 @@
                                 <td class="align-middle">{{this.brand}}</td>
                                 <td class="align-middle">{{this.productname}}</td>
                                  <td class="align-middle">{{this.category}}</td>
+                                 <td class="align-middle">{{this.inStock}}</td>
+                                 
+
                                 <td class="align-middle">{{this.price}}</td>
                             
                                 <td class="align-middle"><img src="/uploads/{{this.images.[0]}}" alt="" width="50px" height="50px"></td>
@@ -104,6 +109,10 @@
                               
                             {{/each}}
                         </select>
+                    </div>
+                     <div class="mb-3">
+                         <label for="price" class="form-label">STOCK</label>
+                        <input type="number" name="stock" class="form-control"required>
                     </div>
                      <div class="mb-3">
                          <label for="price" class="form-label">PRICE</label>
