@@ -23,6 +23,7 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 const userControllers = require("../controllers/userController");
 const cartController = require("../controllers/cartController");
+const checkoutController = require("../controllers/checkOutController");
 
 router.get("/signup", auth.isLogOut, userControllers.loadSignUp);
 router.post("/signup", userControllers.insertUser);
@@ -62,7 +63,13 @@ router.post("/change-product-quantity", cartController.changeProductQuantity);
 
 //checkout
 router.get("/checkout", auth.isLogin, cartController.checkoutLoad);
-
+router.post(
+  "/submit-checkout",
+  auth.isLogin,
+  checkoutController.submitCheckout
+);
+// orders
+router.get("/my-orders", auth.isLogin, checkoutController.loadOrders);
 //user profile
 router.get("/user-profile", auth.isLogin, userControllers.loadUserProfile);
 router.get("/address", auth.isLogin, userControllers.loadAddress);
@@ -71,6 +78,7 @@ router.post("/address", userControllers.addressList);
 router.get("/delete-address", auth.isLogin, userControllers.deletingAddress);
 router.post("/edit-address", userControllers.editAddress);
 router.post("/set-as-default", userControllers.settingAsDefault);
-
+router.post("/change-address", cartController.changeAddress);
 router.post("/edit-user", uploads.single("image"), userControllers.editUser);
+
 module.exports = router;

@@ -222,7 +222,7 @@ module.exports = {
         },
         { "addresses.$": 1 }
       ).lean();
-      console.log(defaultAddress, "eeeeeeeeeeeeeeeeeeeeee");
+      console.log(defaultAddress.addresses, "eeeeeeeeeeeeeeeeeeeeee");
       const addressDoc = await Addresses.findOne({ user_id: userId }).lean();
       const addressArray = addressDoc.addresses;
       console.log(addressArray, "arrayyyy");
@@ -263,7 +263,74 @@ module.exports = {
       const count = products.length;
       res.render("users/checkout", {
         layout: "user-layout",
-        defaultAddress: defaultAddress.addresses[0],
+        defaultAddress: defaultAddress.addresses,
+        filteredAddresses: filteredAddresses,
+        products,
+        total,
+        count,
+        subtotal: total,
+        finalAmount,
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  },
+
+  changeAddress: async (req, res) => {
+    try {
+      console.log("entred chnge address");
+      const userId = req.session.user_id;
+      const addressId = req.body.addressId;
+      console.log(addressId, "addressid");
+      const userDocument = await Addresses.findOne({ user_id: userId }).lean();
+      const addressArray = userDocument.addresses;
+
+      console.log(addressArray, "addressarray");
+      console.log(userDocument, "userDoccsss");
+
+      const changeAddress = addressArray.find(
+        (address) => address._id.toString() === addressId
+      );
+      console.log(changeAddress, "changeaddresss");
+      const filteredAddresses = addressArray.filter(
+        (address) => !address.is_default
+      );
+      console.log(filteredAddresses, "filteredaddresss of change ");
+
+      const cart = await Cart.findOne({ User_id: userId })
+        .populate({
+          path: "products.productId",
+        })
+        .lean()
+        .exec();
+
+      const products = cart.products.map((product) => {
+        const total =
+          Number(product.quantity) * Number(product.productId.price);
+
+        return {
+          _id: product.productId._id.toString(),
+          brand: product.productId.brand,
+          productname: product.productId.productname,
+          category: product.productId.category,
+          images: product.productId.images,
+          price: product.productId.price,
+          description: product.productId.description,
+          quantity: product.quantity,
+          total,
+          user_id: req.session.user_id,
+        };
+      });
+
+      const total = products.reduce(
+        (sum, product) => sum + Number(product.total),
+        0
+      );
+      const finalAmount = total;
+      const count = products.length;
+      res.render("users/checkout", {
+        layout: "user-layout",
+        defaultAddress: changeAddress,
         filteredAddresses: filteredAddresses,
         products,
         total,

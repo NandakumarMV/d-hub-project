@@ -1,0 +1,78 @@
+const mongoose = require("mongoose");
+
+const ordersSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  date: {
+    type: Date,
+    require: true,
+  },
+  orderValue: {
+    type: Number,
+    require: true,
+  },
+  paymentMethod: {
+    type: String,
+    require: true,
+  },
+  orderStatus: {
+    type: String,
+    require: true,
+  },
+  products: [
+    {
+      productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+      quantity: {
+        type: Number,
+        required: true,
+        default: 1,
+      },
+      total: {
+        type: Number,
+        default: 0,
+      },
+    },
+  ],
+  addressDetails: {
+    name: {
+      type: String,
+      require: true,
+    },
+    mobile: {
+      type: String,
+      require: true,
+    },
+    homeAddress: {
+      type: String,
+      require: true,
+    },
+    city: {
+      type: String,
+      require: true,
+    },
+    street: {
+      type: String,
+      require: true,
+    },
+    postalCode: {
+      type: String,
+      require: true,
+    },
+  },
+
+  cancellationStatus: {
+    type: String,
+    default: "Not requested",
+  },
+  cancelledOrder: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+module.exports = mongoose.model("Order", ordersSchema);
