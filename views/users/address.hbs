@@ -309,13 +309,13 @@
               <a href="/delete-address?id={{this._id}}" class="delete-button">
                Delete
               </a>
-             {{#if this.is_default}}
+             {{#unless this.is_default}}
   
-{{else}}
+
   <div>
     <button type="button" class="btn btn-primary btn-sm make-default-button" onclick="setAsDefault('{{this._id}}')">Make as default address</button>
   </div>
-{{/if}}
+{{/unless}}
             </div>
           </div>
         </div>

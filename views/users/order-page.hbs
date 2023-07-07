@@ -105,6 +105,7 @@
 
 
   <a href="/logout" ><button type="button" class="btn btn-dark" style="color: white">LOGOUT</button></a>
+</div>
 
 {{#if orderDetails.length}}
 <div class="container tableheader">
@@ -118,6 +119,8 @@
                             <tr>
                                 <th scope="col">DATE</th>
                                 <th scope="col">ORDER ID</th>
+                              
+                             
                                 <th scope="col">TOTAL PRICE</th>
                                 <th scope="col">PAYMENT METHOD</th>
                                 <th scope="col">STATUS</th>
@@ -129,6 +132,8 @@
                             <tr>
                                 <td scope="row">{{this.date}}</td>
                                 <td>{{this._id}}</td>
+                               
+                             
                                 <td>{{this.orderValue}}</td>
                                 <td>{{this.paymentMethod}}</td>
                                 <td>{{this.orderStatus}}</td>
@@ -149,6 +154,7 @@
 </div>
 {{else}}
 <!-- No order history message -->
+
 <div class="card card-1 mt-5 mb-5">
     <div class="card-body text-center">
         <h4 class="mb-4">No Order History</h4>
@@ -156,9 +162,8 @@
             <i class="fa fa-search fa-5x"></i>
         </div>
         <p class="mt-3">You haven't placed any orders yet.</p>
-        <a href="/home" class="btn btn-warning" style="color: #ffffff;">Shop Now</a>
+        <a href="/home" class="btn btn-dark" style="color: #ffffff;">Shop Now</a>
     </div>
-</div>
 </div>
 {{/if}}
 

@@ -1,9 +1,9 @@
-require("dotenv").config();
+require("dotenv").config(); //var to const
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
 const session = require("express-session");
-const bodyParser = require("body-parser");
+const bodyParser = require("body-parser"); //remove
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
@@ -15,6 +15,7 @@ const handlebarsHelpers = require("handlebars-helpers");
 // Establish Mongoose connection
 mongoose
   .connect("mongodb://127.0.0.1:27017/d-hub_users", {
+    //env
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -44,8 +45,6 @@ app.engine(
 );
 
 app.use(session({ secret: config.sessionSecret }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -58,7 +57,7 @@ app.use("/", usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404));
+  next(createError(404)); // middleware
 });
 
 // error handler

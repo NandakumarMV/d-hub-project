@@ -32,8 +32,7 @@
           />
         </div>
         <div class="pass-link"><a href="/forget">Forgot password?</a></div>
-        <div class="pass-link"><a href="/otp-verification">login with otp
-          </a></div>
+        <div class="pass-link"><a href="/otp-verification">login with otp</a></div>
 
         <div class="field btn">
           <div class="btn-layer"></div>
@@ -48,7 +47,6 @@
         <div class="field">
           <input type="email" placeholder="enter email" name="email" required />
         </div>
-
         <div class="field">
           <input
             type="number"
@@ -65,12 +63,16 @@
             required
           />
         </div>
-
         <div class="field btn">
           <div class="btn-layer"></div>
           <input type="submit" value="Signup" />
         </div>
       </form>
+    </div>
+    <div class="message" style="color: red;">
+      {{#if message}}
+        {{message}}
+      {{/if}}
     </div>
   </div>
 </div>
@@ -80,10 +82,11 @@
   loginForm = document.querySelector("form.login"); const loginBtn =
   document.querySelector("label.login"); const signupBtn =
   document.querySelector("label.signup"); const signupLink =
-  document.querySelector("form .signup-link a"); signupBtn.onclick = (()=>{
-  loginForm.style.marginLeft = "-50%"; loginText.style.marginLeft = "-50%"; });
-  loginBtn.onclick = (()=>{ loginForm.style.marginLeft = "0%";
-  loginText.style.marginLeft = "0%"; }); signupLink.onclick = (()=>{
-  signupBtn.click(); return false; });
-
+  document.querySelector("form .signup-link a"); signupBtn.onclick = () => {
+  loginForm.style.marginLeft = "-50%"; loginText.style.marginLeft = "-50%"; };
+  loginBtn.onclick = () => { loginForm.style.marginLeft = "0%";
+  loginText.style.marginLeft = "0%"; }; signupLink.onclick = () => {
+  signupBtn.click(); return false; };
 </script>
+
+<!-- Rendered Messages -->

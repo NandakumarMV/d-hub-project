@@ -111,14 +111,15 @@
                         </select>
                     </div>
                      <div class="mb-3">
-                         <label for="price" class="form-label">STOCK</label>
-                        <input type="number" name="stock" class="form-control"required>
-                    </div>
-                     <div class="mb-3">
-                         <label for="price" class="form-label">PRICE</label>
-                        <input type="number" name="price" class="form-control"required>
-                    </div>
-                     <div class="mb-3">
+                        <label for="stock" class="form-label">STOCK</label>
+                        <input type="number" name="stock" class="form-control" required oninput="validateStock(this)">
+                        </div>
+
+                        <div class="mb-3">
+                        <label for="price" class="form-label">PRICE</label>
+                        <input type="number" name="price" class="form-control" required oninput="validatePrice(this)">
+                        </div>
+                       <div class="mb-3">
                          <label for="image" class="form-label">IMAGE</label>
                         <input type="file" name="images" class="form-control"  multiple required>
                     </div>
@@ -140,7 +141,23 @@
 
 
     
+<script>
+  function validateStock(input) {
+    if (input.value < 0) {
+      input.setCustomValidity("Stock cannot be less than 0");
+    } else {
+      input.setCustomValidity("");
+    }
+  }
 
+  function validatePrice(input) {
+    if (input.value < 0) {
+      input.setCustomValidity("Price cannot be less than 0");
+    } else {
+      input.setCustomValidity("");
+    }
+  }
+</script>
 
 
 {{>admin-footer}}

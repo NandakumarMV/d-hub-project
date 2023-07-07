@@ -6,7 +6,7 @@ const path = require("path");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../public/uploads"));
+    cb(null, path.join(__dirname, "../public/uploads")); //config
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + "-" + file.originalname);
@@ -18,11 +18,8 @@ const uploads = multer({ storage: storage });
 
 var router = express.Router();
 var config = require("../config/config");
-var bodyParser = require("body-parser");
-var adminController = require("../controllers/adminController");
 
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: true }));
+var adminController = require("../controllers/adminController");
 
 /* GET home page. */
 // router.get("/admin", function (req, res, next) {
@@ -77,6 +74,9 @@ router.get(
   adminController.unlistProducts
 );
 router.get("/list-products", adminAuth.isLogin, adminController.listProducts);
+
+//order management..........
+router.get("/orders", adminAuth.isLogin, adminController.loadOrders);
 
 router.get("*", (req, res) => {
   res.redirect("/admin");

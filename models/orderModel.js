@@ -36,6 +36,10 @@ const ordersSchema = new mongoose.Schema({
         type: Number,
         default: 0,
       },
+      productname: {
+        type: String,
+        required: true,
+      },
     },
   ],
   addressDetails: {
@@ -47,7 +51,7 @@ const ordersSchema = new mongoose.Schema({
       type: String,
       require: true,
     },
-    homeAddress: {
+    address: {
       type: String,
       require: true,
     },
@@ -55,11 +59,11 @@ const ordersSchema = new mongoose.Schema({
       type: String,
       require: true,
     },
-    street: {
+    state: {
       type: String,
       require: true,
     },
-    postalCode: {
+    pincode: {
       type: String,
       require: true,
     },

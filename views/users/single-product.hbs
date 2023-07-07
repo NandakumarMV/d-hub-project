@@ -57,15 +57,29 @@
 
 <!-- ***** Product Area Starts ***** -->
 <section class="section" id="product">
-  <div class="container">
-  {{product._id}}
+  <div class="container" style="display: contents;">
+ 
   
     
     <div class="row">
+      <div style="display: flex;margin-left: 88px;">
+        <div>
+          <div class="">
+          <img src="/uploads/{{product.images.[0]}}" alt="" class="product-img"  style="height: 100px; width: 100px;"/>
+        </div>
+        <div class="">
+          <img src="/uploads/{{product.images.[1]}}" alt="" class="product-img"  style="height: 100px; width: 100px;"/>
+        </div>
+        <div class="">
+          <img src="/uploads/{{product.images.[2]}}" alt="" class="product-img"  style="height: 100px; width: 100px;"/>
+        </div>
+          
+        </div>
       <div class="col-lg-8">
         <div class="left-images">
-          <img src="/uploads/{{product.images}}" alt="" class="product-img" />
+          <img src="/uploads/{{product.images.[0]}}" alt="" class="product-img" />
         </div>
+      </div>
       </div>
       <div class="col-lg-4">
         <div class="right-content">

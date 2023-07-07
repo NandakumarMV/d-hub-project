@@ -11,6 +11,10 @@ const twilio = require("twilio");
 const Verify = require("twilio/lib/rest/Verify");
 const productHelpers = require("../helpers/productHelpers");
 const helpers = require("handlebars-helpers");
+const Order = require("../models/orderModel");
+const Cart = require("../models/cartModel");
+const moment = require("moment-timezone");
+
 // const upload = multer({ dest: "./public/uploads/" });
 
 const securePassword = async (password) => {
@@ -552,6 +556,28 @@ const listProducts = async (req, res) => {
   }
 };
 
+// order management.............
+const loadOrders = async (req, res) => {
+  try {
+    const orderData = await Order.find().populate("userId").lean();
+    console.log(orderData, "order data coming");
+    const orderHistory = orderData.map((history) => {
+      let createdOnIST = moment(history.date)
+        .tz("Asia/Kolkata")
+        .format("DD-MM-YYYY h:mm A");
+
+      return { ...history, date: createdOnIST, userName: history.userId.name };
+    });
+    console.log(orderHistory, "order serial numbers");
+    res.render("admin/order-details", {
+      layout: "admin-layout",
+      orderData: orderHistory,
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 module.exports = {
   loadAdminLogin,
   verfiyLogin,
@@ -573,4 +599,5 @@ module.exports = {
   listCategory,
   unlistProducts,
   listProducts,
+  loadOrders,
 };

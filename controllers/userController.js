@@ -168,34 +168,74 @@ const loadSignUp = async (req, res) => {
 
 //data to database
 
+// const insertUser = async (req, res) => {
+//   try {
+//     const securePass = await securePassword(req.body.password);
+//     const user = new User({
+//       name: req.body.name,
+//       email: req.body.email,
+//       mobile: req.body.mobile,
+//       password: securePass,
+//       is_admin: 0,
+//     });
+//     const userDate = await user.save();
+
+//     if (userDate) {
+//       sendVerifyMail(req.body.name, req.body.email, userDate._id);
+//       res.render("users/signup", {
+//         layout: "user-layout",
+//         message: "your signup is successful, please verify your email ",
+//       });
+//     } else {
+//       res.render("users/signup", {
+//         layout: "user-layout",
+//         message: "your signup is failed",
+//       });
+//     }
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
 const insertUser = async (req, res) => {
   try {
-    const securePass = await securePassword(req.body.password);
+    const { name, email, mobile, password } = req.body;
+
+    // Check if email or mobile already exists in the database
+    const existingUser = await User.findOne({ $or: [{ email }, { mobile }] });
+    if (existingUser) {
+      return res.render("users/signup", {
+        layout: "user-layout",
+        message: "Email or mobile number already exists",
+      });
+    }
+
+    const securePass = await securePassword(password);
     const user = new User({
-      name: req.body.name,
-      email: req.body.email,
-      mobile: req.body.mobile,
+      name,
+      email,
+      mobile,
       password: securePass,
       is_admin: 0,
     });
-    const userDate = await user.save();
+    const savedUser = await user.save();
 
-    if (userDate) {
-      sendVerifyMail(req.body.name, req.body.email, userDate._id);
-      res.render("users/signup", {
+    if (savedUser) {
+      sendVerifyMail(name, email, savedUser._id);
+      return res.render("users/signup", {
         layout: "user-layout",
-        message: "your signup is successful, please verify your email ",
+        message: "Your signup is successful, please verify your email",
       });
     } else {
-      res.render("users/signup", {
+      return res.render("users/signup", {
         layout: "user-layout",
-        message: "your signup is failed",
+        message: "Your signup has failed",
       });
     }
   } catch (error) {
     console.log(error.message);
   }
 };
+
 
 const verfiyMail = async (req, res) => {
   try {
@@ -611,6 +651,7 @@ const settingAsDefault = async (req, res) => {
       .json({ success: false, message: "Failed to set addresses as default" });
   }
 };
+
 module.exports = {
   loadSignUp,
   insertUser,

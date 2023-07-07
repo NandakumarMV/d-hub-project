@@ -70,6 +70,7 @@ router.post(
 );
 // orders
 router.get("/my-orders", auth.isLogin, checkoutController.loadOrders);
+router.get("/ordersView", auth.isLogin, checkoutController.loadOrdersView);
 //user profile
 router.get("/user-profile", auth.isLogin, userControllers.loadUserProfile);
 router.get("/address", auth.isLogin, userControllers.loadAddress);
