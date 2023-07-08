@@ -4,6 +4,7 @@ const Addresses = require("../models/addressesModel");
 const mongoose = require("mongoose");
 const Order = require("../models/orderModel");
 const moment = require("moment-timezone");
+const { ObjectId } = require("mongodb");
 
 module.exports = {
   // submitCheckout: async (req, res) => {
@@ -81,28 +82,28 @@ module.exports = {
 
   submitCheckout: async (req, res) => {
     try {
-      console.log("entered checkout page");
+      // console.log("entered checkout page");
 
       const userId = req.session.user_id;
-      console.log(userId, "userid");
-      console.log("FIND THE CART DETAILS");
+      // console.log(userId, "userid");
+      // console.log("FIND THE CART DETAILS");
 
       const cartData = await Cart.findOne({ User_id: userId }).lean();
-      console.log(cartData, "cart data has been fetched successfully");
+      // console.log(cartData, "cart data has been fetched successfully");
 
-      console.log(req.body, "all req body");
+      // console.log(req.body, "all req body");
       const paymentMethod = req.body.paymentMethod;
 
-      console.log(paymentMethod, "paymentmethod");
+      // console.log(paymentMethod, "paymentmethod");
       const status = paymentMethod === "COD" ? "PENDING" : "PAYED";
 
-      console.log(status, "the status of payment");
+      // console.log(status, "the status of payment");
 
       const addressData = await Addresses.findOne(
         { user_id: userId, "addresses.is_default": true },
         { "addresses.$": 1 }
       ).lean();
-      console.log(addressData, "address data is this");
+      // console.log(addressData, "address data is this");
 
       if (!addressData) {
         return res.status(400).json({ error: "Default address not found." });
@@ -116,7 +117,7 @@ module.exports = {
         const productDetail = await Product.findById(product.productId).lean();
         if (productDetail) {
           const productName = productDetail.productname; // Access the product name from the retrieved product object
-          console.log(productName, "this is the product name");
+          // console.log(productName, "this is the product name");
           const updatedProduct = {
             productId: product.productId,
             quantity: product.quantity,
@@ -127,7 +128,7 @@ module.exports = {
         }
       }
 
-      console.log(products, "products loading");
+      // console.log(products, "products loading");
 
       const defaultAddress = addressData.addresses[0];
       const address = {
@@ -139,7 +140,7 @@ module.exports = {
         pincode: defaultAddress.pincode,
       };
 
-      console.log(address, "setting the defaulf address");
+      // console.log(address, "setting the defaulf address");
 
       const newOrder = new Order({
         userId: userId,
@@ -152,7 +153,7 @@ module.exports = {
       });
 
       const savedOrder = await newOrder.save();
-      console.log(savedOrder, "saved to database");
+      // console.log(savedOrder, "saved to database");
 
       await Cart.findOneAndDelete({ User_id: userId });
 
@@ -161,16 +162,16 @@ module.exports = {
         savedOrder,
       });
     } catch (error) {
-      console.log(error.message);
+      // console.log(error.message);
     }
   },
 
   loadOrders: async (req, res) => {
     console.log("entered the order loading");
     const userId = req.session.user_id;
-    console.log(userId, "this is userid");
+    // console.log(userId, "this is userid");
     const orderDetails = await Order.find({ userId: userId }).lean();
-    console.log(orderDetails, "order details are here");
+    // console.log(orderDetails, "order details are here");
 
     const products = await Product.find({});
 
@@ -181,7 +182,7 @@ module.exports = {
 
       return { ...history, date: createdOnIST };
     });
-    console.log(orderHistory, "order history");
+    // console.log(orderHistory, "order history");
     res.render("users/order-page", {
       layout: "user-layout",
       orderDetails: orderHistory,
@@ -191,12 +192,12 @@ module.exports = {
     try {
       const orderId = req.query.id;
       const userId = req.session.user_id;
-      console.log(orderId, "this is the order  id");
+      // console.log(orderId, "this is the order  id");
       const order = await Order.findOne({ _id: orderId }).populate({
         path: "products.productId",
         select: "brand productname price images",
       });
-      console.log(order, "populated orders");
+      // console.log(order, "populated orders");
 
       const createdOnIST = moment(order.date)
         .tz("Asia/Kolkata")
@@ -214,7 +215,7 @@ module.exports = {
           status: order.orderStatus,
         };
       });
-      console.log(orderDetails, "ordeerdetails are here");
+      // console.log(orderDetails, "ordeerdetails are here");
 
       const deliveryAddress = {
         name: order.addressDetails.name,
@@ -223,7 +224,7 @@ module.exports = {
         state: order.addressDetails.state,
         pincode: order.addressDetails.pincode,
       };
-      console.log(deliveryAddress, "deliveryaddress is here");
+      // console.log(deliveryAddress, "deliveryaddress is here");
       const subtotal = order.orderValue;
       const cancellationStatus = order.cancellationStatus;
       res.render("users/view-order", {
@@ -235,6 +236,29 @@ module.exports = {
         orderDate: createdOnIST,
         cancellationStatus: cancellationStatus,
       });
+    } catch (error) {
+      console.log(error.message);
+    }
+  },
+  cancellOrder: async (req, res) => {
+    try {
+      console.log("cancell ordering");
+      const orderId = req.body.orderId;
+      const url = "/ordersView?id=" + orderId;
+      console.log(orderId, "order have reached");
+      const updateOrder = await Order.findByIdAndUpdate(
+        { _id: new ObjectId(orderId) },
+        {
+          $set: {
+            orderStatus: "PENDING",
+            cancellationStatus: "cancellation requested",
+          },
+        },
+        { new: true }
+      ).exec();
+      console.log(updateOrder, "updated order");
+
+      res.redirect(url);
     } catch (error) {
       console.log(error.message);
     }

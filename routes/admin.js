@@ -77,6 +77,19 @@ router.get("/list-products", adminAuth.isLogin, adminController.listProducts);
 
 //order management..........
 router.get("/orders", adminAuth.isLogin, adminController.loadOrders);
+router.get("/ordersView", adminAuth.isLogin, adminController.loadOrderView);
+router.post(
+  "/cancel-by-admin",
+
+  adminController.cancellingOrder
+);
+router.post(
+  "/reject-by-admin",
+
+  adminController.rejectingCancell
+);
+router.post("/shipping-by-admin", adminController.shippingOrder);
+router.post("/deliver-by-admin", adminController.deliveredOrder);
 
 router.get("*", (req, res) => {
   res.redirect("/admin");

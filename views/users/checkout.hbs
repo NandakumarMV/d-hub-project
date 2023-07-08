@@ -422,3 +422,44 @@
             })
         }, false)
 </script>
+
+/*-------checkout  page ajax-------*/
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+$(document).ready(function () {
+
+        $('#checkout-button').click(function (e) {
+
+            e.preventDefault(); // To prevent default method of submitting form as here Ajax should be used here to submit the form based on the two different payment methods
+
+            console.log("Checkout Button Ajax call");
+
+            $.ajax({
+
+                url: '/place-order',
+
+                method: 'POST',
+
+                data: $('#checkout-form').serialize(), // Here serialize function is used to get all the data from the form into the data feild of ajax call
+
+                success: (response) => {
+
+                    if (response.COD_CHECKOUT) {
+                        location.href = '/orderPlaced'
+                    } else if (response.ONLINE_CHECKOUT) {
+                        makeRazorpayPayment(response);
+                    } else {
+                        location.href = '/orderFailed'
+                        // If any of the above payment didn't happen, Should create a failed order page to user and display
+                    }
+
+                }
+
+            })
+
+        })
+
+
+</script>

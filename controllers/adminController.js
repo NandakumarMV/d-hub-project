@@ -14,6 +14,7 @@ const helpers = require("handlebars-helpers");
 const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
 const moment = require("moment-timezone");
+const { ObjectId } = require("mongodb");
 
 // const upload = multer({ dest: "./public/uploads/" });
 
@@ -578,6 +579,111 @@ const loadOrders = async (req, res) => {
   }
 };
 
+const loadOrderView = async (req, res) => {
+  try {
+    console.log("entered load order views");
+    const orderId = req.query.id;
+    const order = await Order.findOne({ _id: orderId }).populate({
+      path: "products.productId",
+      select: "brand price productname images",
+    });
+    const createdOnIST = moment(order.date)
+      .tz("Asia/Kolkata")
+      .format("DD-MM-YYYY h:mm A");
+    order.date = createdOnIST;
+
+    const orderdetails = order.products.map((product) => {
+      const images = product.productId.images || [];
+      const image = images.length > 0 ? images[0] : "";
+      return {
+        brand: product.productId.brand,
+        image: image,
+        productname: product.productId.productname,
+        price: product.productId.price,
+        quantity: product.quantity,
+        status: order.orderStatus,
+      };
+    });
+    console.log(orderdetails, "order details reached here");
+    const deliveryAddress = {
+      name: order.addressDetails.name,
+      address: order.addressDetails.address,
+      city: order.addressDetails.city,
+      state: order.addressDetails.state,
+      pincode: order.addressDetails.pincode,
+    };
+    const subtotal = order.orderValue;
+    console.log(subtotal, "subtotal");
+    const cancellationStatus = order.cancellationStatus;
+    res.render("admin/view-order", {
+      layout: "admin-layout",
+      orderDetails: orderdetails,
+      deliveryAddress: deliveryAddress,
+      subtotal: subtotal,
+      orderId: orderId,
+      orderDate: createdOnIST,
+      cancellationStatus: cancellationStatus,
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const cancellingOrder = async (req, res) => {
+  const orderId = req.body.orderId;
+  const url = "/admin/ordersView?id=" + orderId;
+  const updateOrder = await Order.findByIdAndUpdate(
+    { _id: new ObjectId(orderId) },
+    { $set: { orderStatus: "cancelled", cancellationStatus: "cancelled" } },
+    { new: true }
+  ).exec();
+  res.redirect(url);
+};
+const rejectingCancell = async (req, res) => {
+  const orderId = req.body.orderId;
+  const url = "/admin/ordersView?id=" + orderId;
+  const updatedOrder = await Order.findByIdAndUpdate(
+    { _id: new ObjectId(orderId) },
+    {
+      $set: {
+        orderStatus: "Placed",
+        cancellationStatus: "Not requested",
+      },
+    }
+  ).exec();
+  res.redirect(url);
+};
+const shippingOrder = async (req, res) => {
+  try {
+    console.log("entered shipping order");
+    const orderId = req.body.orderId;
+    const url = "/admin/ordersView?id=" + orderId;
+    const updatedOrder = await Order.findByIdAndUpdate(
+      { _id: new ObjectId(orderId) },
+      { $set: { orderStatus: "Shipped", cancellationStatus: "Shipped" } },
+      { new: true }
+    ).exec();
+    console.log(updatedOrder, "updated order id this");
+    res.redirect(url);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const deliveredOrder = async (req, res) => {
+  try {
+    const orderId = req.body.orderId;
+    const url = "/admin/ordersView?id=" + orderId;
+    const updatedOrder = await Order.findByIdAndUpdate(
+      { _id: new ObjectId(orderId) },
+      { $set: { orderStatus: "Delivered", cancellationStatus: "Delivered" } },
+      { new: true }
+    ).exec();
+
+    res.redirect(url);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 module.exports = {
   loadAdminLogin,
   verfiyLogin,
@@ -600,4 +706,9 @@ module.exports = {
   unlistProducts,
   listProducts,
   loadOrders,
+  loadOrderView,
+  cancellingOrder,
+  rejectingCancell,
+  deliveredOrder,
+  shippingOrder,
 };
