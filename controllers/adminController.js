@@ -633,7 +633,13 @@ const cancellingOrder = async (req, res) => {
   const url = "/admin/ordersView?id=" + orderId;
   const updateOrder = await Order.findByIdAndUpdate(
     { _id: new ObjectId(orderId) },
-    { $set: { orderStatus: "cancelled", cancellationStatus: "cancelled" } },
+    {
+      $set: {
+        orderStatus: "cancelled",
+        cancellationStatus: "cancelled",
+        cancelledOrder: true,
+      },
+    },
     { new: true }
   ).exec();
   res.redirect(url);
@@ -683,6 +689,27 @@ const deliveredOrder = async (req, res) => {
     console.log(error.message);
   }
 };
+const returnOrder = async (req, res) => {
+  try {
+    const orderId = req.body.orderId;
+    const url = "/admin/ordersView?id=" + orderId;
+    const updatedOrder = await Order.findByIdAndUpdate(
+      { _id: new ObjectId(orderId) },
+      {
+        $set: {
+          orderStatus: "Returned",
+          cancellationStatus: "Returned",
+          returnOrder: true,
+        },
+      },
+      { new: true }
+    ).exec();
+
+    res.redirect(url);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 module.exports = {
   loadAdminLogin,
@@ -711,4 +738,5 @@ module.exports = {
   rejectingCancell,
   deliveredOrder,
   shippingOrder,
+  returnOrder,
 };

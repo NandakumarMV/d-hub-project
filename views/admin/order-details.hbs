@@ -140,11 +140,17 @@
                                        
                                         type="button" >Delivered</a>
                                 </td>
-                                {{else if (eq cancellationStatus "Return")}}
+                                {{else if (eq cancellationStatus "Return Processing")}}
                                      <td>
                                     <a href="/admin/ordersView?id={{this._id}}" class="btn btn-success btn-sm btn-block view-btn" style="color: #ffffff;"
                                        
-                                        type="button" >Requested for return</a>
+                                        type="button" >Return Processing</a>
+                                </td>
+                                  {{else if (eq cancellationStatus "Returned")}}
+                                     <td>
+                                    <a href="/admin/ordersView?id={{this._id}}" class="btn btn-success btn-sm btn-block view-btn" style="color: #ffffff;"
+                                       
+                                        type="button" >Returned</a>
                                 </td>
                                 {{/if}}
                             </tr>

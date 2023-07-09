@@ -157,7 +157,7 @@
                 {{/if}}
                 <div class="col-md-8 order-md-1">
                     <h4 class="mb-3">Billing address</h4>
-                    <form class="needs-validation" novalidate="" method="post" action="/submit-checkout" >
+                       <form class="needs-validation" novalidate="" id="checkout-form">
 
 
 
@@ -233,7 +233,7 @@
 
                         </div>
 
-<button class="btn btn-primary btn-lg btn-block btn-checkout" type="submit" >Continue to checkout</button>
+                            <button class="btn btn-primary btn-lg btn-block btn-checkout"  id="checkout-button" type="submit" >Continue to checkout</button>
 
                         <hr class="mb-4">
                       
@@ -425,6 +425,7 @@
 
 /*-------checkout  page ajax-------*/
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
 
@@ -438,7 +439,7 @@ $(document).ready(function () {
 
             $.ajax({
 
-                url: '/place-order',
+                url: '/submit-checkout',
 
                 method: 'POST',
 
@@ -447,7 +448,8 @@ $(document).ready(function () {
                 success: (response) => {
 
                     if (response.COD_CHECKOUT) {
-                        location.href = '/orderPlaced'
+                      console.log("reached here")
+                        location.href = '/order-sucessfull'
                     } else if (response.ONLINE_CHECKOUT) {
                         makeRazorpayPayment(response);
                     } else {
@@ -461,5 +463,37 @@ $(document).ready(function () {
 
         })
 
+    })
+    function makeRazorpayPayment(serverOrderData) {
+            let razorpayKeyId = serverOrderData.razorpayKeyId;
+            let orderDetails = serverOrderData.orderDetails;
+            let userDetails = serverOrderData.userDetails;
+            let userOrderRequestData = serverOrderData.userOrderRequestData;
+
+            let paymentDataToRazorpayServer = {
+                "key": razorpayKeyId,
+                "amount": orderDetails.amount,
+                "currency": "INR",
+                "name": "D-HUB",
+                "description": "Test Transaction",
+                "order_id": orderDetails.id,
+                "handler": function (response) {
+                    verifyPayment(response, orderDetails);
+                },
+                "prefill": {
+                    "name": userDetails.name,
+                    "email": userDetails.email,
+                    "contact": userOrderRequestData.mobile
+                },
+                "notes": {
+                    "Customer Address": userOrderRequestData.address
+                }
+            };
+
+            var razorpayPayment = new Razorpay(paymentDataToRazorpayServer);
+            razorpayPayment.open();
+
+            // If the payment failed for any reason, calling the pre-defined function "on" in Razorpay module using the object of Razorpay
+        }
 
 </script>

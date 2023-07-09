@@ -75,6 +75,10 @@
                                 <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#exampleModalCenter">Cancel</button>
                                 <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#markAsDelivered">Mark as Delivered</button>
                                 {{else if (eq cancellationStatus "Delivered")}}
+                                {{else if (eq cancellationStatus "Return Processing")}}
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#returnModal">Return Order</button>
+                                
+
                                  {{/if}}
                             </div>
                         </div>
@@ -211,7 +215,7 @@
   </div>
 </div> 
 
-                   {{!-- mark ad deivered --}}
+                   {{!-- mark as deivered --}}
 
                    <div class="modal fade" id="markAsDelivered" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -235,6 +239,29 @@
   </div>
 </div>
 
+                   {{!-- mark as returned --}}
+
+ <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Delivery confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <p>Are you sure you want to return the order?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form action="/admin/return-by-admin" method="post">
+                    <button type="submit" class="btn btn-danger" id="confirmCancelBtn" name="orderId" value="{{orderId}}">Yes</button>
+                </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>

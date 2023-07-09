@@ -212,7 +212,7 @@ module.exports = {
 
   checkoutLoad: async (req, res) => {
     try {
-      console.log("entered checkout load");
+      // console.log("entered checkout load");
       const userId = req.session.user_id;
 
       const defaultAddress = await Addresses.findOne(
@@ -222,14 +222,14 @@ module.exports = {
         },
         { "addresses.$": 1 }
       ).lean();
-      console.log(defaultAddress.addresses, "eeeeeeeeeeeeeeeeeeeeee");
+      // console.log(defaultAddress.addresses, "eeeeeeeeeeeeeeeeeeeeee");
       const addressDoc = await Addresses.findOne({ user_id: userId }).lean();
       const addressArray = addressDoc.addresses;
-      console.log(addressArray, "arrayyyy");
+      // console.log(addressArray, "arrayyyy");
       const filteredAddresses = addressArray.filter(
         (address) => !address.is_default
       );
-      console.log(filteredAddresses, "filtered address");
+      // console.log(filteredAddresses, "filtered address");
 
       const cart = await Cart.findOne({ User_id: userId })
         .populate({
@@ -254,7 +254,7 @@ module.exports = {
           user_id: req.session.user_id,
         };
       });
-      console.log(products, "products.........................");
+      // console.log(products, "products.........................");
       const total = products.reduce(
         (sum, product) => sum + Number(product.total),
         0
@@ -272,13 +272,13 @@ module.exports = {
         finalAmount,
       });
     } catch (error) {
-      console.log(error.message);
+      // console.log(error.message);
     }
   },
 
   changeAddress: async (req, res) => {
     try {
-      console.log("Entered into Change address page.....");
+      // console.log("Entered into Change address page.....");
       const addressId = req.body.addressId;
       const userId = req.session.user_id;
 
@@ -287,7 +287,7 @@ module.exports = {
         { user_id: userId, "addresses.is_default": true },
         { $set: { "addresses.$.is_default": false } }
       );
-      // console.log(defaultAddress,"old default address");
+      console.log(defaultAddress, "old default address");
 
       // Set the selected address as the new default address
       const defaultAddress = await Addresses.findOneAndUpdate(

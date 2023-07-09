@@ -229,6 +229,17 @@
                     {{else if (eq cancellationStatus "cancellation requested")}}
                     <button type="button" class="btn btn-danger btn-sm">Cancel requested</button>
                     {{else if (eq cancellationStatus "cancelled")}}
+                    {{else if (eq cancellationStatus "Delivered")}}
+                         <button type="button" 
+                            class="btn btn-danger btn-sm" onclick="showReturnConfirmationModal('{{orderId}}')">Return</button>
+                    {{else if (eq cancellationStatus "Return Processing")}}
+                    <button type="button" class="btn btn-danger btn-sm">Return Processing</button>
+                    {{else if (eq cancellationStatus "Returned")}}
+                    <button type="button" class="btn btn-danger btn-sm">Returned</button>
+
+
+
+
 
                     {{/if}}
                 </div>
@@ -318,6 +329,28 @@
         </div>
     </div>
 </div>
+<div class="modal" id="returnConfirmationModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Return Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p>Are you sure you want to Return the order?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                 <form action="/return-order" method="post">
+                <button type="submit" class="btn btn-danger" id="confirmReturnBtn" name="orderId" value="{{orderId}}">Yes, Return</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
  <footer>
       <div class="container">
@@ -387,6 +420,12 @@
         var confirmCancelBtn = document.getElementById("confirmCancelBtn");
         confirmCancelBtn.value = orderId;
         var modal = new bootstrap.Modal(document.getElementById("cancelConfirmationModal"));
+        modal.show();
+    }
+     function showReturnConfirmationModal(orderId) {
+        var confirmReturnlBtn = document.getElementById("confirmReturnBtn");
+        confirmReturnlBtn.value = orderId;
+        var modal = new bootstrap.Modal(document.getElementById("returnConfirmationModal"));
         modal.show();
     }
 </script>

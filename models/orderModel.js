@@ -36,10 +36,10 @@ const ordersSchema = new mongoose.Schema({
         type: Number,
         default: 0,
       },
-      productname: {
-        type: String,
-        required: true,
-      },
+      // productname: {
+      //   type: String,
+      //   required: true,
+      // },
     },
   ],
   addressDetails: {
@@ -74,6 +74,10 @@ const ordersSchema = new mongoose.Schema({
     default: "Not requested",
   },
   cancelledOrder: {
+    type: Boolean,
+    default: false,
+  },
+  returnOrder: {
     type: Boolean,
     default: false,
   },

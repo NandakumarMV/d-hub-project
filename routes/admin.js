@@ -90,6 +90,7 @@ router.post(
 );
 router.post("/shipping-by-admin", adminController.shippingOrder);
 router.post("/deliver-by-admin", adminController.deliveredOrder);
+router.post("/return-by-admin", adminController.returnOrder);
 
 router.get("*", (req, res) => {
   res.redirect("/admin");

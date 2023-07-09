@@ -63,15 +63,13 @@ router.post("/change-product-quantity", cartController.changeProductQuantity);
 
 //checkout
 router.get("/checkout", auth.isLogin, cartController.checkoutLoad);
-router.post(
-  "/submit-checkout",
-  auth.isLogin,
-  checkoutController.submitCheckout
-);
+router.post("/submit-checkout", auth.isLogin, checkoutController.placeOrder);
+router.get("/order-sucessfull", auth.isLogin, checkoutController.placedOrder);
 // orders
 router.get("/my-orders", auth.isLogin, checkoutController.loadOrders);
 router.get("/ordersView", auth.isLogin, checkoutController.loadOrdersView);
 router.post("/cancel-order", auth.isLogin, checkoutController.cancellOrder);
+router.post("/return-order", auth.isLogin, checkoutController.returnOrder);
 
 //user profile
 router.get("/user-profile", auth.isLogin, userControllers.loadUserProfile);
