@@ -15,6 +15,7 @@ const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
 const moment = require("moment-timezone");
 const { ObjectId } = require("mongodb");
+const Wallet = require("../models/walletModel");
 
 // const upload = multer({ dest: "./public/uploads/" });
 
@@ -642,6 +643,28 @@ const cancellingOrder = async (req, res) => {
     },
     { new: true }
   ).exec();
+  if (
+    (updateOrder.paymentMethod === "ONLINE" ||
+      updateOrder.paymentMethod === "WALLET") &&
+    updateOrder.orderValue > 0
+  ) {
+    const wallet = await Wallet.findOne({ userId: updateOrder.userId }).exec();
+
+    if (wallet) {
+      const updatedWallet = await Wallet.findOneAndUpdate(
+        { userId: updateOrder.userId },
+        { $inc: { walletAmount: updateOrder.orderValue } },
+        { new: true }
+      ).exec();
+    } else {
+      const newWallet = new Wallet({
+        userId: updateOrder.userId,
+        walletAmount: updateOrder.orderValue,
+      });
+      const createdWallet = await newWallet.save();
+      console.log(createdWallet, "created wallet");
+    }
+  }
   res.redirect(url);
 };
 const rejectingCancell = async (req, res) => {
@@ -704,6 +727,23 @@ const returnOrder = async (req, res) => {
       },
       { new: true }
     ).exec();
+
+    const wallet = await Wallet.findOne({ userId: updatedOrder.userId }).exec();
+
+    if (wallet) {
+      const updatedWallet = await Wallet.findOneAndUpdate(
+        { userId: updatedOrder.userId },
+        { $inc: { walletAmount: updatedOrder.orderValue } },
+        { new: true }
+      ).exec();
+    } else {
+      const newWallet = new Wallet({
+        userId: updatedOrder.userId,
+        walletAmount: updatedOrder.orderValue,
+      });
+      const createdWallet = await newWallet.save();
+      console.log(createdWallet, "created wallet");
+    }
 
     res.redirect(url);
   } catch (error) {

@@ -6,7 +6,7 @@ const walletSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
-  walletAmout: {
+  walletAmount: {
     type: Number,
     default: 0,
   },

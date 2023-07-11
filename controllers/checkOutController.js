@@ -7,7 +7,7 @@ const Order = require("../models/orderModel");
 const productHepler = require("../helpers/productHelpers");
 const moment = require("moment-timezone");
 const { ObjectId } = require("mongodb");
-
+const userhelper = require("../helpers/userHelpers");
 module.exports = {
   // submitCheckout: async (req, res) => {
   //   try {
@@ -109,8 +109,9 @@ module.exports = {
         console.log(totalOrderValue, "this is the total order value");
         productHepler
           .placingOrder(userId, orderDetails, productsOrdered, totalOrderValue)
-          .then((orderId) => {
+          .then(async (orderId) => {
             console.log("successfully reached hereeeeeeeeee");
+
             if (req.body["paymentMethod"] === "COD") {
               console.log("cod_is true here");
               res.json({ COD_CHECKOUT: true });
@@ -118,6 +119,10 @@ module.exports = {
               productHepler
                 .generateRazorpayOrder(orderId, totalOrderValue)
                 .then(async (razorpayOrderDetails) => {
+                  console.log(
+                    razorpayOrderDetails,
+                    "razorpayOrderDetails reached here"
+                  );
                   const user = await User.findById({ _id: userId }).lean();
                   res.json({
                     ONLINE_CHECKOUT: true,
@@ -127,6 +132,24 @@ module.exports = {
                     razorpayKeyId: "rzp_test_bfnSH6XKHJdHG9",
                   });
                 });
+            } else if (req.body["paymentMethod"] === "WALLET") {
+              console.log("wallet true");
+              const walletBalance = await userhelper.walletBalance(userId);
+              console.log(walletBalance, "wallet balance is this");
+              if (walletBalance >= totalOrderValue) {
+                productHepler
+                  .placingOrder(
+                    userId,
+                    orderDetails,
+                    productsOrdered,
+                    totalOrderValue
+                  )
+                  .then(async (orderId, error) => {
+                    res.json({ WALLET_CHECKOUT: true, orderId });
+                  });
+              } else {
+                res.json({ error: "Insufficient balance." });
+              }
             } else {
               res.json({ paymentStatus: false });
             }
@@ -139,6 +162,32 @@ module.exports = {
     }
   },
 
+  verifyPayment: async (req, res) => {
+    console.log("verify payment enters here");
+    const razorpayPayment = req.body.razorpayPayment;
+    console.log(razorpayPayment, "razorpayPaymentttttttttttt");
+    const orderDetails = req.body.orderDetails;
+
+    console.log(orderDetails, "orderDetailssssssssssssssss");
+    console.log(req.body, "reqqqq");
+    productHepler.verifyRazorpayment(req.body).then(() => {
+      let paymentId = req.body[" orderDetails[receipt]"];
+      let paymentSuccess = true;
+      productHepler.changePaymentStatus(paymentId, paymentSuccess).then(() => {
+        res.json({ status: true });
+      });
+    });
+  },
+  walletOrder: async (req, res) => {
+    try {
+      console.log("wallet order controller");
+      const orderId = req.query.id;
+      const userId = req.session.user_id;
+      const updatewallet = await userhelper.updatewallet(userId, orderId);
+      console.log(updatewallet, "updated wallet data");
+      res.redirect("/order-sucessfull");
+    } catch (error) {}
+  },
   loadOrders: async (req, res) => {
     console.log("entered the order loading");
     const userId = req.session.user_id;

@@ -230,6 +230,11 @@
                                     required="" value="ONLINE">
                                 <label class="custom-control-label" for="debit">ONLINE</label>
                             </div>
+                            <div class="custom-control custom-radio">
+                                <input id="credit" name="paymentMethod" type="radio" class="custom-control-input"
+                                    checked="" required="" value="WALLET">
+                                <label class="custom-control-label" for="credit">WALLET</label>
+                            </div>
 
                         </div>
 
@@ -452,6 +457,13 @@ $(document).ready(function () {
                         location.href = '/order-sucessfull'
                     } else if (response.ONLINE_CHECKOUT) {
                         makeRazorpayPayment(response);
+                    }else if(response.WALLET_CHECKOUT){
+                      console.log("reached wallet")
+                      console.log(response.orderId)
+
+                        location.href = '/wallet-placed?id='+response.orderId
+                    }else if(response.error){
+                         $('#error-message').text(response.error);
                     } else {
                         location.href = '/orderFailed'
                         // If any of the above payment didn't happen, Should create a failed order page to user and display
@@ -469,6 +481,11 @@ $(document).ready(function () {
             let orderDetails = serverOrderData.orderDetails;
             let userDetails = serverOrderData.userDetails;
             let userOrderRequestData = serverOrderData.userOrderRequestData;
+            console.log(razorpayKeyId,"razorpayKeyId")
+            console.log(orderDetails,"orderDetails")
+            console.log(orderDetails.id,"orderDetails")
+            console.log(userDetails,"userDetails")
+            console.log(userOrderRequestData,"userOrderRequestData")
 
             let paymentDataToRazorpayServer = {
                 "key": razorpayKeyId,
@@ -496,4 +513,23 @@ $(document).ready(function () {
             // If the payment failed for any reason, calling the pre-defined function "on" in Razorpay module using the object of Razorpay
         }
 
+function verifyPayment(razorpayPayment,orderDetails){
+  console.log(razorpayPayment,"gguhk;l")
+  console.log(orderDetails,"gguhhhhhhhhhhhhhk;l")
+  $.ajax({
+    url:"/verify-payment",
+    data:{
+      razorpayPayment,
+      orderDetails
+    },
+    method:'POST',
+success:(response)=>{
+  if(response.status){
+    location.href="/order-sucessfull"
+  }else{
+    location.href="/order-failed"
+  }
+}
+  })
+}
 </script>

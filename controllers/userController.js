@@ -9,6 +9,7 @@ const Category = require("../models/categoryModel");
 const { use } = require("../app");
 const { default: mongoose } = require("mongoose");
 const Addresses = require("../models/addressesModel");
+const userHelper = require("../helpers/userHelpers");
 
 //bcrypt password
 
@@ -236,7 +237,6 @@ const insertUser = async (req, res) => {
   }
 };
 
-
 const verfiyMail = async (req, res) => {
   try {
     const updateInfo = await User.updateOne(
@@ -419,15 +419,23 @@ const loadUserProfile = async (req, res) => {
       { user_id: userId, "addresses.is_default": true },
       { "addresses.$": 1 }
     ).lean();
+    const walletBalance = await userHelper.walletBalance(userId);
+    console.log(walletBalance, "walletBalanceeeeeeeeeeeeeeeeee");
+
     console.log(defaultAddress, "defaultAddress of user");
     if (defaultAddress) {
       res.render("users/user-profile", {
         layout: "user-layout",
         userData,
         defaultAddress: defaultAddress.addresses,
+        walletBalance,
       });
     } else {
-      res.render("users/user-profile", { layout: "user-layout", userData });
+      res.render("users/user-profile", {
+        layout: "user-layout",
+        userData,
+        walletBalance,
+      });
     }
   } catch (error) {
     console.log(error.message);
