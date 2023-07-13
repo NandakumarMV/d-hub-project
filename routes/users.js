@@ -6,6 +6,7 @@ const config = require("../config/config");
 const auth = require("../middlewares/auth");
 var multer = require("multer");
 const path = require("path");
+const couponController = require("../controllers/couponController");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -73,6 +74,8 @@ router.get("/my-orders", auth.isLogin, checkoutController.loadOrders);
 router.get("/ordersView", auth.isLogin, checkoutController.loadOrdersView);
 router.post("/cancel-order", auth.isLogin, checkoutController.cancellOrder);
 router.post("/return-order", auth.isLogin, checkoutController.returnOrder);
+//coupons
+router.post("/apply-coupon-request", couponController.applyCouponUser);
 
 //user profile
 router.get("/user-profile", auth.isLogin, userControllers.loadUserProfile);

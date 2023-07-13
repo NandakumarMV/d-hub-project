@@ -1,7 +1,7 @@
 const Cart = require("../models/cartModel");
 const Order = require("../models/orderModel");
 const Address = require("../models/addressesModel");
-const wallet = require("../models/walletModel");
+
 const walletModel = require("../models/walletModel");
 
 module.exports = {
@@ -9,7 +9,7 @@ module.exports = {
     console.log("wallet balancee controller");
     return new Promise(async (resolve, reject) => {
       try {
-        const walletBalance = await wallet.findOne({ userId });
+        const walletBalance = await walletModel.findOne({ userId });
         const walletAmount = walletBalance.walletAmount;
         resolve(walletAmount);
       } catch (error) {
