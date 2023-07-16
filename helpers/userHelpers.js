@@ -1,6 +1,7 @@
 const Cart = require("../models/cartModel");
 const Order = require("../models/orderModel");
 const Address = require("../models/addressesModel");
+const Product = require("../models/productModels");
 
 const walletModel = require("../models/walletModel");
 
@@ -43,5 +44,24 @@ module.exports = {
         reject(error);
       }
     });
+  },
+
+  updateProductStock: async (orderedProducts) => {
+    try {
+      console.log("reached updatedproductstock");
+      for (const orderedProduct of orderedProducts) {
+        const productId = orderedProduct.productId;
+        const quantity = orderedProduct.quantity;
+
+        // Find the product by its ID
+        const product = await Product.findById(productId);
+
+        // Update the product stock by subtracting the ordered quantity
+        product.inStock -= quantity;
+
+        // Save the updated product
+        await product.save();
+      }
+    } catch (error) {}
   },
 };

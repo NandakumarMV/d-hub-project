@@ -27,9 +27,11 @@ const securePassword = async (password) => {
 const sendOtp = async (req, res) => {
   try {
     const { mobile } = req.body;
-
+    console.log(mobile, "mobile number");
+    req.session.userMobile = mobile;
+    console.log(req.session.userMobile, " req.session.userMobile");
     const user = await User.findOne({ mobile: mobile });
-    req.session.userMobile = req.body.mobile;
+
     if (!user) {
       res.status(401).json({ message: "user not found" });
     } else {
@@ -59,14 +61,20 @@ const pageOtp = async (req, res) => {
     res.render("users/otp-verify", { layout: "user-layout" });
   } catch (error) {}
 };
+
 const loadOtpHome = async (req, res) => {
   try {
+    console.log("load otp page");
     const userMobile = "+91" + req.session.userMobile;
-    console.log(userMobile);
+    console.log(userMobile, "user mobile");
     const otp = req.body.otp;
+    console.log(otp, "otp");
+    // Initialize the Twilio client
+    const client = new twilio(process.env.accountSid, process.env.authToken);
+
     client.verify.v2
       .services(process.env.verifySid)
-      .verificationChecks.create({ to: User.mobile, code: otp })
+      .verificationChecks.create({ to: userMobile, code: otp })
       .then(async (verification_check) => {
         if (verification_check.status === "approved") {
           console.log(verification_check.status);
@@ -78,7 +86,7 @@ const loadOtpHome = async (req, res) => {
 
           res.redirect("/home");
         } else {
-          res.render("users/", {
+          res.render("users/otp-verify", {
             message: "invalid OTP",
             layout: "user-layout",
           });
@@ -88,6 +96,7 @@ const loadOtpHome = async (req, res) => {
     throw new Error(error.message);
   }
 };
+
 //for sending mail
 const sendVerifyMail = async (name, email, user_id) => {
   try {

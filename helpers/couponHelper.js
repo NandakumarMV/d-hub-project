@@ -168,7 +168,7 @@ module.exports = {
     });
   },
 
-  /*------helper for userside------*/
+  /*---------------------------------helper for userside---------------------------------*/
 
   getCouponDataByCouponCode: (couponCode) => {
     return new Promise(async (resolve, reject) => {

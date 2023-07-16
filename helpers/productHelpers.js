@@ -5,6 +5,7 @@ const Address = require("../models/addressesModel");
 const razorpay = require("razorpay");
 const { resolve } = require("path");
 const { ObjectId } = require("mongodb");
+const userHelpers = require("./userHelpers");
 const instance = new razorpay({
   key_id: "rzp_test_bfnSH6XKHJdHG9",
   key_secret: "yvWKgSxIUiBsV3jBPL6BCOUi",
@@ -106,6 +107,11 @@ module.exports = {
         );
         const placedOrder = await orderDetails.save();
         console.log(placedOrder, "save to the database");
+
+        const stockDecrease = await userHelpers.updateProductStock(
+          orderedProducts
+        );
+
         await Cart.deleteMany({ User_id: userId });
         console.log("placing db order id here jdslkcjdsjk");
         let dbOrderId = placedOrder._id.toString();

@@ -121,10 +121,13 @@
               </div>
             </div>
           </div> --}}
-          <div class="total">
-            {{!-- <h4>Total: $210.00</h4> --}}
-            <div class="main-border-button pro-button"><a href="" onclick="addToCart('{{product._id}}',event), showSweetAlert()">Add To Cart</a></div>
-          </div>
+         <div class="total">
+  {{!-- <h4>Total: $210.00</h4> --}}
+              <div class="main-border-button pro-button">
+                <a href="#" onclick="addToCart('{{product._id}}', event)">Add To Cart</a>
+              </div>
+            </div>
+
         </div>
       </div>
     </div>
@@ -207,20 +210,29 @@ function addToCart(productId, event) {
   xhr.open('POST', '/add-cart', true);
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      // Handle the server response here (if needed)
-      swal("Success", "Product added to cart!", "success");
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        // Handle the server response here (if needed)
+        showSuccessAlert();
+      } else if (xhr.status === 400) {
+        console.log('status is 400 ')
+        // Product is out of stock
+        showOutOfStock() 
+      } else {
+        // Other server errors
+        swal("Error", "An error occurred while adding the product to cart.", "error");
+      }
     }
   };
   xhr.onerror = function() {
-  console.log("Request error");
-};
+    console.log("Request error");
+  };
 
   xhr.send(JSON.stringify({ productId: productId }));
 }
 </script>
 <script>
-function showSweetAlert() {
+function showSuccessAlert() {
   Swal.fire({
     title: "Success",
     text: "Product added to cart!",
@@ -231,7 +243,33 @@ function showSweetAlert() {
     customClass: {
       container: "swal-container",
       title: "swal-title",
-      content: "swal-text",
+      text: "swal-text",
+      confirmButton: "swal-button"
+    },
+    onOpen: () => {
+      // Set the text color to white
+      const swalContainer = document.querySelector(".swal-container");
+      swalContainer.style.color = "white";
+
+      // Remove the border from the OK button
+      const okButton = document.querySelector(".swal-button");
+      okButton.style.border = "none";
+    }
+  });
+}
+
+function showOutOfStock() {
+  Swal.fire({
+    title: "Out of Stock",
+    text: "This product is currently out of stock.",
+    icon: "error",
+    showCancelButton: false,
+    confirmButtonColor: "#000000",
+    confirmButtonText: "OK",
+    customClass: {
+      container: "swal-container",
+      title: "swal-title",
+      text: "swal-text",
       confirmButton: "swal-button"
     },
     onOpen: () => {
@@ -246,3 +284,4 @@ function showSweetAlert() {
   });
 }
 </script>
+

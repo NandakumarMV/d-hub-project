@@ -84,9 +84,6 @@ const adminlogout = async (req, res) => {
 const loadProducts = async (req, res) => {
   try {
     const updateProducts = await Product.find().lean();
-    console.log(
-      "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmupdateProducts"
-    );
 
     // console.log(updateProducts);
     const productWithSerialNumber = updateProducts.map((products, index) => ({
@@ -401,31 +398,19 @@ const editProductsView = async (req, res) => {
         category: data.category,
       };
     });
-
+    console.log(categoryData, "category data");
     const categoryLookup = [];
     categories.forEach((category) => {
       categoryLookup[category._id.toString()] = category.category;
     });
 
-    // Define the lookupCategory helper function
-    const lookupCategory = function (categoryId) {
-      console.log("categoryId:", categoryId);
-      console.log("categoryLookup:", categoryLookup);
-      return categoryLookup[categoryId];
-    };
-
     const updatedProduct = await Product.findById(id).lean();
-    console.log(lookupCategory(updatedProduct.category), "lookupCategory");
-    console.log(categoryLookup);
-    console.log(updatedProduct.category);
-    console.log(updatedProduct);
-    console.log("updatedProduct.category:", updatedProduct.category);
-    console.log("categoryLookup keys:", Object.keys(categoryLookup));
+    // console.log(lookupCategory(updatedProduct.category), "lookupCategory");
 
     if (updatedProduct) {
       const productWithCategoryName = {
         ...updatedProduct,
-        category: lookupCategory(updatedProduct.category),
+        category: updatedProduct.category,
       };
 
       res.render("admin/edit-product", {
@@ -643,6 +628,7 @@ const cancellingOrder = async (req, res) => {
     },
     { new: true }
   ).exec();
+
   if (
     (updateOrder.paymentMethod === "ONLINE" ||
       updateOrder.paymentMethod === "WALLET") &&
@@ -665,6 +651,17 @@ const cancellingOrder = async (req, res) => {
       console.log(createdWallet, "created wallet");
     }
   }
+  // Retrieve the products in the order
+  const productsInOrder = updateOrder.products;
+
+  // Iterate over the products and add them back to the stock
+  for (const product of productsInOrder) {
+    const productId = product.productId;
+    const quantity = product.quantity;
+
+    await Product.findByIdAndUpdate(productId, { $inc: { inStock: quantity } });
+  }
+
   res.redirect(url);
 };
 const rejectingCancell = async (req, res) => {
@@ -743,6 +740,18 @@ const returnOrder = async (req, res) => {
       });
       const createdWallet = await newWallet.save();
       console.log(createdWallet, "created wallet");
+    }
+
+    const productsInOrder = updatedOrder.products;
+
+    // Iterate over the products and add them back to the stock
+    for (const product of productsInOrder) {
+      const productId = product.productId;
+      const quantity = product.quantity;
+
+      await Product.findByIdAndUpdate(productId, {
+        $inc: { inStock: quantity },
+      });
     }
 
     res.redirect(url);

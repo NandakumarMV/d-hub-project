@@ -44,7 +44,7 @@ router.post("/forget-password", userControllers.resetPassword);
 
 router.get("/otp-verification", userControllers.pageOtp);
 router.post("/otp-verification", userControllers.sendOtp);
-router.get("/otp-verified", auth.isLogOut, userControllers.loadOtpHome);
+router.post("/otp-verified", auth.isLogOut, userControllers.loadOtpHome);
 // router.post("/otp-verified",  userControllers.);
 
 router.get(

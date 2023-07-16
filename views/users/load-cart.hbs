@@ -86,12 +86,11 @@
 </div>
 <!-- ***** Main Banner Area End ***** -->
 {{#if products}}
-    <section class="shopping-cart spad">
+<section class="shopping-cart spad">
   <div class="container">
     <div class="row">
       <div class="col-lg-8">
         <div class="shopping__cart__table">
-        
           <table>
             <thead>
               <tr>
@@ -110,36 +109,29 @@
                   </div>
                   <div class="product__cart__item__text">
                     <h6>{{this.brand}}</h6>
-                      {{this.user_id}}
+                    {{this.user_id}}
                     <h6>{{this.productname}}</h6>
                     <h5>{{this.price}}</h5>
                   </div>
                 </td>
-                <td class="quantity__item" >
-                {{!-- <div class="input-group">
-                            <button class="btn btn-outline-secondary decrement-btn" type="button" >-</button>
-                            <input id="quantityInput_{{this._id}}" type="number" class="form-control text-center quantity-input"  readonly />
-                            <button class="btn btn-outline-secondary increment-btn" type="button" >+</button>
-                          </div> --}}
-        <div class="input-group" style="width: 60%;">
-          <div class="input-group-prepend">
-            <button class="btn btn-outline-secondary" id="decrementBtn" onclick="changeQuantity('{{this._id}}', -1, '{{this.user_id}}', {{this.quantity}})">-</button>
-          </div>
-          <input type="text" class="form-control text-center" id="quantityInput_{{this._id}}" value="{{this.quantity}}" min="1" readonly>
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary" id="incrementBtn" onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.quantity}})">+</button >
-          </div>
-        </div>
+                <td class="quantity__item">
+                  <div class="input-group" style="width: 60%;">
+                    <div class="input-group-prepend">
+                      <button class="btn btn-outline-secondary decrement-btn" type="button" onclick="changeQuantity('{{this._id}}', -1, '{{this.user_id}}', {{this.quantity}})">-</button>
+                    </div>
+                    <input type="text" class="form-control text-center quantity-input" id="quantityInput_{{this._id}}" value="{{this.quantity}}" min="1" readonly>
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-secondary increment-btn" type="button" onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.quantity}})">+</button>
+                    </div>
+                  </div>
                 </td>
-            <td class="cart__price" id="productTotal_{{this._id}}">{{total}}</td>
-
+                <td class="cart__price" id="productTotal_{{this._id}}">{{total}}</td>
                 <td class="cart__close">
                   <div class="col-md-1 col-lg-1 col-xl-1">
-                       <button type="button" class="btn btn-link delete-product-btn" onclick="showDeleteConfirmation('{{this._id}}','{{this.user_id}}','{{this.name}}')">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-
+                    <button type="button" class="btn btn-link delete-product-btn" onclick="showDeleteConfirmation('{{this._id}}','{{this.user_id}}','{{this.name}}')">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
               {{/each}}
@@ -152,20 +144,11 @@
               <a href="/home">Continue Shopping</a>
             </div>
           </div>
-          <div class="col-lg-6 col-md-6 col-sm-6">
-            {{!-- <div class="continue__btn update__btn">
-              <a href="#"><i class="fa fa-spinner"></i> Update cart</a>
-            </div> --}}
-          </div>
-        </div> 
+        </div>
       </div>
       <div class="col-lg-4">
         <div class="cart__discount">
-          {{!-- <h6>Discount codes</h6>
-          <form action="#">
-            <input type="text" placeholder="Coupon code">
-            <button type="submit">Apply</button>
-          </form> --}}
+          <!-- Discount codes form -->
         </div>
         <div class="cart__total">
           <h6>Cart total</h6>
@@ -181,13 +164,14 @@
 </section>
 {{else}}
 <div class="cart-emty" style="justify-content: center; display: grid;">
-<h1 style="text-align: center;">CART IS EMPTY</h1>
-<h3 style="text-align: center;">ADD ITEMS TO CART</h3>
-<div class="continue__btn" style="justify-self: center;">
-              <a href="/home">Continue Shopping</a>
-            </div>
+  <h1 style="text-align: center;">CART IS EMPTY</h1>
+  <h3 style="text-align: center;">ADD ITEMS TO CART</h3>
+  <div class="continue__btn" style="justify-self: center;">
+    <a href="/home">Continue Shopping</a>
+  </div>
 </div>
 {{/if}}
+
 
     
 <footer>
@@ -253,11 +237,11 @@
         </div>
       </div>
     </footer>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
   function changeQuantity(proId, count, userId, quantity) {
-   
-
     $.ajax({
       url: "/change-product-quantity",
       method: "post",
@@ -267,51 +251,72 @@
         userId: userId,
         quantity: quantity,
       },
-    success: (response) => {
-      console.log(response)
-       if(response.deleteProduct){
+      success: (response) => {
+        console.log(response);
+        if (response.deleteProduct) {
+          console.log("adding one");
           location.reload(); // Reload the page
-       }else{
-             console.log(response,'ajax response')
-        const quantityInput = document.getElementById(`quantityInput_${proId}`);
-        quantityInput.value = response.quantity;
+        } else if (response.outOfStock) {
+          console.log("out of stock");
+          showOutOfStockAlert();
+        } else {
+          console.log(response, 'ajax response');
+          const quantityInput = document.getElementById(`quantityInput_${proId}`);
+          quantityInput.value = response.quantity;
 
-        
-        const productTotal = document.querySelector(`#productTotal_${proId}`);
-        productTotal.textContent = response.productTotal;
+          const productTotal = document.querySelector(`#productTotal_${proId}`);
+          productTotal.textContent = response.productTotal;
 
-        const subtotal = document.getElementById(`summary`);
-        subtotal.textContent = response.subtotal;
+          const subtotal = document.getElementById(`summary`);
+          subtotal.textContent = response.subtotal;
 
-        const summarySubtotal = document.getElementById(`summary-subtotal`);
-        summarySubtotal.textContent = response.subtotal
-        
-       }
-     
-          
+          const summarySubtotal = document.getElementById(`summary-subtotal`);
+          summarySubtotal.textContent = response.subtotal;
+        }
+      },
+      error: (xhr, status, error) => {
+        swal("Error", "An error occurred while changing the product quantity.", "error");
+        console.error(xhr.responseText);
       }
-       
-    
-    })
+    });
   }
 
-   function showDeleteConfirmation(proId, userId,productName) {
-  
+  function showOutOfStockAlert() {
+    Swal.fire({
+      title: "Out of Stock",
+      text: "This product is currently out of stock.",
+      icon: "warning",
+      showCancelButton: false,
+      confirmButtonColor: "#000000",
+      confirmButtonText: "OK",
+      customClass: {
+        container: "swal-container",
+        title: "swal-title",
+        text: "swal-text",
+        confirmButton: "swal-button"
+      },
+      onOpen: () => {
+        // Set the text color to white
+        const swalContainer = document.querySelector(".swal-container");
+        swalContainer.style.color = "white";
+
+        // Remove the border from the OK button
+        const okButton = document.querySelector(".swal-button");
+        okButton.style.border = "none";
+      }
+    });
+  }
+
+  function showDeleteConfirmation(proId, userId, productName) {
     $('#deleteConfirmationModal').modal('show');
-
-   
-  $('#productName').text(productName);
-
-   
+    $('#productName').text(productName);
     $('#confirmDeleteBtn').data('product-id', proId);
     $('#confirmDeleteBtn').data('user-id', userId);
   }
 
   function deleteproduct() {
-
     const proId = $('#confirmDeleteBtn').data('product-id');
     const userId = $('#confirmDeleteBtn').data('user-id');
-
     $.ajax({
       url: "/delete-product-from-cart",
       method: "post",
@@ -321,27 +326,15 @@
       },
       success: (response) => {
         if (response.deleteProductFromCart) {
-        
           location.reload();
         }
+      },
+      error: (xhr, status, error) => {
+        swal("Error", "An error occurred while deleting the product from the cart.", "error");
+        console.error(xhr.responseText);
       }
     });
   }
 
-  $('#confirmDeleteBtn').click(deleteproduct); 
-   </script> 
-   
-    <script src="/carts/js/jquery-3.3.1.min.js"></script>
-
-
-    <script src="/carts/js/jquery-3.3.1.min.js"></script>
-
-
-    <script src="/carts/js/jquery.nice-select.min.js"></script>
-    <script src="/carts/js/jquery.nicescroll.min.js"></script>
-    <script src="/carts/js/jquery.magnific-popup.min.js"></script>
-    <script src="/carts/js/jquery.countdown.min.js"></script>
-    <script src="/carts/js/jquery.slicknav.js"></script>
-    <script src="/carts/js/mixitup.min.js"></script>
-    <script src="/carts/js/owl.carousel.min.js"></script>
-    <script src="/carts/js/main.js"></script>
+  $('#confirmDeleteBtn').click(deleteproduct);
+</script>

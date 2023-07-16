@@ -36,10 +36,6 @@ const ordersSchema = new mongoose.Schema({
         type: Number,
         default: 0,
       },
-      // productname: {
-      //   type: String,
-      //   required: true,
-      // },
     },
   ],
   addressDetails: {
