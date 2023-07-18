@@ -8,6 +8,7 @@ const productHepler = require("../helpers/productHelpers");
 const moment = require("moment-timezone");
 const { ObjectId } = require("mongodb");
 const userhelper = require("../helpers/userHelpers");
+const couponHelper = require("../helpers/couponHelper");
 module.exports = {
   // submitCheckout: async (req, res) => {
   //   try {
@@ -107,6 +108,24 @@ module.exports = {
       if (productsOrdered) {
         let totalOrderValue = await productHepler.getCartValue(userId);
         console.log(totalOrderValue, "this is the total order value");
+        /*============coupon discounts=====*/
+        const availableCouponData =
+          await couponHelper.checkCouponValidityStatus(userId, totalOrderValue);
+        let couponDiscountAmount = 0;
+        if (availableCouponData.status) {
+          const couponDiscountAmount = availableCouponData.couponDiscount;
+          orderDetails.couponDiscount = couponDiscountAmount;
+          console.log(couponDiscountAmount, "coupon dis amt");
+
+          totalOrderValue = totalOrderValue - couponDiscountAmount;
+          console.log(totalOrderValue, "total order value");
+          const updateCouponUsedStatus =
+            await couponHelper.updateCouponUsedStatus(
+              userId,
+              availableCouponData.couponId
+            );
+        }
+
         productHepler
           .placingOrder(userId, orderDetails, productsOrdered, totalOrderValue)
           .then(async (orderId) => {

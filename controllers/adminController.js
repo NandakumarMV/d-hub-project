@@ -760,6 +760,12 @@ const returnOrder = async (req, res) => {
   }
 };
 
+const loadSalesPage = async (req, res) => {
+  try {
+  } catch (error) {}
+  res.render("admin/sales-page", { layout: "admin-layout" });
+};
+
 module.exports = {
   loadAdminLogin,
   verfiyLogin,
@@ -788,4 +794,5 @@ module.exports = {
   deliveredOrder,
   shippingOrder,
   returnOrder,
+  loadSalesPage,
 };

@@ -182,12 +182,12 @@ const applyCouponUser = async (req, res) => {
       const cartValue = await productHepler.getCartValue(userId);
       console.log(cartValue, "cart value is this");
       if (cartValue >= couponData.minOrderAmount) {
-        const EligibleUSer = await couponHelper.verifyUsedCoupon(
+        const EligibleUser = await couponHelper.verifyUsedCoupon(
           userId,
           couponData._id
         );
-        console.log(EligibleUSer, "eligible user");
-        if (EligibleUSer.status) {
+        console.log(EligibleUser, "eligible user");
+        if (EligibleUser.status) {
           const applyNewCoupon = await couponHelper.applyCouponToCart(
             userId,
             couponData._id

@@ -93,8 +93,8 @@
                 <li class="scroll-to-section">
                   <a href="/home" class="active">Home</a>
                 </li>
-                <li class="scroll-to-section"><a href="#men">PHONES</a></li>
-                <li class="scroll-to-section"><a href="#women">LAPTOPS</a></li>
+                <li class="scroll-to-section"><a href="/shop-page">SHOP</a></li>
+
                 <li class="scroll-to-section"><a href="/user-profile">PROFILE</a></li>
                 <li class="scroll-to-section"><a href="/load-cart">CART</a></li>
 
@@ -135,17 +135,17 @@
                       {{/each}}                       
                         <li class="list-group-item d-flex justify-content-between bg-light">
                             <div class="text-success">
-                                <h6 class="my-0">Promo code</h6>
+                                <h6 class="my-0">Coupon  code</h6>
                                 <small>EXAMPLECODE</small>
                             </div>
-                            <span class="text-success">-$5</span>
+                            <span class="text-success">-₹{{this.couponDiscount}}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Total</span>
-                            <strong>₹{{subtotal}}</strong>
+                            <strong>₹{{this.totalAmount}}</strong>
                         </li>
                     </ul>
-                    <form class="card p-2" action="/apply-coupon-request" method="POST">
+                    <form class="card p-2"  style="width: 315px;" action="/apply-coupon-request" method="POST">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Coupon code" name="couponCode">
                             {{#if couponApplied}}
@@ -154,7 +154,7 @@
 
                             {{else if couponError}}
 
-                            <p style="color: red;"><b>{{couponError}}</b></p>
+                            <p style="color: red; margin-top=10px"><b>{{couponError}}</b></p>
 
                             {{/if}}
                             <div class="input-group-append">
@@ -437,7 +437,7 @@
         }, false)
 </script>
 
-/*-------checkout  page ajax-------*/
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 

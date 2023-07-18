@@ -37,7 +37,8 @@ router.post(
   adminController.insertProducts
 );
 
-//otp verification
+//sales report
+router.get("/sales-page", adminAuth.isLogin, adminController.loadSalesPage);
 
 //category loading
 

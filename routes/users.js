@@ -56,6 +56,7 @@ router.get(
 // product load
 
 router.get("/load-product", auth.isLogin, userControllers.loadProductView);
+router.get("/shop-page", auth.isLogin, userControllers.loadShopPage);
 
 //cart loading
 router.post("/add-cart", cartController.addToCart);

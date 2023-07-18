@@ -669,6 +669,19 @@ const settingAsDefault = async (req, res) => {
   }
 };
 
+const loadShopPage = async (req, res) => {
+  try {
+    const products = await Product.find({ unlist: false }).lean();
+
+    const category = await Category.find({ unlist: false }).lean();
+
+    res.render("users/shop-page", {
+      layout: "user-layout",
+      products: products,
+      category: category,
+    });
+  } catch (error) {}
+};
 module.exports = {
   loadSignUp,
   insertUser,
@@ -692,4 +705,5 @@ module.exports = {
   deletingAddress,
   editAddress,
   settingAsDefault,
+  loadShopPage,
 };

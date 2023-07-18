@@ -2,85 +2,15 @@ const Cart = require("../models/cartModel");
 const Product = require("../models/productModels");
 const Addresses = require("../models/addressesModel");
 const mongoose = require("mongoose");
+const couponHelper = require("../helpers/couponHelper");
+const walletModel = require("../models/walletModel");
 
 module.exports = {
-  // addToCart: async (req, res) => {
-  //   try {
-  //     console.log("cart loading");
-  //     const proId = req.body.productId;
-  //     console.log(proId, "id is coming");
-
-  //     let cart = await Cart.findOne({ User_id: req.session.user_id });
-  //     console.log(cart, "cart  data is this...........");
-  //     if (!cart) {
-  //       let newCart = new Cart({ User_id: req.session.user_id, products: [] });
-  //       await newCart.save();
-  //       cart = newCart;
-  //     }
-  //     const product = await Product.findById(proId).lean();
-  //     if (product.inStock < 1) {
-  //       console.log("out of stock");
-  //       return res.status(400).json({ message: "Product is out of stock" });
-  //     }
-  //     const existingProductIndex = cart.products.findIndex((product) => {
-  //       return product.productId.toString() === proId;
-  //     });
-  //     console.log(existingProductIndex, "existingProductIndex");
-  //     const quantityAdded = cart.products[existingProductIndex].quantity + 1;
-  //     console.log(quantityAdded, "quantity added");
-  //     console.log(product.inStock, "product  in stock");
-
-  //     if (existingProductIndex === -1) {
-  //       const total = product.price; // Set the initial total to the price of the product
-  //       cart.products.push({
-  //         productId: proId,
-  //         quantity: 1,
-  //         total, // Use the updated total value
-  //       });
-  //       const existingProduct = cart.products[existingProductIndex];
-
-  //     } else {
-  //       console.log("enter else condition");
-  //        if (existingProduct.quantity + 1 > product.inStock) {
-  //         return res
-  //           .status(400)
-  //           .json({ message: "Product stock limit exceeded" });
-  //       }
-  //       if (1 > product.inStock) {
-  //         return res
-  //           .status(400)
-  //           .json({ message: "Product stock limit exceeded" });
-  //       }
-
-  //       cart.products[existingProductIndex].quantity += 1;
-
-  //       const product = await Product.findById(proId).lean();
-  //       cart.products[existingProductIndex].total += product.price; // Update the total by adding the price of the product
-  //     }
-
-  //     // Calculate the updated total amount for the cart
-  //     cart.total = cart.products.reduce((total, product) => {
-  //       return total + product.total;
-  //     }, 0);
-
-  //     await cart.save();
-  //     console.log(cart);
-
-  //     // Send a response indicating success or any other relevant data
-  //     res.status(200).json({ message: "Product added to cart successfully" });
-  //   } catch (error) {
-  //     // Handle any errors that occurred during the process
-  //     res.status(500).json({ error: error.message });
-  //   }
-  // },
   addToCart: async (req, res) => {
     try {
-      console.log("cart loading");
       const proId = req.body.productId;
-      console.log(proId, "id is coming");
 
       let cart = await Cart.findOne({ User_id: req.session.user_id });
-      console.log(cart, "cart data is this");
       const product = await Product.findById(proId).lean();
       if (product.inStock < 1) {
         return res.status(400).json({ message: "product is out of stock" });
@@ -94,7 +24,6 @@ module.exports = {
       const existingProductIndex = cart.products.findIndex((product) => {
         return product.productId.toString() === proId;
       });
-      console.log(existingProductIndex, "existingProductIndex");
       if (existingProductIndex === -1) {
         const product = await Product.findById(proId).lean();
         const total = product.price; // Set the initial total to the price of the product
@@ -119,7 +48,6 @@ module.exports = {
       }, 0);
 
       await cart.save();
-      console.log(cart);
 
       // Send a response indicating success or any other relevant data
       res.status(200).json({ message: "Product added to cart successfully" });
@@ -128,83 +56,11 @@ module.exports = {
       res.status(500).json({ error: error.message });
     }
   },
-  // addToCart: async (req, res) => {
-  //   try {
-  //     console.log("cart loading");
-  //     const proId = req.body.productId;
-  //     console.log(proId, "id is coming");
-
-  //     let cart = await Cart.findOne({ user_id: req.session.user_id });
-  //     const product = await Product.findById(proId);
-  //     console.log(product, "product details");
-
-  //     if (!cart) {
-  //       let newCart = new Cart({ user_id: req.session.user_id, products: [] });
-  //       await newCart.save();
-  //       cart = newCart;
-  //     }
-  //     console.log(cart, "this is the cart data");
-  //     const existingProductIndex = cart.products.findIndex(
-  //       (product) => product.productId.toString() === proId
-  //     );
-  //     console.log(existingProductIndex, "existing product index");
-  //     // Check if the product is out of stock
-  //     if (product.inStock === 0) {
-  //       return res.status(400).json({ message: "Product is out of stock" });
-  //     }
-
-  //     // Check if the product is already in the cart
-  //     if (existingProductIndex !== -1) {
-  //       const existingProduct = cart.products[existingProductIndex];
-
-  //       // Check if adding one more of this product exceeds the available stock
-  //       if (existingProduct.quantity + 1 > product.inStock) {
-  //         return res
-  //           .status(400)
-  //           .json({ message: "Product stock limit exceeded" });
-  //       }
-
-  //       // Increase the quantity and total of the existing product in the cart
-  //       existingProduct.quantity += 1;
-  //       existingProduct.total += product.price;
-  //     } else {
-  //       // Check if adding the product exceeds the available stock
-  //       if (1 > product.inStock) {
-  //         return res
-  //           .status(400)
-  //           .json({ message: "Product stock limit exceeded" });
-  //       }
-
-  //       // Add the product to the cart with quantity and total
-  //       cart.products.push({
-  //         productId: proId,
-  //         quantity: 1,
-  //         total: product.price,
-  //       });
-  //     }
-
-  //     // Calculate the updated total amount for the cart
-  //     cart.total = cart.products.reduce((total, product) => {
-  //       return total + product.total;
-  //     }, 0);
-
-  //     await cart.save();
-  //     console.log(cart, "cart on saving");
-
-  //     // Send a response indicating success or any other relevant data
-  //     res.status(200).json({ message: "Product added to cart successfully" });
-  //   } catch (error) {
-  //     // Handle any errors that occurred during the process
-  //     res.status(500).json({ error: error.message });
-  //   }
-  // },
 
   loadingCartPage: async (req, res) => {
     try {
-      console.log("entered loading cart page");
       const check = await Cart.findOne({ User_id: req.session.user_id });
 
-      console.log("checking no 1", check, "this is cart");
       if (check) {
         const cart = await Cart.findOne({ User_id: req.session.user_id })
           .populate({
@@ -212,7 +68,6 @@ module.exports = {
           })
           .lean()
           .exec();
-        console.log(cart, "checking no 2");
         console.log("products : ", cart.products);
         const products = cart.products.map((product) => {
           const total =
@@ -229,7 +84,6 @@ module.exports = {
             user_id: req.session.user_id,
           };
         });
-        console.log("passing products data is :", products);
 
         const total = products.reduce(
           (sum, product) => sum + Number(product.total),
@@ -263,8 +117,6 @@ module.exports = {
 
   changeProductQuantity: async (req, res) => {
     try {
-      console.log(req.body.userId, "userid is this");
-      console.log(req.body.productId, "product id is this");
       const userId = new mongoose.Types.ObjectId(req.body.userId);
       const productId = new mongoose.Types.ObjectId(req.body.productId);
       const quantity = req.body.quantity;
@@ -275,7 +127,7 @@ module.exports = {
       const findProduct = cartFind.products.find((product) =>
         product.productId._id.equals(productId)
       );
-      8;
+
       const sumProductQuantityAndCount =
         parseInt(findProduct.quantity) + parseInt(count);
 
@@ -284,13 +136,7 @@ module.exports = {
         res.send(response);
         return response;
       }
-      console.log(productsData, "productsData is here ..............");
       const cartId = cartFind._id;
-      console.log(userId, "userId");
-      console.log(productId, "productid");
-      console.log(quantity, "quantity");
-      console.log(cartId, "cartId");
-      console.log(count, "count");
 
       // Find the cart for the given user and product
       const cart = await Cart.findOneAndUpdate(
@@ -333,7 +179,6 @@ module.exports = {
         subtotal: subtotal,
         productTotal: updatedProduct.total,
       };
-      console.log(response, "resposeeeeee");
       res.send(response);
       return response;
     } catch (error) {
@@ -421,7 +266,41 @@ module.exports = {
         (sum, product) => sum + Number(product.total),
         0
       );
-      const finalAmount = total;
+
+      //coupon management
+
+      let couponError = false;
+      let couponApplied = false;
+
+      if (req.session.couponInvalidError) {
+        couponError = req.session.couponInvalidError;
+        console.log("(req.session.couponInvalidError)", couponError);
+      } else if (req.session.couponApplied) {
+        couponApplied = req.session.couponApplied;
+        console.log("(req.session.couponApplied)", couponApplied);
+      }
+
+      let couponDiscount = 0;
+      const eligibleCoupon = await couponHelper.checkCouponValidityStatus(
+        userId,
+        total
+      );
+      console.log(eligibleCoupon, "eligible coupon");
+      if (eligibleCoupon.status) {
+        couponDiscount = eligibleCoupon.couponDiscount;
+        console.log(couponDiscount, "coupon discount is this");
+      } else {
+        couponDiscount = 0;
+        console.log("zero coupon discount");
+      }
+
+      let totalAmount = total - couponDiscount;
+      console.log(totalAmount, "total amount");
+      const walletDetails = await walletModel
+        .findOne({ userId: userId })
+        .lean();
+      console.log(walletDetails, "wallet details");
+      const finalAmount = totalAmount;
       const count = products.length;
       res.render("users/checkout", {
         layout: "user-layout",
@@ -430,9 +309,16 @@ module.exports = {
         products,
         total,
         count,
+        couponError,
+        couponApplied,
+        couponDiscount,
+        totalAmount,
         subtotal: total,
         finalAmount,
+        walletDetails,
       });
+      delete req.session.couponApplied;
+      delete req.session.couponInvalidError;
     } catch (error) {
       // console.log(error.message);
     }
