@@ -39,7 +39,27 @@ router.post(
 
 //sales report
 router.get("/sales-page", adminAuth.isLogin, adminController.loadSalesPage);
-
+router.get(
+  "/get-daily-Sales",
+  adminAuth.isLogin,
+  adminController.loadDailySalesPage
+);
+router.get(
+  "/get-Weekly-Sales",
+  adminAuth.isLogin,
+  adminController.loadWeeklySales
+);
+router.get(
+  "/get-monthly-sales",
+  adminAuth.isLogin,
+  adminController.loadMonthlySales
+);
+router.get(
+  "/get-yearly-sales",
+  adminAuth.isLogin,
+  adminController.loadYearlysales
+);
+router.get("/sales-report", adminAuth.isLogin, adminController.loadsalesReport);
 //category loading
 
 router.get("/category", adminAuth.isLogin, adminController.loadCategory);

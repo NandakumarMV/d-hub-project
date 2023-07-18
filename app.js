@@ -8,6 +8,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 const hbs = require("express-handlebars");
+const handlebars = require("handlebars");
 const config = require("./config/config");
 const handlebarsHelpers = require("handlebars-helpers");
 // mongoose.connect();
@@ -43,7 +44,9 @@ app.engine(
     helpers: handlebarsHelpers(),
   })
 );
-
+handlebars.registerHelper("inc", function (value, options) {
+  return parseInt(value) + 1;
+});
 app.use(session({ secret: config.sessionSecret }));
 
 app.use(logger("dev"));

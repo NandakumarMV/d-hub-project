@@ -302,6 +302,8 @@ module.exports = {
       console.log(walletDetails, "wallet details");
       const finalAmount = totalAmount;
       const count = products.length;
+      console.log("y the");
+      console.log(defaultAddress.addresses, "defaultAddress.addresses");
       res.render("users/checkout", {
         layout: "user-layout",
         defaultAddress: defaultAddress.addresses,
@@ -320,7 +322,7 @@ module.exports = {
       delete req.session.couponApplied;
       delete req.session.couponInvalidError;
     } catch (error) {
-      // console.log(error.message);
+      console.log("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy", error);
     }
   },
 

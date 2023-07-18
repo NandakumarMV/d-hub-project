@@ -16,6 +16,7 @@ const Cart = require("../models/cartModel");
 const moment = require("moment-timezone");
 const { ObjectId } = require("mongodb");
 const Wallet = require("../models/walletModel");
+const adminHelpers = require("../helpers/adminHelper");
 
 // const upload = multer({ dest: "./public/uploads/" });
 
@@ -762,10 +763,80 @@ const returnOrder = async (req, res) => {
 
 const loadSalesPage = async (req, res) => {
   try {
-  } catch (error) {}
-  res.render("admin/sales-page", { layout: "admin-layout" });
-};
+    const adminUser = await User.findOne({ is_admin: 1 }).lean();
+    const orderDetails = await adminHelpers.orderDetails();
 
+    res.render("admin/sales-page", {
+      layout: "admin-layout",
+      order: orderDetails.orderHistory,
+      total: orderDetails.total,
+      admin: adminUser,
+    });
+  } catch (error) {}
+};
+const loadDailySalesPage = async (req, res) => {
+  console.log("load daily sale page");
+  const dailySales = await adminHelpers.salesDaily();
+  console.log(dailySales, "daily sales");
+  const adminUser = await User.findOne({ is_admin: 1 }).lean();
+
+  res.render("admin/sales-page", {
+    layout: "admin-layout",
+    order: dailySales.orderHistory,
+    total: dailySales.total,
+    admin: adminUser,
+  });
+};
+const loadWeeklySales = async (req, res) => {
+  try {
+    console.log("loadWeeklySales");
+    const WeeklySales = await adminHelpers.WeeklySales();
+    const adminUser = await User.findOne({ is_admin: 1 }).lean();
+    console.log(WeeklySales, "week sales");
+    res.render("admin/sales-page", {
+      layout: "admin-layout",
+      order: WeeklySales.orderHistory,
+      total: WeeklySales.total,
+      admin: adminUser,
+    });
+    s;
+  } catch (error) {}
+};
+const loadMonthlySales = async (req, res) => {
+  try {
+    const monthlySales = await adminHelpers.monthlySales();
+    const adminUser = await User.findOne({ is_admin: 1 }).lean();
+
+    res.render("admin/sales-page", {
+      layout: "admin-layout",
+      order: monthlySales.orderHistory,
+      total: monthlySales.total,
+      admin: adminUser,
+    });
+    s;
+  } catch (error) {}
+};
+const loadYearlysales = async (req, res) => {
+  try {
+    const yearlySales = await adminHelpers.yearlySales();
+    const adminUser = await User.findOne({ is_admin: 1 }).lean();
+
+    res.render("admin/sales-page", {
+      layout: "admin-layout",
+      order: yearlySales.orderHistory,
+      total: yearlySales.total,
+      admin: adminUser,
+    });
+  } catch (error) {}
+};
+const loadsalesReport = async (req, res) => {
+  try {
+    const salesPdf = await adminHelpers.salesPdf(req, res);
+  } catch (error) {
+    console.log(error.message, "pdfSales controller error");
+    res.redirect("/admin/admin-error");
+  }
+};
 module.exports = {
   loadAdminLogin,
   verfiyLogin,
@@ -795,4 +866,9 @@ module.exports = {
   shippingOrder,
   returnOrder,
   loadSalesPage,
+  loadDailySalesPage,
+  loadWeeklySales,
+  loadMonthlySales,
+  loadYearlysales,
+  loadsalesReport,
 };
