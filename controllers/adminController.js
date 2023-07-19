@@ -65,9 +65,37 @@ const verfiyLogin = async (req, res) => {
 };
 const loadDash = async (req, res) => {
   try {
-    User.findById({ _id: req.session.user_id });
-
-    res.render("admin/home", { layout: "admin-layout" });
+    console.log("entered load dash board");
+    const admin = await User.find({ is_admin: 1 }).lean();
+    console.log(admin, "admin data");
+    const dashBoardDetails = await adminHelpers.loadingDashboard();
+    console.log(dashBoardDetails, "dash board details");
+    const orderDetails = await adminHelpers.OrdersList(req, res);
+    console.log(orderDetails, "order details");
+    const totalUser = dashBoardDetails.totaluser;
+    console.log(totalUser, "dashBoardDetails.totaluser");
+    const totalSales = dashBoardDetails.totalSales;
+    console.log(totalSales, "dashBoardDetails.totalSales");
+    const salesbymonth = dashBoardDetails.salesbymonth;
+    console.log(salesbymonth, "dashBoardDetails.salesbymonth");
+    const paymentMethod = dashBoardDetails.paymentMethod;
+    console.log(paymentMethod, "paymentMethod");
+    const yearSales = dashBoardDetails.yearSales;
+    console.log(yearSales, "yearSales");
+    const todaySales = dashBoardDetails.todaySales;
+    console.log(todaySales, "todaySales");
+    let sales = encodeURIComponent(JSON.stringify(salesbymonth));
+    res.render("admin/home", {
+      layout: "admin-layout",
+      totalUser,
+      todaySales: todaySales[0],
+      totalSales: totalSales[0],
+      salesbymonth: encodeURIComponent(JSON.stringify(salesbymonth)),
+      paymentMethod: encodeURIComponent(JSON.stringify(paymentMethod)),
+      yearSales: yearSales[0],
+      orderDetails: orderDetails,
+      admin: admin,
+    });
   } catch (error) {
     console.log(error.message);
   }

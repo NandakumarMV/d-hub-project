@@ -671,6 +671,8 @@ const settingAsDefault = async (req, res) => {
 
 const loadShopPage = async (req, res) => {
   try {
+    const resultsHTML = await userHelper.listProducts(req, res);
+
     const products = await Product.find({ unlist: false }).lean();
 
     const category = await Category.find({ unlist: false }).lean();
@@ -679,6 +681,7 @@ const loadShopPage = async (req, res) => {
       layout: "user-layout",
       products: products,
       category: category,
+      listedItems: resultsHTML,
     });
   } catch (error) {}
 };

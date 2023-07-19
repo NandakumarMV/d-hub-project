@@ -1,15 +1,218 @@
 const Cart = require("../models/cartModel");
+const User = require("../models/userModel");
 const Order = require("../models/orderModel");
 const Address = require("../models/addressesModel");
 const Product = require("../models/productModels");
 const moment = require("moment-timezone");
-// const pdfPrinter = require("pdfmake");
+const pdfPrinter = require("pdfmake");
 const mongoose = require("mongoose");
 const { MongoError } = require("mongodb");
-const pdfPrinter = require("pdfmake");
 const ObjectId = mongoose.Types.ObjectId;
+const fs = require("fs");
+const path = require("path");
 
 module.exports = {
+  loadingDashboard: async () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const users = await User.find({}).lean().exec();
+        console.log(users, "user ");
+        const totaluser = users.length;
+
+        const totalSales = await Order.aggregate([
+          {
+            $match: {
+              orderStatus: { $nin: ["cancelled"] },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalSum: { $sum: "$orderValue" },
+            },
+          },
+        ]);
+
+        const salesbymonth = await Order.aggregate([
+          {
+            $match: {
+              orderStatus: { $nin: ["cancelled"] },
+            },
+          },
+          {
+            $group: {
+              _id: { $month: "$date" },
+              totalSales: { $sum: "$orderValue" },
+            },
+          },
+          {
+            $sort: {
+              _id: 1,
+            },
+          },
+        ]);
+
+        const paymentMethod = await Order.aggregate([
+          {
+            $match: {
+              orderStatus: {
+                $in: ["Placed", "Shipped", "Delivered", "Returned"],
+              }, // Exclude "cancelled" status
+            },
+          },
+          {
+            $group: {
+              _id: "$paymentMethod", // Group by paymentMethod only
+              totalOrderValue: { $sum: "$orderValue" },
+              count: { $sum: 1 },
+            },
+          },
+        ]);
+
+        const currentYear = new Date().getFullYear();
+        const previousYear = currentYear - 1;
+
+        const yearSales = await Order.aggregate([
+          // Match orders within the current year or previous year
+          {
+            $match: {
+              orderStatus: { $nin: ["cancelled"] },
+              date: {
+                $gte: new Date(`${previousYear}-01-01`),
+                $lt: new Date(`${currentYear + 1}-01-01`),
+              },
+            },
+          },
+          // Group orders by year and calculate total sales
+          {
+            $group: {
+              _id: {
+                $year: "$date",
+              },
+              totalSales: {
+                $sum: "$orderValue",
+              },
+            },
+          },
+        ]).exec();
+
+        // to get today sales
+
+        // console.log(yearSales, 'yearSales');
+
+        const todaysalesDate = new Date();
+        const startOfDay = new Date(
+          todaysalesDate.getFullYear(),
+          todaysalesDate.getMonth(),
+          todaysalesDate.getDate(),
+          0,
+          0,
+          0,
+          0
+        );
+        const endOfDay = new Date(
+          todaysalesDate.getFullYear(),
+          todaysalesDate.getMonth(),
+          todaysalesDate.getDate(),
+          23,
+          59,
+          59,
+          999
+        );
+
+        const todaySales = await Order.aggregate([
+          {
+            $match: {
+              orderStatus: {
+                $in: ["Placed", "Shipped", "Delivered", "Returned"],
+              },
+
+              date: {
+                $gte: startOfDay, // Set the current date's start time
+                $lt: endOfDay,
+              },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalAmount: { $sum: "$orderValue" },
+            },
+          },
+        ]);
+        console.log(
+          totaluser + "total user",
+          totalSales + "total sales",
+          salesbymonth + "sales by month",
+          paymentMethod + "payment method",
+          yearSales + "year sales",
+          todaySales + "today sales"
+        );
+        const dashBoardDetails = {
+          totaluser,
+          totalSales,
+          salesbymonth,
+          paymentMethod,
+          yearSales,
+          todaySales,
+        };
+
+        resolve(dashBoardDetails);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+  OrdersList: async (req, res) => {
+    try {
+      console.log("enter order list helper");
+      const userId = req.session.user_id;
+      console.log(userId, "user id");
+
+      const { paymentMethod, orderStatus } = req.query;
+      console.log(req.query, "req.query");
+      let query = { userId };
+
+      // Apply filters if provided
+      if (paymentMethod) {
+        console.log(paymentMethod, "pay ment method");
+        query.paymentMethod = paymentMethod;
+      }
+      if (orderStatus) {
+        query.orderStatus = orderStatus;
+        console.log(query.orderStatus, "query.orderStatus");
+      }
+
+      let orderDetails = await Order.find().populate("userId").lean();
+      console.log(orderDetails, "orderDetails is this");
+
+      // Reverse the order of transactions
+      orderDetails = orderDetails.reverse();
+
+      const orderHistory = orderDetails.map((history) => {
+        let createdOnIST = moment(history.date)
+          .tz("Asia/Kolkata")
+          .format("DD-MM-YYYY h:mm A");
+
+        return {
+          ...history,
+          date: createdOnIST,
+          userName: history.userId.name,
+        };
+      });
+
+      console.log(
+        orderHistory,
+        "orderHistoryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+      );
+
+      return orderHistory;
+    } catch (error) {
+      console.log(error.message);
+      res.redirect("/admin/admin-error");
+    }
+  },
+
   orderDetails: () => {
     return new Promise(async (resolve, reject) => {
       try {

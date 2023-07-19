@@ -58,50 +58,50 @@
   <h1 class="mb-2 pb-2 pt-2">Shop</h1>
 
   <!-- Search Bar -->
+  <form id="products-list-form">
+
+  
+  <div style="display: inline-flex; gap: 5px;">
+
+ 
   <div class="row mb-4">
     <div class="col-md-6">
-      <input id="searchInput" type="text" class="form-control" placeholder="Search..." style="width: 150px;">
+      <input placeholder="Search" name="searchKeyword" id="searchKeyword" type="search" class="input" style="width: 150px;">
     </div>
   </div>
 
   <!-- Filter and Sort Options -->
-  <div class="row mb-4 g-3" >
-  <div class="col-md-4">
-  <select id="categoryFilter" class="form-control" style="width: 250px;" onchange="applyFilter()">
+  <div class="row mb-4 g-3" style="display: flex; " >
+   <div class="col-md-4">
+   <select id="category" class="form-control" style="width: 250px;"  name="category">
     <option value="">All Categories</option>
     {{#each category}}
       <option value="{{this.category}}">{{this.category}}</option>
     {{/each}}
-  </select>
-</div>
+   </select>
+   </div>
 
   
-    <div class="col-md-4">
-      <select id="priceSort" class="form-control" style="width: 250px;">
-        <option value="low">Price: Low to High</option>
-        <option value="high">Price: High to Low</option>
+    <div class="col-md-4" style="padding-left: 38px;">
+      <select id="sortBy" name="sortBy" class="form-control" style="width: 250px;">
+        <option value="product_name">Name</option>
+        <option value="product_price">Price</option>
       </select>
     </div>
-  </div>
 
+    <div class="col-md-2 col-sm-6 d-flex justify-content-center" style="margin-left: 30px;">
+        <button type="submit" class="btn  btn-dark">Find</button>
+      </div>
+  </div>
+ </div>
+ </form>
   <!-- Products Grid -->
   <div class="row" id="productsGrid">
-    {{#each products}}
-    <div class="col-md-4">
-      <div class="card mb-4">
-        <a href="/load-product?id={{this._id}}">
-          <img src="/uploads/{{this.images.[0]}}" alt="img" class="card-img-top fixed-height-image" />
-        </a>
-        <div class="card-body">
-          <h4 class="card-title">{{this.brand}}</h4>
-          <h5 class="card-title">{{this.productname}}</h5>
-          <span>₹{{this.price}}</span>
-          <p class="card-text"></p>
-          <a href="/load-product?id={{this._id}}" class="btn btn-dark">view</a>
+    {{#if listedItems}}
+ <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
+                <div class="row product-grid-4" id="search-results">{{{listedItems}}}</div>
         </div>
-      </div>
-    </div>
-    {{/each}}
+    {{/if}}
   </div>
 </div>
 
@@ -161,3 +161,47 @@
   </footer>
 
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+
+let { resultsHTML } = require("../../helpers/userHelpers");
+$("#products-list-form").submit((e) => {
+  e.preventDefault();
+  let searchKeyword = $('#searchItem').val().trim();
+  let category = $("#categorySort select[name='category']").val();
+  let sortBy = $("#sortBy").val();
+
+  let url = "/shop-page";
+
+  let hasQueryParams = false;
+
+  if (searchKeyword !== "") {
+    url += "?search=" + encodeURIComponent(searchKeyword);
+    hasQueryParams = true;
+  }
+
+  if (category !== "") {
+    url += (hasQueryParams ? "&" : "?") + "category=" + encodeURIComponent(category);
+    hasQueryParams = true;
+  }
+
+  if (sortBy !== "") {
+    url += (hasQueryParams ? "&" : "?") + "sort=" + encodeURIComponent(sortBy);
+  }
+
+  console.log(url);
+
+  // Send AJAX request
+  $.ajax({
+    url: url,
+    method: "get",
+    success: async function (response) {
+      let resultsHTML = await generateResultsHTML(response);
+      $('#searchResults').html(resultsHTML);
+    },
+    error: function (xhr, status, error) {
+      console.error(error);
+    }
+  });
+});
+
+</script>
