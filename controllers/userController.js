@@ -322,7 +322,7 @@ const loadHome = async (req, res) => {
 
 const userLogout = async (req, res) => {
   try {
-    req.session.destroy();
+    delete req.session.user_id;
     res.redirect("/login");
   } catch (error) {
     console.log(error.message);
@@ -671,17 +671,64 @@ const settingAsDefault = async (req, res) => {
 
 const loadShopPage = async (req, res) => {
   try {
-    const resultsHTML = await userHelper.listProducts(req, res);
+    console.log("load shop page");
+    let search = "";
+    if (req.query.search) {
+      search = req.query.search;
+    }
+    console.log(search, " search ");
+    // Get sorting criteria from the request, default to "productname" ascending
+    const sortField = req.query.sortField || "productname";
+    console.log(req.query.sortField, "req.query.sortField");
+    const sortDirection = req.query.sortDirection === "desc" ? -1 : 1;
+    console.log(req.query.sortDirection, "req.query.sortDirection");
+    console.log(sortField + "  :sortField", sortDirection + "  :sortDirection");
+    const query = {
+      unlist: false,
+      $or: [
+        { brand: { $regex: ".*" + search + ".*", $options: "i" } },
+        { productname: { $regex: ".*" + search + ".*", $options: "i" } },
+        { category: { $regex: ".*" + search + ".*", $options: "i" } },
+      ],
+    };
+    console.log(query, "query");
+    const productData = await Product.find(query)
+      .sort({ [sortField]: sortDirection }) // Apply sorting based on the provided field and direction
+      .lean();
+    console.log(productData, "product  data");
+    // Pagination in shop
+    const currentPage = parseInt(req.query.page) || 1;
+    const PAGE_SIZE = 3;
 
-    const products = await Product.find({ unlist: false }).lean();
+    const totalItems = productData.length;
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
 
-    const category = await Category.find({ unlist: false }).lean();
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    const paginatedProductData = productData.slice(startIndex, endIndex);
+
+    const hasPrev = currentPage > 1;
+    const hasNext = currentPage < totalPages;
+
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push({
+        number: i,
+        current: i === currentPage,
+      });
+    }
 
     res.render("users/shop-page", {
       layout: "user-layout",
-      products: products,
-      category: category,
-      listedItems: resultsHTML,
+      product: paginatedProductData,
+      showPagination: totalItems > PAGE_SIZE,
+      hasPrev,
+      prevPage: currentPage - 1,
+      hasNext,
+      nextPage: currentPage + 1,
+      pages,
+      sortField, // Pass sorting criteria to the view to keep track of the current sorting field
+      sortDirection, // Pass sorting direction to the view to keep track of the current sorting direction
     });
   } catch (error) {}
 };

@@ -229,21 +229,37 @@
                         <hr class="mb-4">
                         <h4 class="mb-3">Payment</h4>
                        <div class="d-block my-3">
-                            <div class="custom-control custom-radio">
+                           
+                              <div class="custom-control custom-radio">
                                 <input id="credit" name="paymentMethod" type="radio" class="custom-control-input"
                                     checked="" required="" value="COD">
                                 <label class="custom-control-label" for="credit">COD</label>
                             </div>
+                             
+                             <div class="custom-control custom-radio">
+                                <input id="wallet" name="paymentMethod" type="radio" class="custom-control-input"
+                                    required="" value="WALLET">
+                                <label class="custom-control-label" for="wallet">WALLET <span class="wallet-balance">
+                                     
+                                    (Amount in the Wallet: ₹{{walletDetails.walletAmount}})</span>
+                                   
+                                </label>
+                                 <p id="error-message" class="text-danger"></p>
+                              </div>
+                               
+                   
+
+
+
+
+
                             <div class="custom-control custom-radio">
                                 <input id="debit" name="paymentMethod" type="radio" class="custom-control-input"
                                     required="" value="ONLINE">
                                 <label class="custom-control-label" for="debit">ONLINE</label>
                             </div>
-                            <div class="custom-control custom-radio">
-                                <input id="credit" name="paymentMethod" type="radio" class="custom-control-input"
-                                    checked="" required="" value="WALLET">
-                                <label class="custom-control-label" for="credit">WALLET</label>
-                            </div>
+                            
+                            
 
                         </div>
 

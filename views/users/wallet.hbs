@@ -1,0 +1,146 @@
+<style>
+  body {
+    background-color: #f5f5f5;
+  }
+
+  .wallet-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .wallet-card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+    margin-bottom: 50px;
+    position: relative;
+    /* Position the card container */
+  }
+
+  .wallet-header {
+    background-color: #fff;
+    padding: 20px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-family: "Arial", sans-serif;
+    /* Change the font to a professional font */
+    position: relative;
+    /* Position the header container */
+  }
+
+  .wallet-body {
+    background-color: #fff;
+    padding: 20px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+
+  .balance {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .transaction-list li {
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+  }
+
+  .transaction-list li:last-child {
+    border-bottom: none;
+  }
+
+  /* Additional styles for wallet GIF and text */
+  .wallet-gif {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 60px;
+  }
+
+  .wallet-text {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .black-page-link {
+    color: rgb(0, 0, 0) !important;
+
+  }
+
+  .black-page-link.current-page {
+    color: white !important;
+    background-color: black !important;
+    border-color: black;
+  }
+</style>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<!-- Include the SweetAlert CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.2/dist/sweetalert2.min.css">
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card wallet-card">
+        <div class="card-header wallet-header">
+          <h1 class="display-4 mb-0">My Wallet</h1>
+         
+        </div>
+        <div class="card-body wallet-body">
+          <div class="balance">
+            {{#if walletDetails}}
+            <h2 class="display-2">₹{{walletDetails.walletAmount}}</h2>
+            {{/if}}
+          </div>
+          <div>
+            {{!-- <a href="" class="btn btn-warning " style="color: white;" id="walletRechargeBtn"> Recharge your
+              Wallet....</a>
+          </div> --}}
+
+          <ul class="list-unstyled transaction-list">
+            {{#each orderDetails}}
+            <li class="d-flex justify-content-between align-items-center">
+              {{#if (or (eq this.orderStatus "Shipped") (eq this.orderStatus "Placed") (eq this.orderStatus
+              "Delivered"))}}
+              <span class="font-weight-bold">Debit Transaction on {{this.date}}</span>
+              <span class="text-danger">-₹{{this.orderValue}}</span>
+              {{else if (eq this.orderStatus "cancelled")}}
+              <span class="font-weight-bold">Credit Transaction on {{this.date}}</span>
+              <span class="text-success">₹{{this.orderValue}}</span>
+              {{/if}}
+            </li>
+            {{/each}}
+          </ul>
+          {{#if showPagination}}
+          <nav aria-label="Transaction Pagination">
+            <ul class="pagination justify-content-center">
+              {{#if hasPrev}}
+              <li class="page-item">
+                <a class="page-link black-page-link" href="?page={{prevPage}}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              {{/if}}
+              {{#each pages}}
+              <li class="page-item{{#if current}} active{{/if}}">
+                <a class="page-link black-page-link{{#if current}} current-page{{/if}}"
+                  href="?page={{number}}">{{number}}</a>
+              </li>
+              {{/each}}
+              {{#if hasNext}}
+              <li class="page-item">
+                <a class="page-link black-page-link" href="?page={{nextPage}}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+              {{/if}}
+            </ul>
+          </nav>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

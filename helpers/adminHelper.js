@@ -140,14 +140,7 @@ module.exports = {
             },
           },
         ]);
-        console.log(
-          totaluser + "total user",
-          totalSales + "total sales",
-          salesbymonth + "sales by month",
-          paymentMethod + "payment method",
-          yearSales + "year sales",
-          todaySales + "today sales"
-        );
+
         const dashBoardDetails = {
           totaluser,
           totalSales,
@@ -165,26 +158,20 @@ module.exports = {
   },
   OrdersList: async (req, res) => {
     try {
-      console.log("enter order list helper");
       const userId = req.session.user_id;
-      console.log(userId, "user id");
 
       const { paymentMethod, orderStatus } = req.query;
-      console.log(req.query, "req.query");
       let query = { userId };
 
       // Apply filters if provided
       if (paymentMethod) {
-        console.log(paymentMethod, "pay ment method");
         query.paymentMethod = paymentMethod;
       }
       if (orderStatus) {
         query.orderStatus = orderStatus;
-        console.log(query.orderStatus, "query.orderStatus");
       }
 
       let orderDetails = await Order.find().populate("userId").lean();
-      console.log(orderDetails, "orderDetails is this");
 
       // Reverse the order of transactions
       orderDetails = orderDetails.reverse();
@@ -200,11 +187,6 @@ module.exports = {
           userName: history.userId.name,
         };
       });
-
-      console.log(
-        orderHistory,
-        "orderHistoryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
-      );
 
       return orderHistory;
     } catch (error) {

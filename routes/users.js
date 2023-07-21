@@ -68,8 +68,9 @@ router.get("/checkout", auth.isLogin, cartController.checkoutLoad);
 router.post("/submit-checkout", auth.isLogin, checkoutController.placeOrder);
 router.get("/order-sucessfull", auth.isLogin, checkoutController.placedOrder);
 router.get("/wallet-placed", checkoutController.walletOrder),
-  //payment
-  router.post("/verify-payment", checkoutController.verifyPayment);
+  router.get("/wallet-details", auth.isLogin, checkoutController.loadWallet);
+//payment
+router.post("/verify-payment", checkoutController.verifyPayment);
 // orders
 router.get("/my-orders", auth.isLogin, checkoutController.loadOrders);
 router.get("/ordersView", auth.isLogin, checkoutController.loadOrdersView);

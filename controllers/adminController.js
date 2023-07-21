@@ -39,21 +39,25 @@ const loadAdminLogin = async (req, res) => {
 
 const verfiyLogin = async (req, res) => {
   try {
-    // console.log(req.body);
+    console.log(req.body);
     const email = req.body.email;
     const password = req.body.password;
     const userData = await User.findOne({ email: email });
-    // console.log(userData);
+    console.log(userData);
     if (userData) {
       const passMatch = await bcrypt.compare(password, userData.password);
-      // console.log(passMatch);
+      console.log(passMatch, "admin is this");
       if (passMatch) {
         if (userData.is_admin === 0) {
+          console.log("admin is zero");
           res.render("admin/login", { layout: "admin-layout" });
         } else {
-          req.session.user_id = userData._id;
-          // console.log(req.session.user_id);
-          res.redirect("home");
+          req.session.adminId = userData._id;
+          req.session.is_admin = userData.is_admin;
+          console.log(req.session.adminId, "req.session.adminId");
+          console.log(req.session.is_admin, "req.session.is_admin");
+
+          res.redirect("/admin/home");
         }
       }
     } else {
@@ -65,25 +69,15 @@ const verfiyLogin = async (req, res) => {
 };
 const loadDash = async (req, res) => {
   try {
-    console.log("entered load dash board");
     const admin = await User.find({ is_admin: 1 }).lean();
-    console.log(admin, "admin data");
     const dashBoardDetails = await adminHelpers.loadingDashboard();
-    console.log(dashBoardDetails, "dash board details");
     const orderDetails = await adminHelpers.OrdersList(req, res);
-    console.log(orderDetails, "order details");
     const totalUser = dashBoardDetails.totaluser;
-    console.log(totalUser, "dashBoardDetails.totaluser");
     const totalSales = dashBoardDetails.totalSales;
-    console.log(totalSales, "dashBoardDetails.totalSales");
     const salesbymonth = dashBoardDetails.salesbymonth;
-    console.log(salesbymonth, "dashBoardDetails.salesbymonth");
     const paymentMethod = dashBoardDetails.paymentMethod;
-    console.log(paymentMethod, "paymentMethod");
     const yearSales = dashBoardDetails.yearSales;
-    console.log(yearSales, "yearSales");
     const todaySales = dashBoardDetails.todaySales;
-    console.log(todaySales, "todaySales");
     let sales = encodeURIComponent(JSON.stringify(salesbymonth));
     res.render("admin/home", {
       layout: "admin-layout",
@@ -102,9 +96,10 @@ const loadDash = async (req, res) => {
 };
 const adminlogout = async (req, res) => {
   try {
-    // console.log("hy......................................................");
-    req.session.destroy();
-    res.redirect("/");
+    console.log("abmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+    delete req.session.is_admin;
+    delete req.session.adminId;
+    res.redirect("/admin/login");
   } catch (error) {
     console.log(error.message);
   }

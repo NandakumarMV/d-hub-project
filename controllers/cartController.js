@@ -105,8 +105,7 @@ module.exports = {
           finalAmount,
         });
       } else {
-        res.render("users/cart", {
-          message: "Your cart is empty",
+        res.render("users/load-cart", {
           layout: "user-layout",
         });
       }
@@ -229,98 +228,102 @@ module.exports = {
         },
         { "addresses.$": 1 }
       ).lean();
-      // console.log(defaultAddress.addresses, "eeeeeeeeeeeeeeeeeeeeee");
-      const addressDoc = await Addresses.findOne({ user_id: userId }).lean();
-      const addressArray = addressDoc.addresses;
-      // console.log(addressArray, "arrayyyy");
-      const filteredAddresses = addressArray.filter(
-        (address) => !address.is_default
-      );
-      // console.log(filteredAddresses, "filtered address");
+      console.log(defaultAddress, "eeeeeeeeeeeeeeeeeeeeee");
+      if (defaultAddress) {
+        const addressDoc = await Addresses.findOne({ user_id: userId }).lean();
+        const addressArray = addressDoc.addresses;
+        console.log(addressArray, "arrayyyy");
+        const filteredAddresses = addressArray.filter(
+          (address) => !address.is_default
+        );
+        console.log(filteredAddresses, "filtered address");
 
-      const cart = await Cart.findOne({ User_id: userId })
-        .populate({
-          path: "products.productId",
-        })
-        .lean()
-        .exec();
+        const cart = await Cart.findOne({ User_id: userId })
+          .populate({
+            path: "products.productId",
+          })
+          .lean()
+          .exec();
 
-      const products = cart.products.map((product) => {
-        const total =
-          Number(product.quantity) * Number(product.productId.price);
-        return {
-          _id: product.productId._id.toString(),
-          brand: product.productId.brand,
-          productname: product.productId.productname,
-          category: product.productId.category,
-          images: product.productId.images,
-          price: product.productId.price,
-          description: product.productId.description,
-          quantity: product.quantity,
+        const products = cart.products.map((product) => {
+          const total =
+            Number(product.quantity) * Number(product.productId.price);
+          return {
+            _id: product.productId._id.toString(),
+            brand: product.productId.brand,
+            productname: product.productId.productname,
+            category: product.productId.category,
+            images: product.productId.images,
+            price: product.productId.price,
+            description: product.productId.description,
+            quantity: product.quantity,
+            total,
+            user_id: req.session.user_id,
+          };
+        });
+        // console.log(products, "products.........................");
+        const total = products.reduce(
+          (sum, product) => sum + Number(product.total),
+          0
+        );
+
+        //coupon management
+
+        let couponError = false;
+        let couponApplied = false;
+
+        if (req.session.couponInvalidError) {
+          couponError = req.session.couponInvalidError;
+          console.log("(req.session.couponInvalidError)", couponError);
+        } else if (req.session.couponApplied) {
+          couponApplied = req.session.couponApplied;
+          console.log("(req.session.couponApplied)", couponApplied);
+        }
+
+        let couponDiscount = 0;
+        const eligibleCoupon = await couponHelper.checkCouponValidityStatus(
+          userId,
+          total
+        );
+        console.log(eligibleCoupon, "eligible coupon");
+        if (eligibleCoupon.status) {
+          couponDiscount = eligibleCoupon.couponDiscount;
+          console.log(couponDiscount, "coupon discount is this");
+        } else {
+          couponDiscount = 0;
+          console.log("zero coupon discount");
+        }
+
+        let totalAmount = total - couponDiscount;
+        console.log(totalAmount, "total amount");
+        const walletDetails = await walletModel
+          .findOne({ userId: userId })
+          .lean();
+        console.log(walletDetails, "wallet details");
+        const finalAmount = totalAmount;
+        const count = products.length;
+        console.log("y the");
+        console.log(defaultAddress.addresses, "defaultAddress.addresses");
+        res.render("users/checkout", {
+          layout: "user-layout",
+          defaultAddress: defaultAddress.addresses,
+          filteredAddresses: filteredAddresses,
+          products,
           total,
-          user_id: req.session.user_id,
-        };
-      });
-      // console.log(products, "products.........................");
-      const total = products.reduce(
-        (sum, product) => sum + Number(product.total),
-        0
-      );
-
-      //coupon management
-
-      let couponError = false;
-      let couponApplied = false;
-
-      if (req.session.couponInvalidError) {
-        couponError = req.session.couponInvalidError;
-        console.log("(req.session.couponInvalidError)", couponError);
-      } else if (req.session.couponApplied) {
-        couponApplied = req.session.couponApplied;
-        console.log("(req.session.couponApplied)", couponApplied);
-      }
-
-      let couponDiscount = 0;
-      const eligibleCoupon = await couponHelper.checkCouponValidityStatus(
-        userId,
-        total
-      );
-      console.log(eligibleCoupon, "eligible coupon");
-      if (eligibleCoupon.status) {
-        couponDiscount = eligibleCoupon.couponDiscount;
-        console.log(couponDiscount, "coupon discount is this");
+          count,
+          couponError,
+          couponApplied,
+          couponDiscount,
+          totalAmount,
+          subtotal: total,
+          finalAmount,
+          walletDetails,
+        });
+        delete req.session.couponApplied;
+        delete req.session.couponInvalidError;
       } else {
-        couponDiscount = 0;
-        console.log("zero coupon discount");
+        res.redirect("/address");
       }
-
-      let totalAmount = total - couponDiscount;
-      console.log(totalAmount, "total amount");
-      const walletDetails = await walletModel
-        .findOne({ userId: userId })
-        .lean();
-      console.log(walletDetails, "wallet details");
-      const finalAmount = totalAmount;
-      const count = products.length;
-      console.log("y the");
-      console.log(defaultAddress.addresses, "defaultAddress.addresses");
-      res.render("users/checkout", {
-        layout: "user-layout",
-        defaultAddress: defaultAddress.addresses,
-        filteredAddresses: filteredAddresses,
-        products,
-        total,
-        count,
-        couponError,
-        couponApplied,
-        couponDiscount,
-        totalAmount,
-        subtotal: total,
-        finalAmount,
-        walletDetails,
-      });
-      delete req.session.couponApplied;
-      delete req.session.couponInvalidError;
     } catch (error) {
       console.log("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy", error);
     }

@@ -2,34 +2,11 @@ const Cart = require("../models/cartModel");
 const Order = require("../models/orderModel");
 const Address = require("../models/addressesModel");
 const Product = require("../models/productModels");
+const Wallet = require("../models/walletModel");
+const moment = require("moment-timezone");
 
 const walletModel = require("../models/walletModel");
 
-const generateResultsHTML = (items) => {
-  let html = "";
-  items.forEach((item) => {
-    html += `<div class="row" id="productsGrid">
-    {{#each products}}
-    <div class="col-md-4">
-      <div class="card mb-4">
-        <a href="/load-product?id=${item._id}">
-          <img src="/uploads/${item.images[0]}" alt="img" class="card-img-top fixed-height-image" />
-        </a>
-        <div class="card-body">
-          <h4 class="card-title">${this.brand}</h4>
-          <h5 class="card-title">${this.productname}</h5>
-          <span>₹${item.price}</span>
-          <p class="card-text"></p>
-          <a href="/load-product?id=${this._id}" class="btn btn-dark">view</a>
-        </div>
-      </div>
-    </div>
-    {{/each}}
-  </div>
-</div>`;
-  });
-  return html;
-};
 module.exports = {
   walletBalance: (userId) => {
     console.log("wallet balance");
@@ -95,64 +72,71 @@ module.exports = {
       }
     } catch (error) {}
   },
-  listProducts: async (req, res) => {
-    try {
-      const products = await Product.find();
-      console.log(products);
-      let query = [];
-      console.log(products.category, "products.category");
-      console.log(products.productname, "product name");
-      if (req.query.searchKeyword && req.query.searchKeyword !== "") {
-        query.push({
-          $match: {
-            $or: [
-              {
-                productname: {
-                  $regex: req.query.searchKeyword,
-                  $options: "i",
-                },
-              },
-            ],
-          },
+
+  getWalletDetails: (userId) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const walletDetails = await Wallet.findOne({ userId: userId }).lean();
+        // console.log(walletDetails,'walletDetailsvvvvvvvvvvvvvv');
+
+        resolve(walletDetails);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  creditOrderDetails: (userId) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const orderDetails = await Order.find({
+          userId: userId,
+          $or: [{ paymentMethod: "ONLINE" }, { paymentMethod: "WALLET" }],
+          $or: [{ orderStatus: "cancelled" }, { orderStatus: "Returned" }],
+        }).lean();
+        console.log(orderDetails, "order details credit");
+        const orderHistory = orderDetails.map((history) => {
+          let createdOnIST = moment(history.date)
+            .tz("Asia/Kolkata")
+            .format("DD-MM-YYYY h:mm A");
+
+          return { ...history, date: createdOnIST };
         });
+
+        resolve(orderHistory);
+      } catch (error) {
+        reject(error);
       }
-      if (req.query.category && req.query.category !== "") {
-        query.push({
-          $match: { category: req.query.category },
+    });
+  },
+
+  debitOrderDetails: (userId) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const orderDetails = await Order.find({
+          userId: userId,
+          paymentMethod: "WALLET",
+          $or: [
+            { orderStatus: "Placed" },
+            { orderStatus: "PENDING" },
+            { orderStatus: "Delivered" },
+            { orderStatus: "Shipped" },
+          ],
+        }).lean();
+        console.log(orderDetails, "debit order details");
+
+        const orderHistory = orderDetails.map((history) => {
+          let createdOnIST = moment(history.date)
+            .tz("Asia/Kolkata")
+            .format("DD-MM-YYYY h:mm A");
+
+          return { ...history, date: createdOnIST };
         });
+
+        resolve(orderHistory);
+      } catch (error) {
+        reject(error);
       }
-
-      let sortField = req.query.sortBy;
-      let sortQuery = {};
-
-      if (sortField === "productname") {
-        sortQuery = { category: 1, product_name: 1 };
-      } else if (sortField === "product_price") {
-        sortQuery = { category: 1, product_price: 1 };
-      }
-
-      if (Object.keys(sortQuery).length > 0) {
-        query.push({ $sort: sortQuery });
-      }
-      console.log(query, "query");
-
-      let shopItems = await Product.aggregate(query);
-
-      if (shopItems.length < 1) {
-        req.session.message = {
-          type: "error",
-          message:
-            "Oops! We couldn't find any products matching the identifier you provided",
-        };
-        res.redirect("/home");
-        return;
-      }
-
-      console.log("Entered into the shop page", shopItems);
-      let resultsHTML = generateResultsHTML(shopItems);
-      return resultsHTML;
-    } catch (error) {
-      throw error;
-    }
+    });
   },
 };

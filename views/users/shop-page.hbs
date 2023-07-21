@@ -7,7 +7,6 @@
   height: 325px; /* Adjust the height as needed */
   object-fit: cover;
 }
-
   </style>
 </head>
 <body>
@@ -54,58 +53,84 @@
   </header>
   <!-- ***** Header Area End ***** -->
 
- <div class="container mt-5 pt-5">
+ 
+
+<div class="container mt-5 pt-5">
   <h1 class="mb-2 pb-2 pt-2">Shop</h1>
 
   <!-- Search Bar -->
-  <form id="products-list-form">
+   <div class="button-bar" style="justify-content: center;">
+                    <form action="/shop-page" method="GET">
+                        <input type="text" name="search" placeholder="Search Products" value="{{query.search}}">
+                        <button type="submit" class="search-button btn-dark">Search</button>
+                        <label for="sortField" >Filter By:</label>
+                     
+                        
+                        <select id="sortField" class="sort-label" name="sortField">
+                             <option value="category" {{#if (eq query.sortField "category")}}selected{{/if}}>Category</option>
 
-  
-  <div style="display: inline-flex; gap: 5px;">
+                            <option value="price" {{#if (eq query.sortField "price")}}selected{{/if}}>Price</option>
+                        </select>
+                        <label for="sortDirection">Sort By:</label>
+                        <select id="sortDirection" name="sortDirection">
+                            <option value="asc" {{#if (eq query.sortDirection "asc")}}selected{{/if}}>Ascending</option>
+                            <option value="desc" {{#if (eq query.sortDirection "desc")}}selected{{/if}}>Descending</option>
+                        </select>
+                        
+                        <button type="submit" class="sort-button btn-dark">Sort</button>
+                    </form>
+                    <br>
+                    <br>
+                </div>
 
- 
-  <div class="row mb-4">
-    <div class="col-md-6">
-      <input placeholder="Search" name="searchKeyword" id="searchKeyword" type="search" class="input" style="width: 150px;">
-    </div>
-  </div>
-
-  <!-- Filter and Sort Options -->
-  <div class="row mb-4 g-3" style="display: flex; " >
-   <div class="col-md-4">
-   <select id="category" class="form-control" style="width: 250px;"  name="category">
-    <option value="">All Categories</option>
-    {{#each category}}
-      <option value="{{this.category}}">{{this.category}}</option>
-    {{/each}}
-   </select>
-   </div>
-
-  
-    <div class="col-md-4" style="padding-left: 38px;">
-      <select id="sortBy" name="sortBy" class="form-control" style="width: 250px;">
-        <option value="product_name">Name</option>
-        <option value="product_price">Price</option>
-      </select>
-    </div>
-
-    <div class="col-md-2 col-sm-6 d-flex justify-content-center" style="margin-left: 30px;">
-        <button type="submit" class="btn  btn-dark">Find</button>
-      </div>
-  </div>
- </div>
- </form>
   <!-- Products Grid -->
   <div class="row" id="productsGrid">
-    {{#if listedItems}}
- <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
-                <div class="row product-grid-4" id="search-results">{{{listedItems}}}</div>
+    {{#each product}}
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <a href="/load-product?id={{this._id}}">
+          <img src="/uploads/{{this.images.[0]}}" alt="img" class="card-img-top fixed-height-image" />
+        </a>
+        <div class="card-body">
+          <h4 class="card-title">{{this.brand}}</h4>
+          <h5 class="card-title">{{this.productname}}</h5>
+          <span>₹{{this.price}}</span>
+          <p class="card-text"></p>
+          <a href="/load-product?id={{this._id}}" class="btn btn-dark">view</a>
         </div>
-    {{/if}}
+      </div>
+    </div>
+    {{/each}}
   </div>
+
+   {{#if showPagination}}
+        <nav aria-label="Transaction Pagination">
+            <ul class="pagination justify-content-center">
+                <!-- Pagination links here -->
+                   
+                {{#if hasPrev}}
+                  <li class="page-item">
+                    <a class="page-link black-page-link" href="?page={{prevPage}}" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                {{/if}}
+                {{#each pages}}
+                  <li class="page-item{{#if current}} active{{/if}}">
+                    <a class="page-link black-page-link{{#if current}} current-page{{/if}}" href="?page={{number}}">{{number}}</a>
+                  </li>
+                {{/each}}
+                {{#if hasNext}}
+                  <li class="page-item">
+                    <a class="page-link black-page-link" href="?page={{nextPage}}" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                {{/if}}
+            </ul>
+        </nav>
+        {{/if}}
 </div>
-
-
 
   <footer>
     <div class="container">
@@ -160,48 +185,4 @@
     </div>
   </footer>
 
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script>
-
-let { resultsHTML } = require("../../helpers/userHelpers");
-$("#products-list-form").submit((e) => {
-  e.preventDefault();
-  let searchKeyword = $('#searchItem').val().trim();
-  let category = $("#categorySort select[name='category']").val();
-  let sortBy = $("#sortBy").val();
-
-  let url = "/shop-page";
-
-  let hasQueryParams = false;
-
-  if (searchKeyword !== "") {
-    url += "?search=" + encodeURIComponent(searchKeyword);
-    hasQueryParams = true;
-  }
-
-  if (category !== "") {
-    url += (hasQueryParams ? "&" : "?") + "category=" + encodeURIComponent(category);
-    hasQueryParams = true;
-  }
-
-  if (sortBy !== "") {
-    url += (hasQueryParams ? "&" : "?") + "sort=" + encodeURIComponent(sortBy);
-  }
-
-  console.log(url);
-
-  // Send AJAX request
-  $.ajax({
-    url: url,
-    method: "get",
-    success: async function (response) {
-      let resultsHTML = await generateResultsHTML(response);
-      $('#searchResults').html(resultsHTML);
-    },
-    error: function (xhr, status, error) {
-      console.error(error);
-    }
-  });
-});
-
-</script>
+  

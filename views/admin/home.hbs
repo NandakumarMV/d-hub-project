@@ -128,7 +128,7 @@
     $(document).ready(function () {
         // Monthly Sales Chart
         const salesbymonth = JSON.parse(decodeURIComponent('{{salesbymonth}}'));
-        console.log(salesbymonth,"sales by month")
+       
         const sales = salesbymonth.map(data => data.totalSales);
         console.log(sales, 'sales');
         var ctx1 = $("#worldwide-sales").get(0).getContext("2d");

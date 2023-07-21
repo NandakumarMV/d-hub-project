@@ -2,7 +2,10 @@ const { log } = require("handlebars");
 
 const isLogin = async (req, res, next) => {
   try {
-    if (req.session.user_id) {
+    console.log("gjhhjkjhghjhhjhjhhhhkh");
+    if (req.session.adminId && req.session.is_admin === 1) {
+      console.log("(req.session.adminId && req.session.is_admin === true)");
+
       next();
     } else {
       return res.redirect("/admin");
@@ -13,7 +16,7 @@ const isLogin = async (req, res, next) => {
 };
 const islogOut = async (req, res, next) => {
   try {
-    if (req.session.user_id) {
+    if (req.session.adminId && req.session.is_admin === 1) {
       res.redirect("/admin/home");
     } else {
       next();

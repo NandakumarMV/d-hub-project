@@ -9,6 +9,7 @@ const moment = require("moment-timezone");
 const { ObjectId } = require("mongodb");
 const userhelper = require("../helpers/userHelpers");
 const couponHelper = require("../helpers/couponHelper");
+const userHelpers = require("../helpers/userHelpers");
 module.exports = {
   // submitCheckout: async (req, res) => {
   //   try {
@@ -335,6 +336,73 @@ module.exports = {
       res.redirect(url);
     } catch (error) {
       console.log(error.message);
+    }
+  },
+
+  loadWallet: async (req, res) => {
+    try {
+      const userId = req.session.user_id;
+      console.log(userId);
+      const walletDetails = await userHelpers.getWalletDetails(userId);
+      const creditOrderDetails = await userHelpers.creditOrderDetails(userId);
+      const debitOrderDetails = await userHelpers.debitOrderDetails(userId);
+      console.log(
+        walletDetails + "walletDetails",
+        creditOrderDetails + "creditOrderDetails",
+        debitOrderDetails + "debitOrderDetails"
+      );
+      const isLogin = req.session.user_id ? true : false;
+
+      // Merge credit and debit order details into a single array
+      const orderDetails = [...creditOrderDetails, ...debitOrderDetails];
+
+      // Sort the merged order details by date and time in descending order
+      orderDetails.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // Pagination logic
+      const currentPage = parseInt(req.query.page) || 1;
+      const PAGE_SIZE = 5;
+
+      const totalItems = orderDetails.length;
+      const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+
+      const startIndex = (currentPage - 1) * PAGE_SIZE;
+      const endIndex = startIndex + PAGE_SIZE;
+      const paginatedOrderDetails = orderDetails.slice(startIndex, endIndex);
+
+      const hasPrev = currentPage > 1;
+      const hasNext = currentPage < totalPages;
+
+      const pages = [];
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push({
+          number: i,
+          current: i === currentPage,
+        });
+      }
+      console.log(
+        walletDetails + "wallet details",
+        paginatedOrderDetails + "paginated order",
+        hasPrev,
+        hasNext,
+        pages
+      );
+
+      res.render("users/wallet", {
+        layout: "user-layout",
+        walletDetails,
+        orderDetails: paginatedOrderDetails,
+        showPagination: totalItems > PAGE_SIZE,
+        hasPrev,
+        prevPage: currentPage - 1,
+        hasNext,
+        nextPage: currentPage + 1,
+        pages,
+        isLogin: isLogin,
+      });
+    } catch (error) {
+      console.log(error.message);
+      res.redirect("/user-error");
     }
   },
 };
