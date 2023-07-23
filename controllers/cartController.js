@@ -10,7 +10,7 @@ module.exports = {
     try {
       const proId = req.body.productId;
 
-      let cart = await Cart.findOne({ User_id: req.session.user_id });
+      const cart = await Cart.findOne({ User_id: req.session.user_id });
       const product = await Product.findById(proId).lean();
       if (product.inStock < 1) {
         return res.status(400).json({ message: "product is out of stock" });

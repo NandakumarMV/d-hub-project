@@ -34,7 +34,7 @@ router.get("/verify", userControllers.verfiyMail);
 router.get("/login", auth.isLogOut, userControllers.loginLoad);
 
 router.post("/login", userControllers.verfiyLogin);
-router.get("/", auth.isLogOut, userControllers.loginLoad);
+router.get("/", auth.isLogOut, userControllers.loadHome);
 router.get("/home", auth.isLogin, userControllers.loadHome);
 router.get("/logout", auth.isLogin, userControllers.userLogout);
 

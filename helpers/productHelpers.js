@@ -80,7 +80,7 @@ module.exports = {
 
         if (!defaultAddress) {
           console.log("default address not found");
-          return res.redirect("/address");
+          res.redirect("/address");
         }
         const defaultAddressDetails = defaultAddress.addresses[0];
         const address = {

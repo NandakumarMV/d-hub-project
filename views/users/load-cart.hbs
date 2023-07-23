@@ -70,6 +70,9 @@
     </header>
     <!-- ***** Main Banner Area Start ***** -->
     
+
+<!-- ***** Main Banner Area End *****  -->
+{{#if products}}
 <div class="page-heading" id="top">
     
   <div class="container">
@@ -78,14 +81,14 @@
         <div class="inner-content">
           <h2>D-HUB Online</h2>
           <span>Where technology meets you</span>
-          <h1 style="font-size: 70px; color: white; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;" >CART PAGE</h1>
+          <h1 style="font-size: 70px; color: white; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;" >CART</h1>
         </div>
       </div>
     </div>
+    
   </div>
 </div>
-<!-- ***** Main Banner Area End ***** -->
-{{#if products}}
+
 <section class="shopping-cart spad">
   <div class="container">
     <div class="row">
@@ -163,13 +166,25 @@
   </div>
 </section>
 {{else}}
-<div class="cart-emty" style="justify-content: center; display: grid;">
-  <h1 style="text-align: center;">CART IS EMPTY</h1>
-  <h3 style="text-align: center;">ADD ITEMS TO CART</h3>
-  <div class="continue__btn" style="justify-self: center;">
-    <a href="/home">Continue Shopping</a>
+<div class="page-heading" id="top">
+    
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="inner-content">
+          <h2>D-HUB Online</h2>
+          <span>Where technology meets you</span>
+          <h1 style="font-size: 70px; color: white; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;" >OOPS ! CART IS EMPTY!</h1>
+          <div class="continue__btn" style="justify-self: center;">
+    <a href="/home" style="color: beige;">Continue Shopping</a>
+  </div>
+        </div>
+        
+      </div>
+    </div>
   </div>
 </div>
+
 {{/if}}
 
 

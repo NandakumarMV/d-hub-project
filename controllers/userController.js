@@ -101,7 +101,7 @@ const loadOtpHome = async (req, res) => {
 const sendVerifyMail = async (name, email, user_id) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
+      host: "smtp.gmail.com",
       port: 587,
       secure: false,
       requireTLS: true,
@@ -136,7 +136,7 @@ const sendVerifyMail = async (name, email, user_id) => {
 const sendResetPasswordMail = async (name, email, token) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
+      host: "smtp.gmail.com",
       port: 587,
       secure: false,
       requireTLS: true,
@@ -305,13 +305,16 @@ const verfiyLogin = async (req, res) => {
 };
 const loadHome = async (req, res) => {
   try {
-    const userData = await User.findById({ _id: req.session.user_id });
     const products = await Product.find({ unlist: false }).lean();
-
+    const isLogin = req.session.user_id ? true : false;
     const category = await Category.find({ unlist: false }).lean();
+    res.setHeader(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, private"
+    );
     res.render("users/home-page", {
       layout: "user-layout",
-      user: userData,
+      isLogin: isLogin,
       products: products,
       category: category,
     });

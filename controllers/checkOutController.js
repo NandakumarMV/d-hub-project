@@ -230,21 +230,86 @@ module.exports = {
       orderDetails: orderHistory,
     });
   },
+  // loadOrdersView: async (req, res) => {
+  //   try {
+  //     const orderId = req.query.id;
+  //     const userId = req.session.user_id;
+  //     // console.log(orderId, "this is the order  id");
+  //     const order = await Order.findOne({ _id: orderId }).populate({
+  //       path: "products.productId",
+  //       select: "brand productname price images",
+  //     });
+  //     // console.log(order, "populated orders");
+
+  //     const createdOnIST = moment(order.date)
+  //       .tz("Asia/Kolkata")
+  //       .format("DD-MM-YYYY h:mm A");
+  //     order.date = createdOnIST;
+  //     const orderDetails = order.products.map((product) => {
+  //       const images = product.productId.images;
+  //       const image = images.length > 0 ? images[0] : "";
+  //       return {
+  //         name: product.productId.productname,
+  //         brand: product.productId.brand,
+  //         image: image,
+  //         price: product.productId.price,
+  //         quantity: product.quantity,
+  //         status: order.orderStatus,
+  //       };
+  //     });
+  //     // console.log(orderDetails, "ordeerdetails are here");
+
+  //     const deliveryAddress = {
+  //       name: order.addressDetails.name,
+  //       address: order.addressDetails.address,
+  //       city: order.addressDetails.city,
+  //       state: order.addressDetails.state,
+  //       pincode: order.addressDetails.pincode,
+  //     };
+  //     // console.log(deliveryAddress, "deliveryaddress is here");
+  //     const subtotal = order.orderValue;
+  //     const cancellationStatus = order.cancellationStatus;
+  //     res.render("users/view-order", {
+  //       layout: "user-layout",
+  //       orderDetails: orderDetails,
+  //       deliveryAddress: deliveryAddress,
+  //       subtotal: subtotal,
+  //       orderId: orderId,
+  //       orderDate: createdOnIST,
+  //       cancellationStatus: cancellationStatus,
+  //     });
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // },
+
   loadOrdersView: async (req, res) => {
     try {
       const orderId = req.query.id;
       const userId = req.session.user_id;
-      // console.log(orderId, "this is the order  id");
+
       const order = await Order.findOne({ _id: orderId }).populate({
         path: "products.productId",
         select: "brand productname price images",
       });
-      // console.log(order, "populated orders");
 
       const createdOnIST = moment(order.date)
         .tz("Asia/Kolkata")
         .format("DD-MM-YYYY h:mm A");
       order.date = createdOnIST;
+
+      // Get the current date in the Asia/Kolkata timezone
+      const currentDateIST = moment().tz("Asia/Kolkata");
+
+      // Calculate the difference between the current date and the order date
+      const orderDate = moment(order.date, "DD-MM-YYYY h:mm A").tz(
+        "Asia/Kolkata"
+      );
+      const differenceInDays = currentDateIST.diff(orderDate, "days");
+
+      // Check if the order is more than 14 days old
+      const isLessThan14DaysOld = differenceInDays < 14;
+      console.log(isLessThan14DaysOld, "isMoreThan14DaysOld");
       const orderDetails = order.products.map((product) => {
         const images = product.productId.images;
         const image = images.length > 0 ? images[0] : "";
@@ -257,7 +322,6 @@ module.exports = {
           status: order.orderStatus,
         };
       });
-      // console.log(orderDetails, "ordeerdetails are here");
 
       const deliveryAddress = {
         name: order.addressDetails.name,
@@ -266,9 +330,10 @@ module.exports = {
         state: order.addressDetails.state,
         pincode: order.addressDetails.pincode,
       };
-      // console.log(deliveryAddress, "deliveryaddress is here");
+
       const subtotal = order.orderValue;
       const cancellationStatus = order.cancellationStatus;
+
       res.render("users/view-order", {
         layout: "user-layout",
         orderDetails: orderDetails,
@@ -277,6 +342,7 @@ module.exports = {
         orderId: orderId,
         orderDate: createdOnIST,
         cancellationStatus: cancellationStatus,
+        isLessThan14DaysOld: isLessThan14DaysOld,
       });
     } catch (error) {
       console.log(error.message);
@@ -285,7 +351,6 @@ module.exports = {
 
   placedOrder: async (req, res) => {
     try {
-      console.log("hjfjkdshfjkadjfklhadiof adshf suceessfull");
       res.render("users/order-sucessfull", { layout: "user-layout" });
     } catch (error) {
       console.log(error.message);
