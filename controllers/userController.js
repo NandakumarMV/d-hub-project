@@ -10,6 +10,8 @@ const { use } = require("../app");
 const { default: mongoose } = require("mongoose");
 const Addresses = require("../models/addressesModel");
 const userHelper = require("../helpers/userHelpers");
+const Wallet = require("../models/walletModel");
+const { log } = require("handlebars");
 
 //bcrypt password
 
@@ -178,34 +180,6 @@ const loadSignUp = async (req, res) => {
 
 //data to database
 
-// const insertUser = async (req, res) => {
-//   try {
-//     const securePass = await securePassword(req.body.password);
-//     const user = new User({
-//       name: req.body.name,
-//       email: req.body.email,
-//       mobile: req.body.mobile,
-//       password: securePass,
-//       is_admin: 0,
-//     });
-//     const userDate = await user.save();
-
-//     if (userDate) {
-//       sendVerifyMail(req.body.name, req.body.email, userDate._id);
-//       res.render("users/signup", {
-//         layout: "user-layout",
-//         message: "your signup is successful, please verify your email ",
-//       });
-//     } else {
-//       res.render("users/signup", {
-//         layout: "user-layout",
-//         message: "your signup is failed",
-//       });
-//     }
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
 const insertUser = async (req, res) => {
   try {
     const { name, email, mobile, password } = req.body;
@@ -283,9 +257,34 @@ const verfiyLogin = async (req, res) => {
             layout: "user-layout",
             message: "please verify your email",
           });
+        } else if (userData.blocked === true) {
+          res.render("users/signup", {
+            message: "You have been blocked",
+            layout: "user-layout",
+          });
         } else {
           req.session.user_id = userData._id;
-          res.redirect("/home");
+          req.session.blocked = userData.blocked;
+          const wallet = await Wallet.findOne({ userId: userData._id }).exec();
+          if (wallet) {
+            res.setHeader(
+              "Cache-Control",
+              "no-store, no-cache, must-revalidate, private"
+            );
+            res.redirect("/home");
+          } else {
+            const newWallet = new Wallet({
+              userId: userData._id,
+              walletAmount: 0,
+            });
+            const createdWallet = await newWallet.save();
+            res.setHeader(
+              "Cache-Control",
+              "no-store, no-cache, must-revalidate, private"
+            );
+
+            res.redirect("/home");
+          }
         }
       } else {
         res.render("users/signup", {
@@ -335,7 +334,7 @@ const forgetLoad = async (req, res) => {
   try {
     res.render("users/forget", { layout: "user-layout" });
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/user-error");
   }
 };
 const forgetVerify = async (req, res) => {
@@ -367,7 +366,7 @@ const forgetVerify = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/user-error");
   }
 };
 
@@ -417,7 +416,7 @@ const loadProductView = async (req, res) => {
       product: product,
     });
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/user-error");
   }
 };
 
@@ -451,6 +450,7 @@ const loadUserProfile = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.redirect("/user-error");
   }
 };
 // const addressList = async (req, res) => {};
@@ -515,7 +515,7 @@ const loadAddress = async (req, res) => {
       });
     }
   } catch (error) {
-    throw new Error(error.message);
+    res.redirect("/user-error");
   }
 };
 
@@ -564,7 +564,7 @@ const addressList = async (req, res) => {
 
     res.redirect("/address");
   } catch (error) {
-    throw new Error(error.message);
+    res.redirect("/user-error");
   }
 };
 
@@ -600,7 +600,7 @@ const deletingAddress = async (req, res) => {
     await address.save();
     res.redirect("/address");
   } catch (error) {
-    throw new Error(error.message);
+    res.redirect("/user-error");
   }
 };
 const editAddress = async (req, res) => {
@@ -639,7 +639,7 @@ const editAddress = async (req, res) => {
       res.redirect("/address");
     }
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/user-error");
   }
 };
 
@@ -674,69 +674,79 @@ const settingAsDefault = async (req, res) => {
 
 const loadShopPage = async (req, res) => {
   try {
-    console.log("load shop page");
-    let search = "";
-    if (req.query.search) {
-      search = req.query.search;
-    }
-    console.log(search, " search ");
-    // Get sorting criteria from the request, default to "productname" ascending
-    const sortField = req.query.sortField || "productname";
-    console.log(req.query.sortField, "req.query.sortField");
-    const sortDirection = req.query.sortDirection === "desc" ? -1 : 1;
-    console.log(req.query.sortDirection, "req.query.sortDirection");
-    console.log(sortField + "  :sortField", sortDirection + "  :sortDirection");
-    const query = {
-      unlist: false,
-      $or: [
-        { brand: { $regex: ".*" + search + ".*", $options: "i" } },
-        { productname: { $regex: ".*" + search + ".*", $options: "i" } },
-        { category: { $regex: ".*" + search + ".*", $options: "i" } },
-      ],
-    };
-    console.log(query, "query");
-    const productData = await Product.find(query)
-      .sort({ [sortField]: sortDirection }) // Apply sorting based on the provided field and direction
-      .lean();
-    console.log(productData, "product  data");
-    // Pagination in shop
-    const currentPage = parseInt(req.query.page) || 1;
-    const PAGE_SIZE = 3;
-
-    const totalItems = productData.length;
-    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
-
-    const startIndex = (currentPage - 1) * PAGE_SIZE;
-    const endIndex = startIndex + PAGE_SIZE;
-    const paginatedProductData = productData.slice(startIndex, endIndex);
-
-    const hasPrev = currentPage > 1;
-    const hasNext = currentPage < totalPages;
-
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push({
-        number: i,
-        current: i === currentPage,
-      });
-    }
-
-    res.render("users/shop-page", {
+    const products = await Product.find().lean();
+    console.log(products, "products");
+    res.render("users/shop2", {
       layout: "user-layout",
-      product: paginatedProductData,
-      showPagination: totalItems > PAGE_SIZE,
-      hasPrev,
-      prevPage: currentPage - 1,
-      hasNext,
-      nextPage: currentPage + 1,
-      pages,
-      sortField, // Pass sorting criteria to the view to keep track of the current sorting field
-      sortDirection, // Pass sorting direction to the view to keep track of the current sorting direction
+
+      product: products,
     });
-  } catch (error) {}
+  } catch (error) {
+    res.redirect("/user-error");
+  }
+};
+
+const loadErrorPage = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+    const userDetails = await User.findOne({ _id: userId }).lean();
+    res.render("users/404", { layout: "user-layout", userDetails });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const shopOperations = async (req, res) => {
+  try {
+    const {
+      selectedSort,
+      selectedPriceRange,
+      selectedCategory,
+      searchQuery,
+      selectedPage,
+    } = req.query;
+    const sortOptions = {};
+    if (selectedSort === "price-low-high") {
+      console.log(" (selectedSort === 'rice-low-high')");
+      sortOptions["price"] = 1;
+    } else if (selectedSort === "price-high-low") {
+      sortOptions["price"] = -1;
+    }
+    console.log(sortOptions, "sortoptions");
+    let query = {};
+    if (selectedCategory !== "all category") {
+      query["category"] = selectedCategory;
+    }
+
+    if (selectedPriceRange !== "All") {
+      const [minPrice, maxPrice] = selectedPriceRange.split("-").map(Number);
+      query["price"] = { $gte: minPrice, $lte: maxPrice };
+    }
+
+    if (searchQuery) {
+      query["productname"] = { $regex: new RegExp(searchQuery, "i") };
+    }
+    const totalCount = await Product.countDocuments(query);
+    const skip = (parseInt(selectedPage) - 1) * 3;
+    const limit = 3;
+    const products = await Product.find(query)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit);
+
+    console.log(products);
+    res.json({
+      totalProducts: totalCount,
+      currentPage: parseInt(selectedPage),
+      totalPages: Math.ceil(totalCount / limit),
+      products,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "server error" });
+  }
 };
 module.exports = {
   loadSignUp,
+  loadErrorPage,
   insertUser,
   verfiyMail,
   loginLoad,
@@ -759,4 +769,5 @@ module.exports = {
   editAddress,
   settingAsDefault,
   loadShopPage,
+  shopOperations,
 };

@@ -76,7 +76,7 @@ router.get("/edit-user", adminAuth.isLogin, adminController.editUser);
 router.post("/edit-user", adminController.updateUser);
 
 //block user
-router.get("/block", adminAuth.isLogin, adminController.blockUser);
+router.get("/block/:id", adminAuth.isLogin, adminController.blockUser);
 router.get("/blocked-users", adminController.addBlockedUsers);
 
 //unblock user

@@ -1,3 +1,6 @@
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+
 <style>
     .custom-card {
         width: 1400px;
@@ -71,7 +74,11 @@
         /* Lighter border color */
     }
 </style>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+
+
+
+
+
 
 <div id="preloader">
       <div class="jumper">
@@ -96,7 +103,7 @@
               <!-- ***** Menu Start ***** -->
               <ul class="nav">
                 <li class="scroll-to-section">
-                  <a href="/home" class="active">Home</a>
+                  <a href="/home" class="">Home</a>
                 </li>
                 <li class="scroll-to-section"><a href="/shop-page">SHOP</a></li>
 
@@ -110,11 +117,11 @@
 {{#if orderDetails.length}}
 <div class="container tableheader">
     <div class="row justify-content-center mt-4">
-        <div class="card custom-card">
+        <div class="card custom-card" style="margin-top: 20px;">
             <div class="card-body">
                 <h3 class="card-title" style="color: rgb(65, 65, 64);">ORDER DETAILS</h3>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-bordered table-striped" id="mytable">
                         <thead>
                             <tr>
                                 <th scope="col">DATE</th>
@@ -170,4 +177,18 @@
 
 
 
+ <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+ <script>
+      $(document).ready(function() {
+  $('#mytable').DataTable({
+   
+   
+});
+})
+
+
+
+</script>

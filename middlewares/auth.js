@@ -1,10 +1,22 @@
+const User = require("../models/userModel");
+
 const isLogin = async (req, res, next) => {
   try {
     if (req.session.user_id) {
+      const userData = await User.findById(req.session.user_id);
+
+      if (userData && !userData.blocked) {
+        console.log("user not blocked");
+        next();
+      } else {
+        console.log("enter else conditions");
+        const dlete = delete req.session.user_id;
+        console.log(dlete, "truee ogxhhxjko");
+        res.redirect("/login");
+      }
     } else {
       res.redirect("/login");
     }
-    next();
   } catch (error) {
     console.log(error.message);
   }

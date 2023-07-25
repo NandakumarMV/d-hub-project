@@ -1,123 +1,4 @@
-{{!-- {{>admin-header}}
 
-<div class="my-form" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="form-dialog form-dialog-centered" role="document">
-    <form class="form-content" action="/admin/edit-product" method="post" enctype="multipart/form-data">
-      <style>
-        .my-form {
-          background-color: #f8f9fa;
-          border-radius: 5px;
-          padding: 20px;
-          margin: 20px auto;
-          max-width: 500px;
-        }
-
-        .form-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 20px;
-        }
-
-        .form-title {
-          margin-bottom: 0;
-        }
-
-        .form-group {
-          margin-bottom: 20px;
-        }
-
-        .form-label {
-          display: block;
-          margin-bottom: 5px;
-        }
-
-        .form-control {
-          width: 100%;
-          padding: 10px;
-          border: 1px solid #ced4da;
-          border-radius: 5px;
-        }
-
-        .form-footer {
-          margin-top: 20px;
-          display: flex;
-          justify-content: flex-end;
-          gap:10px
-        }
-
-        .btn {
-          padding: 10px 20px;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-        }
-
-        .btn-secondary {
-          background-color: #6c757d;
-          color: #fff;
-        }
-
-        .btn-primary {
-          background-color: #007bff;
-          color: #fff;
-        }
-
-        .product-image {
-          width: 100px;
-          height: auto;
-          margin-top: 10px;
-        }
-      </style>
-      
-      <div class="form-header">
-     
-        <h5 class="form-title" id="exampleModalLongTitle">EDIT PRODUCT</h5>
-        <button type="button" class="close" data-bs-dismiss="form" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="form-body">
-        <div class="form-group">
-          <label for="brand" class="form-label">BRAND</label>
-          <input type="text" name="brand" class="form-control" value="{{product.brand}}" />
-        </div>
-        <div class="form-group">
-          <label for="product-name" class="form-label">PRODUCT NAME</label>
-          <input type="text" name="productname" class="form-control" value="{{product.productname}}" required />
-        </div>
-        <div class="form-group">
-          <label for="category" class="form-label">Category</label>
-          <select name="category" class="form-control" required>
-            {{#each categories}}
-              <option value="{{this}}" {{#if (eq product.category this)}}selected{{/if}}>{{this}}</option>
-            {{/each}}
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="price" class="form-label">PRICE</label>
-          <input type="number" name="price" class="form-control" value="{{product.price}}" required />
-        </div>
-        <div class="form-group">
-          <label for="image" class="form-label">IMAGE</label>
-          <input type="file" name="image" class="form-control" />
-          <img src="/uploads/{{images}}" alt="{{images}}" width="50px" height="50px">
-        </div>
-        <div class="form-group">
-          <label for="description" class="form-label">DESCRIPTION</label>
-          <input type="text" name="description" class="form-control" value="{{product.description}}" />
-        </div>
-      </div>
-
-      <div class="form-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="form">Close</button>
-        <button type="submit" class="btn btn-primary">Update</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-{{>admin-footer}} --}}
 {{> admin-header}}
 <div class="container-fluid pt-4 px-4">
     <div class="row g-4">
@@ -205,64 +86,29 @@
         </div>
     </div>
 </div>
-{{> admin-footer}}
 
 <script>
-      function editimageView(event) {
-        const preview = document.getElementsByClassName('imagepreview');
-
-        for (let i = 0; i < event.target.files.length; i++) {
-          const file = event.target.files[i];
-          const reader = new FileReader();
-
-          reader.onload = function (e) {
-            preview[i].src = e.target.result;
-          };
-          reader.readAsDataURL(file);
+    // Function to prevent negative values for stock and price inputs
+    function preventNegativeValue(input) {
+        if (input.value < 0) {
+            input.value = 0;
         }
-      }
-    </script>
+    }
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const deleteButtons = document.querySelectorAll('.delete-image');
-        const productId = document.getElementById('idForserver').value
+    // Attach the event listeners to relevant inputs
+    document.addEventListener("DOMContentLoaded", function () {
+        const stockInput = document.querySelector("[name='stock']");
+        const priceInput = document.querySelector("[name='price']");
 
-        deleteButtons.forEach(function (button) {
-          button.addEventListener('click', deleteImage);
+        stockInput.addEventListener("input", function () {
+            preventNegativeValue(stockInput);
         });
 
-        function deleteImage(event) {
-          event.preventDefault();
+        priceInput.addEventListener("input", function () {
+            preventNegativeValue(priceInput);
+        });
+    });
+</script>
+{{> admin-footer}}
 
-          const image = this.getAttribute('data-image');
-          const index = this.getAttribute('data-index');
-          const button = this;
 
-          console.log(image);
-
-          fetch('/admin/deleteImage', {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ image, index, productId }),
-          })
-            .then(function (response) {
-              if (response.ok) {
-                // Handle successful image deletion
-                console.log('Image deleted successfully');
-                // Remove the deleted image and button from the DOM
-                button.parentNode.removeChild(button.previousElementSibling);
-                button.parentNode.removeChild(button);
-              } else {
-                // Handle image deletion error
-                console.log('Failed to delete image');
-              }
-            })
-            .catch(function (error) {
-              console.log('Error occurred while deleting image', error);
-            });
-        }
-      });
-    </script>

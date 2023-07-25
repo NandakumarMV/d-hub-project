@@ -1,4 +1,11 @@
-
+<style>
+  .ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px; /* Adjust the max-width as per your container */
+    }
+</style>
     <!-- ***** Preloader Start ***** -->
     <div id="preloader">
       <div class="jumper">
@@ -16,14 +23,14 @@
           <div class="col-12">
             <nav class="main-nav">
               <!-- ***** Logo Start ***** -->
-              <a href="index.html" class="logo">
+              <a href="/home" class="logo">
                 <img class="logo-img" src="/assets/images/dhub-main.png" />
               </a>
               <!-- ***** Logo End ***** -->
               <!-- ***** Menu Start ***** -->
               <ul class="nav">
                 <li class="scroll-to-section">
-                  <a href="/home" class="active">Home</a>
+                  <a href="/home" class="">Home</a>
                 </li>
                 <li class="scroll-to-section"><a href="/shop-page">SHOP</a></li>
                 <li class="scroll-to-section"><a href="/user-profile">PROFILE</a></li>
@@ -189,8 +196,8 @@
                     <img class="one-sales" src="/uploads/{{this.images.[0]}}" alt="img" />
                   </div>
                   <div class="down-content">
-                    <h4>{{this.brand}}</h4>
-                    <h5 class="h5-moblie">{{this.productname}}</h5>
+                    <h4 class="ellipsis" data-bs-toggle="tooltip" data-bs-placement="top" title="{{this.brand}}">{{this.brand}}</h4>
+                    <h5 class="h5-moblie ellipsis" data-bs-toggle="tooltip" data-bs-placement="top" title="{{this.productname}}">{{this.productname}}</h5>
                     <span>₹{{this.price}}</span>
                     <ul class="stars">
                       <li><i class="fa fa-star"></i></li>
@@ -367,6 +374,9 @@
         </div>
       </div>
     </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <!-- jQuery -->
 

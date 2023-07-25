@@ -2,7 +2,15 @@
     .align-middle {
         vertical-align: middle;
     }
+
+    .ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px; /* Adjust the max-width as per your container */
+    }
 </style>
+
 {{>admin-header}}
 
 <div class="container-fluid pt-4">
@@ -36,15 +44,15 @@
                               
 
                             </tr>
-                        </thead>
+                        </thead> 
                         <tbody>
                           
                             {{#each products}}
                             <tr>
                                 <th class="align-middle" scope="row">{{this.serialNumber}}</th>
-                                <td class="align-middle">{{this.brand}}</td>
-                                <td class="align-middle">{{this.productname}}</td>
-                                 <td class="align-middle">{{this.category}}</td>
+                                <td class="align-middle ellipsis" data-bs-toggle="tooltip" data-bs-placement="top" title="{{this.brand}}">{{this.brand}}</td>
+                                <td class="align-middle ellipsis" data-bs-toggle="tooltip" data-bs-placement="top" title="{{this.productname}}">{{this.productname}}</td>
+                                <td class="align-middle ellipsis" data-bs-toggle="tooltip" data-bs-placement="top" title="{{this.category}}">{{this.category}}</td>
                                  <td class="align-middle">{{this.inStock}}</td>
                                  
 
@@ -139,6 +147,8 @@
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     
 <script>
@@ -159,5 +169,3 @@
   }
 </script>
 
-
-{{>admin-footer}}

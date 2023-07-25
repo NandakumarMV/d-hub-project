@@ -52,7 +52,7 @@ module.exports = {
       // Send a response indicating success or any other relevant data
       res.status(200).json({ message: "Product added to cart successfully" });
     } catch (error) {
-      // Handle any errors that occurred during the process
+      console.log(error.message);
       res.status(500).json({ error: error.message });
     }
   },
@@ -110,7 +110,7 @@ module.exports = {
         });
       }
     } catch (error) {
-      throw new Error(error.message);
+      res.redirect("/user-error");
     }
   },
 
@@ -185,36 +185,6 @@ module.exports = {
       res.status(500).json({ error: error.message });
     }
   },
-  // deleteProductFromCart: async (req, res) => {
-  //   try {
-  //     const userId = new mongoose.Types.ObjectId(req.body.userId);
-  //     const productId = new mongoose.Types.ObjectId(req.body.productId);
-
-  //     // Find the cart with the specified user ID and product ID
-  //     const cart = await Cart.findOneAndUpdate(
-  //       { user_id: userId },
-  //       { $pull: { products: { productId: productId } } },
-  //       { new: true } // To return the updated cart document
-  //     );
-
-  //     if (cart) {
-  //       console.log(cart, "updated cart");
-
-  //       // Product successfully removed from the cart
-  //       const response = { deleteProductFromCart: true };
-  //       console.log(response, "response from userhelper");
-  //       return response;
-  //     } else {
-  //       // Cart or product not found
-  //       const response = { deleteProductFromCart: false };
-  //       console.log(response, "response from userhelper");
-  //       return response;
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     res.status(500).json({ error: error.message });
-  //   }
-  // },
 
   checkoutLoad: async (req, res) => {
     try {
@@ -325,28 +295,30 @@ module.exports = {
         res.redirect("/address");
       }
     } catch (error) {
-      console.log("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy", error);
+      res.redirect("/user-error");
     }
   },
 
   changeAddress: async (req, res) => {
     try {
-      // console.log("Entered into Change address page.....");
+      console.log("enter chNFGW addresss");
       const addressId = req.body.addressId;
       const userId = req.session.user_id;
-
+      console.log(userId, "user id");
+      console.log(addressId, "address id");
       // Find the current default address and unset its "isDefault" flag
-      await Addresses.findOneAndUpdate(
+      const old = await Addresses.findOneAndUpdate(
         { user_id: userId, "addresses.is_default": true },
         { $set: { "addresses.$.is_default": false } }
       );
-      console.log(defaultAddress, "old default address");
+      console.log(old, "old");
 
       // Set the selected address as the new default address
       const defaultAddress = await Addresses.findOneAndUpdate(
         { user_id: userId, "addresses._id": addressId },
         { $set: { "addresses.$.is_default": true } }
       );
+
       console.log(defaultAddress, "new Default address");
 
       res.redirect("/checkout");

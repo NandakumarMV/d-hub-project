@@ -91,7 +91,7 @@
               <!-- ***** Menu Start ***** -->
               <ul class="nav">
                 <li class="scroll-to-section">
-                  <a href="/home" class="active">Home</a>
+                  <a href="/home" class="">Home</a>
                 </li>
                 <li class="scroll-to-section"><a href="/shop-page">SHOP</a></li>
 
@@ -220,10 +220,7 @@
                                 <button class="btn btn-dark btn-lg btn-block" data-toggle="modal"
                                     data-target="#changeaddress" type="button">Change Address</button>
                             </div>
-                            {{!-- <div class="col-md-6 mb-3">
-                                <button class="btn btn-dark btn-lg btn-block" data-toggle="modal"
-                                    data-target="#addnewaddress" type="button">Add new Address</button>
-                            </div> --}}
+                            
                         </div>
 
                         <hr class="mb-4">
@@ -320,54 +317,7 @@
     </div>
 </div>
 
-{{!-- Add address modal --}}
 
-<!--Add address Modal -->
-{{!-- <div class="modal fade" id="addnewaddress" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
-  aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Add new address</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form action="/add-new-address" method="post">
-          <div class="form-group">
-            <label for="edit-username">Name</label>
-            <input type="text" class="form-control" name="name" id="edit-username">
-          </div>
-          <div class="form-group">
-            <label for="edit-email">Mobile</label>
-            <input type="text" class="form-control" name="mobile" id="edit-email">
-          </div>
-          <div class="form-group">
-            <label for="edit-phone">Address</label>
-            <input type="text" class="form-control" name="homeAddress" id="edit-phone">
-          </div>
-          <div class="form-group">
-            <label for="edit-email">City</label>
-            <input type="text" class="form-control" name="city" id="edit-email">
-          </div>
-          <div class="form-group">
-            <label for="edit-email">Street</label>
-            <input type="text" class="form-control" name="street" id="edit-email">
-          </div>
-          <div class="form-group">
-            <label for="edit-email">Postal code</label>
-            <input type="number" class="form-control" name="postalCode" id="edit-email">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-warning add-button" style="color: #ffffff;">Add</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div> --}}
 
 <footer>
       <div class="container">
@@ -432,129 +382,114 @@
         </div>
       </div>
     </footer>
-<script>
-    (function () {
-        'use strict'
-
-        window.addEventListener('load', function () {
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            var forms = document.getElementsByClassName('needs-validation')
-
-            // Loop over them and prevent submission
-            Array.prototype.filter.call(forms, function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (form.checkValidity() === false) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-                    form.classList.add('was-validated')
-                }, false)
-            })
-        }, false)
-</script>
-
-
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!-- HTML -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
+  // JavaScript
+  (function () {
+    'use strict';
 
-$(document).ready(function () {
+    window.addEventListener('load', function () {
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      var forms = document.getElementsByClassName('needs-validation');
 
-        $('#checkout-button').click(function (e) {
+      // Loop over them and prevent submission
+      Array.prototype.filter.call(forms, function (form) {
+        form.addEventListener('submit', function (event) {
+          if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    }, false);
+  })();
 
-            e.preventDefault(); // To prevent default method of submitting form as here Ajax should be used here to submit the form based on the two different payment methods
+  $(document).ready(function () {
+    $('#checkout-button').click(function (e) {
+      e.preventDefault();
 
-            console.log("Checkout Button Ajax call");
+      console.log("Checkout Button Ajax call");
 
-            $.ajax({
-
-                url: '/submit-checkout',
-
-                method: 'POST',
-
-                data: $('#checkout-form').serialize(), // Here serialize function is used to get all the data from the form into the data feild of ajax call
-
-                success: (response) => {
-
-                    if (response.COD_CHECKOUT) {
-                      console.log("reached here")
-                        location.href = '/order-sucessfull'
-                    } else if (response.ONLINE_CHECKOUT) {
-                        makeRazorpayPayment(response);
-                    }else if(response.WALLET_CHECKOUT){
-                      console.log("reached wallet")
-                      console.log(response.orderId)
-
-                        location.href = '/wallet-placed?id='+response.orderId
-                    }else if(response.error){
-                         $('#error-message').text(response.error);
-                    } else {
-                        location.href = '/orderFailed'
-                        // If any of the above payment didn't happen, Should create a failed order page to user and display
-                    }
-
-                }
-
-            })
-
-        })
-
-    })
-    function makeRazorpayPayment(serverOrderData) {
-            let razorpayKeyId = serverOrderData.razorpayKeyId;
-            let orderDetails = serverOrderData.orderDetails;
-            let userDetails = serverOrderData.userDetails;
-            let userOrderRequestData = serverOrderData.userOrderRequestData;
-            console.log(razorpayKeyId,"razorpayKeyId")
-            console.log(orderDetails,"orderDetails")
-            console.log(orderDetails.id,"orderDetails")
-            console.log(userDetails,"userDetails")
-            console.log(userOrderRequestData,"userOrderRequestData")
-
-            let paymentDataToRazorpayServer = {
-                "key": razorpayKeyId,
-                "amount": orderDetails.amount,
-                "currency": "INR",
-                "name": "D-HUB",
-                "description": "Test Transaction",
-                "order_id": orderDetails.id,
-                "handler": function (response) {
-                    verifyPayment(response, orderDetails);
-                },
-                "prefill": {
-                    "name": userDetails.name,
-                    "email": userDetails.email,
-                    "contact": userOrderRequestData.mobile
-                },
-                "notes": {
-                    "Customer Address": userOrderRequestData.address
-                }
-            };
-
-            var razorpayPayment = new Razorpay(paymentDataToRazorpayServer);
-            razorpayPayment.open();
-
-            // If the payment failed for any reason, calling the pre-defined function "on" in Razorpay module using the object of Razorpay
+      $.ajax({
+        url: '/submit-checkout',
+        method: 'POST',
+        data: $('#checkout-form').serialize(),
+        success: (response) => {
+          if (response.COD_CHECKOUT) {
+            console.log("reached here");
+            location.href = '/order-sucessfull';
+          } else if (response.ONLINE_CHECKOUT) {
+            makeRazorpayPayment(response);
+          } else if (response.WALLET_CHECKOUT) {
+            console.log("reached wallet");
+            console.log(response.orderId);
+            location.href = '/wallet-placed?id=' + response.orderId;
+          } else if (response.error) {
+            $('#error-message').text(response.error);
+          } else {
+            location.href = '/orderFailed';
+          }
         }
+      });
+    });
+  });
 
-function verifyPayment(razorpayPayment,orderDetails){
-  console.log(razorpayPayment,"gguhk;l")
-  console.log(orderDetails,"gguhhhhhhhhhhhhhk;l")
-  $.ajax({
-    url:"/verify-payment",
-    data:{
-      razorpayPayment,
-      orderDetails
-    },
-    method:'POST',
-success:(response)=>{
-  if(response.status){
-    location.href="/order-sucessfull"
-  }else{
-    location.href="/order-failed"
+  function makeRazorpayPayment(serverOrderData) {
+    let razorpayKeyId = serverOrderData.razorpayKeyId;
+    let orderDetails = serverOrderData.orderDetails;
+    let userDetails = serverOrderData.userDetails;
+    let userOrderRequestData = serverOrderData.userOrderRequestData;
+    console.log(razorpayKeyId, "razorpayKeyId");
+    console.log(orderDetails, "orderDetails");
+    console.log(orderDetails.id, "orderDetails");
+    console.log(userDetails, "userDetails");
+    console.log(userOrderRequestData, "userOrderRequestData");
+
+    let paymentDataToRazorpayServer = {
+      "key": razorpayKeyId,
+      "amount": orderDetails.amount,
+      "currency": "INR",
+      "name": "D-HUB",
+      "description": "Test Transaction",
+      "order_id": orderDetails.id,
+      "handler": function (response) {
+        verifyPayment(response, orderDetails);
+      },
+      "prefill": {
+        "name": userDetails.name,
+        "email": userDetails.email,
+        "contact": userOrderRequestData.mobile
+      },
+      "notes": {
+        "Customer Address": userOrderRequestData.address
+      }
+    };
+
+    var razorpayPayment = new Razorpay(paymentDataToRazorpayServer);
+    razorpayPayment.open();
   }
-}
-  })
-}
+
+  function verifyPayment(razorpayPayment, orderDetails) {
+    console.log(razorpayPayment, "gguhk;l");
+    console.log(orderDetails, "gguhhhhhhhhhhhhhk;l");
+    $.ajax({
+      url: "/verify-payment",
+      data: {
+        razorpayPayment,
+        orderDetails
+      },
+      method: 'POST',
+      success: (response) => {
+        if (response.status) {
+          location.href = "/order-sucessfull";
+        } else {
+          location.href = "/order-failed";
+        }
+      }
+    });
+  }
 </script>

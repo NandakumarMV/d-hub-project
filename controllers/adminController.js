@@ -43,19 +43,16 @@ const verfiyLogin = async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const userData = await User.findOne({ email: email });
-    console.log(userData);
+
     if (userData) {
       const passMatch = await bcrypt.compare(password, userData.password);
-      console.log(passMatch, "admin is this");
+
       if (passMatch) {
         if (userData.is_admin === 0) {
-          console.log("admin is zero");
           res.render("admin/login", { layout: "admin-layout" });
         } else {
           req.session.adminId = userData._id;
           req.session.is_admin = userData.is_admin;
-          console.log(req.session.adminId, "req.session.adminId");
-          console.log(req.session.is_admin, "req.session.is_admin");
 
           res.redirect("/admin/home");
         }
@@ -96,7 +93,6 @@ const loadDash = async (req, res) => {
 };
 const adminlogout = async (req, res) => {
   try {
-    console.log("abmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
     delete req.session.is_admin;
     delete req.session.adminId;
     res.redirect("/admin/login");
@@ -169,45 +165,6 @@ const insertProducts = async (req, res) => {
     console.log(error);
   }
 };
-// const insertProducts = async (req, res) => {
-//   try {
-//     const newProduct = new Product({
-//       brand: req.body.brand,
-//       productname: req.body.productname, // Updated field name
-
-//       category: req.body.category,
-//       price: req.body.price,
-//       // inStock: req.body.inStock,
-//       images: req.file.filename,
-//       description: req.body.description,
-//     });
-
-//     const addProductData = await newProduct.save();
-
-//     if (addProductData) {
-//       const category = await Category.findOneAndUpdate(
-//         { category: req.body.category },
-//         { $push: { products: newProduct._id } },
-//         { new: true }
-//       );
-
-//       const updatedProducts = await Product.find().lean();
-//       const productWithSerialNumber = updatedProducts.map((product, index) => ({
-//         ...product,
-//         serialNumber: index + 1,
-//       }));
-//       const categories = await Category.find().lean();
-
-//       return res.render("admin/add-products", {
-//         layout: "admin-layout",
-//         products: productWithSerialNumber,
-//         categories: categories,
-//       });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
 
 const loadCategory = async (req, res) => {
   try {
@@ -278,7 +235,7 @@ const listCategory = async (req, res) => {
 //user section
 const addUsers = async (req, res) => {
   const userData = await User.find({ is_admin: 0, blocked: false }).lean();
-  console.log(userData);
+
   const usersWithSerialNumber = userData.map((users, index) => ({
     ...users,
     serialNumber: index + 1,
@@ -330,14 +287,14 @@ const updateUser = async (req, res) => {
 
 const blockUser = async (req, res) => {
   try {
-    const id = req.query.id;
-    // console.log(id);
+    const id = req.params.id;
+    console.log(req.params, "blocked user id ");
     const userData = await User.findByIdAndUpdate(
       { _id: id },
       { $set: { blocked: true } }
     );
-    // console.log(userData);
-    res.redirect("/admin/user");
+    console.log(userData, "seting blocked data as true");
+    res.redirect("/admin/users");
   } catch (error) {
     console.log(error.message);
   }
@@ -370,46 +327,7 @@ const unblockUser = async (req, res) => {
     console.log(error.message);
   }
 };
-// const editProductsView = async (req, res) => {
-//   try {
-//     const id = req.query.id;
-//     console.log("ID:", id);
 
-//     const categories = await Category.find({ unlist: false }).lean();
-//     const categoryData = {};
-//     categories.forEach((data) => {
-//       categoryData[data._id.toString()] = {
-//         _id: data._id.toString(),
-//         category: data.category,
-//       };
-//     });
-
-//     const categoryLookup = {};
-//     categories.forEach((category) => {
-//       categoryLookup[category._id.toString()] = category.category;
-//     });
-
-//     const updatedProduct = await Product.findById(id).lean();
-
-//     if (updatedProduct) {
-//       const productWithCategoryName = {
-//         ...updatedProduct,
-//         category: categoryLookup[updatedProduct.category],
-//       };
-//       console.log("CategoryData:", categoryData);
-//       res.render("admin/edit-product", {
-//         product: productWithCategoryName,
-//         layout: "admin-layout",
-//         categories: categoryData,
-//       });
-//     } else {
-//       console.log("Product not found");
-//       res.redirect("/admin/products");
-//     }
-//   } catch (error) {
-//     throw new Error(error.message);
-//   }
-// };
 const editProductsView = async (req, res) => {
   try {
     const id = req.query.id;
@@ -450,66 +368,6 @@ const editProductsView = async (req, res) => {
     throw new Error(error.message);
   }
 };
-
-// const editProducts = async (req, res) => {
-//   try {
-//     const id = req.query.id;
-//     console.log(id);
-//     console.log(req.files, "hi image");
-//     const product = await Product.findById({ _id: id }).lean();
-//     console.log(req.body.category, "coming to updating");
-//     let updatedProductData = {
-//       brand: req.body.brand,
-//       productname: req.body.productname,
-//       price: req.body.price,
-//       description: req.body.description,
-//       category: req.body.category,
-//       images: product.images,
-//     };
-
-//     if (req.files && req.files.length > 0) {
-//       updatedProductData.images = req.files.map((file) => file.filename);
-//     }
-
-//     const product1 = await Product.findByIdAndUpdate(
-//       { _id: req.query.id },
-//       { $set: updatedProductData }
-//     );
-
-//     res.redirect("/admin/products");
-//   } catch (error) {
-//     throw new Error(error.message);
-//   }
-// };
-// const editProducts = async (req, res) => {
-//   try {
-//     const id = req.query.id;
-//     const product = await Product.findById(id).lean();
-
-//     let updatedProductData = {
-//       brand: req.body.brand,
-//       productname: req.body.productname,
-//       price: req.body.price,
-//       description: req.body.description,
-//       category: req.body.category,
-//       images: product.images,
-//     };
-
-//     if (req.files && req.files.length > 0) {
-//       updatedProductData.images = req.files.map((file) => file.filename);
-//     }
-
-//     const product1 = await Product.findByIdAndUpdate(
-//       id,
-//       { $set: updatedProductData },
-//       { new: true }
-//     );
-
-//     res.redirect("/admin/products");
-//   } catch (error) {
-//     throw new Error(error.message);
-//   }
-// };
 
 const editProducts = async (req, res) => {
   try {

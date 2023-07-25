@@ -215,7 +215,9 @@ const applyCouponUser = async (req, res) => {
       req.session.couponInvalidError = validCoupon.reasonForRejection;
       res.redirect("/checkout");
     }
-  } catch (error) {}
+  } catch (error) {
+    res.redirect("/user-error");
+  }
 };
 module.exports = {
   manageCoupon,

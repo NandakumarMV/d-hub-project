@@ -16,7 +16,7 @@ module.exports = {
     return new Promise(async (resolve, reject) => {
       try {
         const users = await User.find({}).lean().exec();
-        console.log(users, "user ");
+
         const totaluser = users.length;
 
         const totalSales = await Order.aggregate([

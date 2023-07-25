@@ -57,6 +57,7 @@ router.get(
 
 router.get("/load-product", auth.isLogin, userControllers.loadProductView);
 router.get("/shop-page", auth.isLogin, userControllers.loadShopPage);
+router.post("/shop-page", userControllers.shopOperations);
 
 //cart loading
 router.post("/add-cart", cartController.addToCart);
@@ -79,11 +80,13 @@ router.post("/return-order", auth.isLogin, checkoutController.returnOrder);
 //coupons
 router.post("/apply-coupon-request", couponController.applyCouponUser);
 
+router.get("/user-error", auth.isLogin, userControllers.loadErrorPage);
+
 //user profile
 router.get("/user-profile", auth.isLogin, userControllers.loadUserProfile);
 router.get("/address", auth.isLogin, userControllers.loadAddress);
 router.post("/address", userControllers.addressList);
-// router.post("/add-new-address", userControllers.addNewAddress);
+
 router.get("/delete-address", auth.isLogin, userControllers.deletingAddress);
 router.post("/edit-address", userControllers.editAddress);
 router.post("/set-as-default", userControllers.settingAsDefault);

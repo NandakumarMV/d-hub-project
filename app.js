@@ -15,11 +15,14 @@ const handlebarsHelpers = require("handlebars-helpers");
 
 // Establish Mongoose connection
 mongoose
-  .connect("mongodb://127.0.0.1:27017/d-hub_users", {
-    //env
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(
+    "mongodb+srv://nandakumarmv:46je9seporF32Ja7@cluster0.3jtvqdz.mongodb.net/",
+    {
+      //env
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
   .then(() => {
     console.log("Connected to MongoDB");
   })

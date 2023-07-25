@@ -1,3 +1,12 @@
+   
+   <style>
+     .ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px; /* Adjust the max-width as per your container */
+    }
+   </style>
    <div id="preloader">
       <div class="jumper">
         <div></div>
@@ -21,7 +30,7 @@
               <!-- ***** Menu Start ***** -->
               <ul class="nav">
                 <li class="scroll-to-section">
-                  <a href="/home" class="active">Home</a>
+                  <a href="/home" class="">Home</a>
                 </li>
                 <li class="scroll-to-section"><a href="/shop-page">SHOP</a></li>
 
@@ -83,9 +92,9 @@
       </div>
       <div class="col-lg-4">
         <div class="right-content">
-          <h5>{{product.brand}}</h5>
+          <h5 class="ellipsis" data-bs-toggle="tooltip" data-bs-placement="top" title="{{product.brand}}">{{product.brand}}</h5>
          
-          <h4>{{product.productname}}</h4>
+          <h4 class="ellipsis" data-bs-toggle="tooltip" data-bs-placement="top" title="{{product.productname}}">{{product.productname}}</h4>
           <span class="price">₹{{product.price}}</span>
           <ul class="stars">
             <li><i class="fa fa-star"></i></li>
@@ -95,34 +104,10 @@
             <li><i class="fa fa-star"></i></li>
           </ul>
           <span>{{product.description}}</span>
-          <div class="quote">
-            <i class="fa fa-quote-left"></i><p>Lorem ipsum dolor sit amet,
-              consectetur adipiscing elit, sed do eiuski smod.</p>
-          </div>
-          {{!-- <div class="quantity-content">
-            <div class="left-content">
-              <h6>No. of Orders</h6>
-            </div>
-            <div class="right-content">
-              <div class="quantity buttons_added">
-                <input type="button" value="-" class="minus" /><input
-                  type="number"
-                  step="1"
-                  min="1"
-                  max=""
-                  name="quantity"
-                  value="1"
-                  title="Qty"
-                  class="input-text qty text"
-                  size="4"
-                  pattern=""
-                  inputmode=""
-                /><input type="button" value="+" class="plus" />
-              </div>
-            </div>
-          </div> --}}
+          
+         
          <div class="total">
-  {{!-- <h4>Total: $210.00</h4> --}}
+  
               <div class="main-border-button pro-button">
                 <a href="#" onclick="addToCart('{{product._id}}', event)">Add To Cart</a>
               </div>
@@ -284,4 +269,7 @@ function showOutOfStock() {
   });
 }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
