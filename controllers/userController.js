@@ -119,7 +119,7 @@ const sendVerifyMail = async (name, email, user_id) => {
       html:
         "<p> hi" +
         name +
-        ',please click here to <a href="http://localhost:3000/verify?id=' +
+        ',please click here to <a href="http://nandakumarmv.co/verify?id=' +
         user_id +
         '">verify</a>ypur mail.</p>',
     };
@@ -154,7 +154,7 @@ const sendResetPasswordMail = async (name, email, token) => {
       html:
         "<p> hi" +
         name +
-        ',please click here to <a href="http://localhost:3000/forget-password?token=' + //to config
+        ',please click here to <a href="http://nandakumarmv.co/forget-password?token=' + //to config
         token +
         '">reset </a>your password</p>',
     };

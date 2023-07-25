@@ -60,9 +60,12 @@
             type="password"
             placeholder="Password"
             name="password"
+            id="passwordInput"
             required
           />
+          <span id="passwordError" style="color: red;"></span>
         </div>
+
         <div class="field btn">
           <div class="btn-layer"></div>
           <input type="submit" value="Signup" />
@@ -87,6 +90,24 @@
   loginBtn.onclick = () => { loginForm.style.marginLeft = "0%";
   loginText.style.marginLeft = "0%"; }; signupLink.onclick = () => {
   signupBtn.click(); return false; };
+</script>
+<script>
+  const passwordInput = document.getElementById("passwordInput"); const
+  passwordError = document.getElementById("passwordError");
+  passwordInput.addEventListener("input", validatePassword); function
+  validatePassword() { const password = passwordInput.value; // Regular
+  expressions to check if the password meets the criteria const hasCapitalLetter
+  = /[A-Z]/.test(password); const hasSpecialCharacter =
+  /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password); const hasNumber =
+  /\d/.test(password); // Clear previous error message passwordError.textContent
+  = ""; // Check if all criteria are met if (!hasCapitalLetter) {
+  passwordError.textContent += "Password must contain a capital letter. "; } if
+  (!hasSpecialCharacter) { passwordError.textContent += "Password must contain a
+  special character. "; } if (!hasNumber) { passwordError.textContent +=
+  "Password must contain a number. "; } // If any of the criteria is not met,
+  show the error message if (!hasCapitalLetter || !hasSpecialCharacter ||
+  !hasNumber) { passwordInput.setCustomValidity("Invalid password"); } else {
+  passwordInput.setCustomValidity(""); } }
 </script>
 
 <!-- Rendered Messages -->
