@@ -60,10 +60,9 @@
             type="password"
             placeholder="Password"
             name="password"
-            id="passwordInput"
+            id="password"
             required
           />
-          <span id="passwordError" style="color: red;"></span>
         </div>
 
         <div class="field btn">
@@ -91,23 +90,27 @@
   loginText.style.marginLeft = "0%"; }; signupLink.onclick = () => {
   signupBtn.click(); return false; };
 </script>
+
 <script>
-  const passwordInput = document.getElementById("passwordInput"); const
-  passwordError = document.getElementById("passwordError");
-  passwordInput.addEventListener("input", validatePassword); function
-  validatePassword() { const password = passwordInput.value; // Regular
-  expressions to check if the password meets the criteria const hasCapitalLetter
-  = /[A-Z]/.test(password); const hasSpecialCharacter =
-  /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password); const hasNumber =
-  /\d/.test(password); // Clear previous error message passwordError.textContent
-  = ""; // Check if all criteria are met if (!hasCapitalLetter) {
-  passwordError.textContent += "Password must contain a capital letter. "; } if
-  (!hasSpecialCharacter) { passwordError.textContent += "Password must contain a
-  special character. "; } if (!hasNumber) { passwordError.textContent +=
-  "Password must contain a number. "; } // If any of the criteria is not met,
-  show the error message if (!hasCapitalLetter || !hasSpecialCharacter ||
-  !hasNumber) { passwordInput.setCustomValidity("Invalid password"); } else {
-  passwordInput.setCustomValidity(""); } }
+  document.addEventListener("DOMContentLoaded", function () {
+    const passwordInput = document.getElementById("password");
+
+    passwordInput.addEventListener("input", function () {
+      const password = passwordInput.value;
+      const containsNumber = /\d/.test(password); // Check for at least one number
+      const containsCapitalLetter = /[A-Z]/.test(password); // Check for at least one capital letter
+
+      // Perform validation and show/hide error message
+      if (containsNumber && containsCapitalLetter) {
+        passwordInput.setCustomValidity("");
+      } else {
+        passwordInput.setCustomValidity(
+          "Password must contain at least one number and one capital letter."
+        );
+      }
+    });
+  });
 </script>
+
 
 <!-- Rendered Messages -->
