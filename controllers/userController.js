@@ -605,10 +605,9 @@ const deletingAddress = async (req, res) => {
 };
 const editAddress = async (req, res) => {
   try {
-    console.log("edit address entering");
     const userId = req.session.user_id;
     const id = req.body._id;
-    console.log(id, "kkkkkkkkkkkkkkkkkkkkkkk");
+
     const name = req.body.name;
     const mobile = req.body.mobile;
     const address = req.body.address;

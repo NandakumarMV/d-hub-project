@@ -13,17 +13,13 @@ const userHelpers = require("../helpers/userHelpers");
 module.exports = {
   placeOrder: async (req, res) => {
     try {
-      console.log("entered placed order routeeeee");
       let userId = req.session.user_id;
       let orderDetails = req.body;
-      console.log(orderDetails, "ordeerdetails have reached here");
 
       let productsOrdered = await productHepler.getProductListForOrders(userId);
-      console.log(productsOrdered, "products that are ordered");
 
       if (productsOrdered) {
         let totalOrderValue = await productHepler.getCartValue(userId);
-        console.log(totalOrderValue, "this is the total order value");
         /*============coupon discounts=====*/
         const availableCouponData =
           await couponHelper.checkCouponValidityStatus(userId, totalOrderValue);
@@ -31,10 +27,8 @@ module.exports = {
         if (availableCouponData.status) {
           const couponDiscountAmount = availableCouponData.couponDiscount;
           orderDetails.couponDiscount = couponDiscountAmount;
-          console.log(couponDiscountAmount, "coupon dis amt");
 
           totalOrderValue = totalOrderValue - couponDiscountAmount;
-          console.log(totalOrderValue, "total order value");
           const updateCouponUsedStatus =
             await couponHelper.updateCouponUsedStatus(
               userId,
@@ -45,19 +39,14 @@ module.exports = {
         productHepler
           .placingOrder(userId, orderDetails, productsOrdered, totalOrderValue)
           .then(async (orderId) => {
-            console.log("successfully reached hereeeeeeeeee");
 
             if (req.body["paymentMethod"] === "COD") {
-              console.log("cod_is true here");
               res.json({ COD_CHECKOUT: true });
             } else if (req.body["paymentMethod"] === "ONLINE") {
               productHepler
                 .generateRazorpayOrder(orderId, totalOrderValue)
                 .then(async (razorpayOrderDetails) => {
-                  console.log(
-                    razorpayOrderDetails,
-                    "razorpayOrderDetails reached here"
-                  );
+                 
                   const user = await User.findById({ _id: userId }).lean();
                   res.json({
                     ONLINE_CHECKOUT: true,
