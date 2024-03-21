@@ -117,11 +117,11 @@ const sendVerifyMail = async (name, email, user_id) => {
       to: email,
       subject: "to verfiy mail",
       html:
-        "<p> hi" +
+        "<p> hi " +
         name +
-        ',please click here to <a href="http://d-hub.nandakumarmv.co/verify?id=' +
+        ',please click here to <a href="https://d-hub.nandakumarmv.co/verify?id=' +
         user_id +
-        '">verify</a>ypur mail.</p>',
+        '">verify</a>your mail.</p>',
     };
     transporter.sendMail(mailOption, (error, info) => {
       if (error) {
@@ -152,9 +152,9 @@ const sendResetPasswordMail = async (name, email, token) => {
       to: email,
       subject: "to Reset Password",
       html:
-        "<p> hi" +
+        "<p> hi " +
         name +
-        ',please click here to <a href="http://d-hub.nandakumarmv.co/forget-password?token=' + //to config
+        ',please click here to <a href="https://d-hub.nandakumarmv.co/forget-password?token=' + //to config
         token +
         '">reset </a>your password</p>',
     };
